@@ -1,0 +1,38 @@
+<style type="text/css" media="screen">
+  #person_style{ background:#ccc;}
+  #person_style tr{ background:#fff;}
+  #person_style td{ width:80px; text-align:center;}
+  #person_style tr:nth-child(even) { background:#FC3; }
+</style>
+
+<br/>
+<table border="0" cellspacing="1" id="person_style">
+        <tbody>
+              <tr>
+                <td>提交日期</td>
+                <td>提交人</td>
+                <td>PV</td>
+                <td>UV</td>
+                <td>订单数</td>
+                <td>销售额</td>
+                <td>操作</td>
+              </tr>
+              {foreach from=$list  item=v}
+              <tr>
+                <td>{$v.add_time}</td>
+                <td>{$v.user_name}</td>
+                <td>{$v.spread_pv}</td>
+                <td>{$v.spread_uv}</td>
+                <td>{$v.orders}</td>
+                <td>{$v.sale}</td>
+                <td>
+                  <a href="performance.php?act=spread_edit&sid={$v.spread_id}">编辑</a> &nbsp;
+                  <input type="button" value="删除" onclick="delSpread({$v.spread_id})"/>
+              </td>
+              </tr>
+           {/foreach}
+       </tbody>
+</table>
+
+
+

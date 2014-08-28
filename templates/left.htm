@@ -1,0 +1,24 @@
+﻿{foreach from=$nav_2nd item=a}
+<dl style="border-top:0"><!--循环时　加if $smarty.foreach.xx.first 就输出 border-top:0-->
+  <dt>{$a.label}</dt>
+{foreach from=$nav_3rd key=e item=l}
+{if $a.action eq $e}
+{foreach from=$l item=t name=index}
+<dd><a href="{$file_name}.php?act={$t.action}">{$t.label}</a></dd>
+{if $smarty.foreach.index.iteration%3 eq 0}
+{/if}
+{/foreach}
+{/if}
+{/foreach}
+</dl>
+{/foreach}
+
+{if $stock_manager}
+<script language="javascript" type="text/javascript">
+ function timelyStockAlarm(){
+   Ajax.call('stock.php','act=timely_stock_alarm',timelyStockAlarmResp,'GET','JOSN');
+ }
+
+timelyStockAlarm(); 
+</script>
+{/if}

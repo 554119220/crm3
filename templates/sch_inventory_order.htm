@@ -1,0 +1,44 @@
+<table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0" >
+      <tr>
+        <th width="10%">姓名</th>
+        <th width="10%">联系电话</th>
+        <th width="10%">总金额</th>
+        <th width="15%">谁的顾客</th>
+        <th width="20%">最新更新时间</th>
+        <th width="20%">操作</th>
+      </tr>
+      {if $inventory neq ''}
+      {freach from=$inventory_list item=val}
+      <tr>
+        <td>{$val.user_name}</td>
+        <td>{$val.mobile_phone}</td>
+        <td>{$val.order_amount}</td>
+        <td>{$val.remain}</td>
+        <td>{$val.update_time}</td>
+        <td>
+          <button onclick="addInventory(this.form)" class="wu_button wu_button_vist">添加存货订单</button>
+        </td>
+      </tr>
+      {/foreach}
+      {else}
+      <tr>
+        <td colspan="7" align="center">没有存货订单</td>
+      </tr>
+      {/if}
+    </table>
+
+    <div class="bottom_tip" id="bottom_tip">
+      <div class="tip_left">
+        <p>共{$filter.record_count}条记录,当前页:{$filter.start}-{$filter.end}条，每页<input type="text" name="page_size" value="" size="4" onkeyup="sendPageValue(this)"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+      </div>
+      <div class="tip_center">
+        <span><a href="service.php?act={$filter.act}&page=1&page_size={$filter.page_size}{$condition}" id="page_link">&lt;&lt;</a></span>
+        {foreach from=$filter.page_set item=v}
+        <span {if $v eq $filter.page} class="cur"{/if}>{if $v eq $filter.page}{$v}{else}<a href="service.php?act={$filter.act}&page={$v}&page_size={$filter.page_size}{$condition}">{$v}</a>{/if}</span>
+        {/foreach}
+        <span><a href="service.php?act={$filter.act}&page={$filter.page_count}&page_size={$filter.page_size}{$condition}">&gt;&gt;</a></span>
+      </div>
+      <div class="tip_right">跳转到第
+        <input type="text" name="page" size="4" onkeyup="sendPageValue(this)">&nbsp;页
+      </div>
+    </div>

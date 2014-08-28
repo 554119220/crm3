@@ -1,0 +1,76 @@
+<table  width="90%" border="0px" cellspacing="0">
+  <caption style="font-size:14px;background:#F1F1F1;text-align:left;line-height:32px;padding-left:10px;font-weight:bold">体重情况</caption>
+  <tr>
+    <th width="130">身高 ：</th>
+    <td>
+      <input type="text" id="txt_height" name="height" onkeypress="isNum(event)" value="{$healthy_file.weight_condition.height}"/>&nbsp;厘米/公分
+    </td>  
+    <th width="80">体重 ：</th>
+    <td>
+      <input type="text" id="txt_weight" name="weight" onkeypress="isNum(event)" onblur="calculater('BMI')" value="{$healthy_file.weight_condition.weight}"/>&nbsp;千克/公斤
+    </td>
+  </tr>
+  <tr>
+    <th width="130">体重指数（BMI）：</th>
+    <td>
+      <input type="text" name="BMI" id="txt_BMI" value="" disabled="true">  
+    </td>
+  </tr>
+  <tr>
+    <th width="130">腰围 ：</th>
+    <td>
+      <input type="text" id="txt_waistline" name="waistline" onkeypress="isNum(event)" value="{$healthy_file.weight_condition.waistline}">&nbsp;厘米
+    </td>
+    <th width="130">臀围 ：</th>
+    <td>
+      <input type="text" id="txt_hipline" name="hipline" onkeypress="isNum(event)" onblur="calculater('WHR')" value="{$healthy_file.weight_condition.hipline}">&nbsp;厘米
+    </td>
+  </tr>
+  <tr>
+    <th width="130">腰臀比（WRH） ：</th>
+    <td>
+      <input type="text" id="txt_WHR" name="WHR" disabled="true" />
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <input type="button" class="input_submit" value="保存" onclick="modifyWeight()">
+    </td> 
+  </tr> 
+</form>
+</table>
+
+
+<form  name="for_before_acse" method="POST" action="">  
+  <table  border="0" cellspacing="0">
+    <caption style="font-size:14px;background:#F1F1F1;line-height:32px;text-align:left;padding-left:10px;font-weight:bold">既往病例</caption>
+    <tr>
+      <th width="140">
+        既往病例 ：
+      </th>
+      <td>
+        {foreach from=$healthy_file.baseInfo.before_case item=val}
+        {foreach from=$before_case item=val_disease}
+        {if $val eq $val_disease.sickness_id}
+        {$val_disease.disease}&nbsp;
+        {/if}
+        {/foreach}
+        {/foreach}
+      </td>
+    </tr>
+  </table>
+  <!-- 其它-->
+  <form name="for_other" method="POST" action=""> 
+    <table  border="0" cellspacing="0">
+      <caption style="font-size:14px;background:#F1F1F1;padding-left:10px;font-weight:bold;line-height:32px;text-align:left">目前身体存在其它适症状</caption>
+      <tr>
+        <th width="150"></th>
+        <td width="120">
+          {$healthy_file.baseInfo.other}
+        </td>
+      </tr>
+    </table>
+  </form>
+  <input type="hidden" value="users.php" id="URI"/>
+  <input type="hidden" value="user_id" id="field"/>
+  <input type="hidden" value="{$user.user_id}" id="ID"/>

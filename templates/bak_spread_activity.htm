@@ -1,0 +1,53 @@
+<!--推广活动登记-->
+<br/>
+<h3>
+  <font color="red">{$current_time.date}</font>,{$role_name}平台推广活动登记,
+  本月共有<i>{$activity_num}</i>个活动
+</h3>
+<br/>
+<div style="width:100%"> <div id="calender" width="100%"> <table id="calender" width="100%" cellpadding="0" cellspacing="0"> <tr> <th><font color="red">日</font></th> <th>一</th> <th>二</th> <th>三</th> <th>四</th> <th>五</th> <th><font color="red">六</font></th> </tr> {foreach from=$calender item=val} <tr> {foreach from=$val item=v name=i} <td {if $v eq $current_time.today}style="background:#81C022"{/if}> <button {if $smarty.foreach.i.index eq 0 || $smarty.foreach.i.index eq 6}style="color:red"{/if} onclick="getActivity('{$sort_time}{if $v<10}0{/if}{$v}')">{$v}</button>
+        </td>
+        {/foreach}
+      </tr>
+      {/foreach}
+    </table>
+  </div>
+
+  <br/>
+  <div id="activity_list">
+    <div style="width:100%;margin-bottom:8px;">
+      时间：<span id="activiity_say" style="color:red;width:64px;">________</span>&nbsp;&nbsp;<input type="button" class="b_submit" value="执行" onclick="addMoreActivity(false)"/>
+      <input type="button" onclick=getActivity('all') />
+    </div>
+    <div id="resource">
+      <table cellpadding=0 cellspacing=0 width=100% border=0 class="wu_table_list rb_border wu_rb_border tr_hover" id="activity_tbl">
+        <tr>
+          <th width=10%>活动名称</th>
+          <th width=10%>开始时间</th>
+          <th width=10%>结束时间</th>
+          <th width=10%>商品名</th>
+          <th width=25%>基本描述</th>
+          <th width=5%>操作</th>
+        </tr>
+        {if $activity_list neq null}
+        {foreach from=$activity_list item=val}
+        <tr>
+          <td>{$val.activity_name}</td>
+          <td>{$val.start_time}</td>
+          <td>{$val.end_time}</td>
+          <td>{$val.goods_name}</td>
+          <td>{$val.discribe}</td>
+          <td>
+            <button class="btn_new" onclick="removeTr()">删除</button>
+          </td>
+        </tr>
+        {/foreach}
+        {else}
+        <tr><td colspan="6">没有活动</td></tr>
+        {/if}
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- <form action="" method="POST" accept-charset="utf-8" onsubmit="return addSpeadActivity(this.form)"></form> -->

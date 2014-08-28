@@ -1,0 +1,96 @@
+<div>
+  <span class="title">新增提醒</span>
+  <div>
+    <form name="for_remind_conf" action="" method="POST">
+      <table width="980" height="100%" class="table_form table_tr table_td" cellspacing="0" border="1" id="table_info">
+        <tr>
+          <th width="130">提醒名称 ：</th>
+          <td><input type="text" width="403px" name="remind_name"></td>
+        </tr>
+        <tr>
+          <th width="130">被提醒人 ：</th>
+          <td>
+            <input name="reminded_name" type="text">
+          </td>
+        </tr>
+        <tr>
+          <th width="130">提醒内容：</th>
+          <td>
+            <textarea style="padding:10px" name="remind_content" rows=5px; cols="64px"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <th width="130">提醒类型：</th>
+          <td>
+            <label><input type="radio" name="remind_type" value="1" />一次必提醒</label>
+            <label><input type="radio" name="remind_type" value="2" />每天提醒</label>
+            <label><input type="radio" name="remind_type" value="3" />每周提醒</label>
+            <label><input type="radio" name="remind_type" value="4" />每月提醒</label>
+            <label><input type="radio" name="remind_type" value="5" />每年提醒</label>
+          </td>
+        </tr>
+        <tr>
+          <th width="130">提醒时间 ：</th>
+          <td>
+          <input type="text" class="Wdate" name="remind_time" onfocus="WdatePicker({dateFmt:'yyyy年M月d日',minDate:'2013-2-1',maxDate:'2018-12-1'})"/>&nbsp;&nbsp;
+          <label><input type="checkbox" name="show_index" value="1"/>在首页提醒</label>
+          </td>
+        </tr>
+      </table>
+      <br><br>
+      <table width="980" height="100%" class="table_form table_tr table_td" cellspacing="0" border="1" id="table_info">
+        <tr>
+          <td colspan="6" style="padding-left:80px">
+            <label><input type="checkbox" name="conRemind" value="">启用条件提醒</label>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6" style="padding-left:80px">当&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <select name="contable">
+              <option value="1">订单表</option>
+              {foreach from=$contable item=val}
+              <option value="{$val}">{$val}</option>
+              {/foreach}
+            </select>&nbsp;&nbsp;&nbsp;表&nbsp;&nbsp;&nbsp;&nbsp;
+            <select name="cocolumn">
+              <option value="1">订单金额</option>
+              {foreach from=$concolumn item=val}
+              <option value="{$val}">{$val}</option>
+              {/foreach}
+            </select>&nbsp;&nbsp;&nbsp;字段&nbsp;&nbsp;&nbsp;
+            <select name="codition">
+              <option value="0">等于</option>
+              <option value="1">大于</option>
+              <option value="2">小于</option>
+              {foreach from=$codition item=val}
+              <option value="{$val}">$val</option> 
+              {/foreach}
+            </select>
+            <input type="text" name="conval" value=""/>&nbsp;&nbsp;&nbsp;时&nbsp;&nbsp;&nbsp;
+            <button onclick="#" class="b_submit">+</button>
+          </td>
+        </tr>
+        <tr style="background:#F1F1F1">
+          <td width="15%"></td>
+          <td width="15%">表名</td>
+          <td width="15%">字段名</td>
+          <td width="15%">符号</td>
+          <td width="15%">值</td>
+          <td></td>
+        </tr>
+        <tr>
+        <tr height="60px"></tr>
+        <tr>
+          <td colspan="4" align="center">
+            <input type="button" class="input_submit" onclick="subRemind()" value="保存" />
+            &nbsp;&nbsp;&nbsp;
+            <input type="reset" class="input_submit" value="取消" />
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+  </form>
+</div>
+</div>

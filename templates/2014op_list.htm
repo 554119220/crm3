@@ -1,0 +1,84 @@
+﻿<div class="w830" >
+  <div class="finder-title" width="100%">
+    <span style="float:right">
+      <select id="role" onchange="adminByRole(this.value)">
+        <option value="0">全部</option>
+        {foreach from=$role_list item=val}
+        <option value="{$val.role_id}">{$val.role_name}</option>
+        {/foreach}
+      </select>
+    </span>
+    操作员管理     
+    <span style="float:right">
+      <input type="button" class="b_submit" value="添加管理员" onclick="addAdminTemp()"/>
+    </span>
+  </div>
+  <div id="resource">
+    <table cellpadding="0" cellspacing="0" class="wu_table_list  c_b rb_border tr_hover" width="100%" style="margin-bottom:65px">
+      <tr>
+        <th width="5%">ID</th>
+        <th width="10%">所在部门</th>
+        <th width="10%">姓名</th>
+        <th width="10%">联系电话</th>
+        <th width="10%">最后登录时间</th>
+        <th width="10%">登录次数</th>
+        <th width="5%">状态</th>
+        <th width="10%">备注</th>
+        <th width="20%">操作</th>
+      </tr>
+      {foreach from=$account_list item=account}
+      <tr>
+        <td>{$account.user_id}</td>
+        <td>{$account.role_name}</td>
+        <td>{$account.user_name}</td>
+        <td>{$account.mobile}</td>
+        <td>{if $account.last_login eq "1970-01-01"}-{else}{$account.last_login}{/if}</td>
+        <td>{$account.login_times}</td>
+        <td id="dis_{$account.user_id}" >
+          <input type="button" class="b_submit" {if $account.status eq 1}value='在职'{else}value="离职" style="background:#E0E0E0"{/if} onclick="admindisable({$account.user_id})">
+        </td>
+        <td>{$test}</td>
+        <td>
+          <a class="btn" href="system.php?act=assign_authority&user_id={$account.user_id}" >分派权限</a>
+          <button class="btn" onclick="editAdminInfo({$account.user_id})">编辑</button>
+          <button class="btn" onclick="assignAuthority({$account.user_id})">查看日志</button>
+        </td>
+      </tr>
+      {/foreach}
+    </table>
+
+    <!-- 分页 -->
+    <div class="bottom_tip">
+      <div class="tip_left">
+        <p>共{$filter.record_count}条记录,当前页:{$filter.start}-{$filter.end}条，每页<input type="text" name="page_size" value="" size="4" onkeyup="sendPageValue(this)"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+      </div>
+      <div class="tip_center">
+        <span><a href="system.php?act={$filter.act}&page=1&page_size={$filter.page_size}" id="page_link">&lt;&lt;</a></span>
+        {foreach from=$filter.page_set item=v}
+        <span {if $v eq $filter.page} class="cur"{/if}>{if $v eq $filter.page}{$v}{else}<a href="system.php?act={$filter.act}&page={$v}&page_size={$filter.page_size}">{$v}</a>{/if}</span>
+        {/foreach}
+        <span><a href="system.php?act={$filter.act}&page={$filter.page_count}&page_size={$filter.page_size}">&gt;&gt;</a></span>
+      </div>
+      <div class="tip_right">跳转到第
+        <input type="text" name="page" size="4" onkeyup="sendPageValue(this)">&nbsp;页
+      </div>
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+  a:hover{
+    color: rgb(202,103,47);
+  }
+  .btn{
+    color: #3367AC;
+    cursor: pointer;
+  }
+  .btn:hover{
+    color: rgb(202,103,47);
+  }
+  .rb_border tr:nth-child(even)
+  {
+    background:#FFF !important; 
+  }
+</style>

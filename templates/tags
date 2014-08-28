@@ -1,0 +1,61 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+addBrand	goods_info.htm	/^                  function addBrand()$/;"	f
+addBrandResponse	goods_info.htm	/^                  function addBrandResponse(result)$/;"	f
+addCatResponse	goods_info.htm	/^                  function addCatResponse(result)$/;"	f
+addCategory	goods_info.htm	/^                  function addCategory()$/;"	f
+addImg	goods_info.htm	/^                  function addImg(obj)$/;"	f
+addOtherCat	goods_info.htm	/^                  function addOtherCat(conObj)$/;"	f
+addSpec	goods_info.htm	/^            function addSpec(obj)$/;"	f
+addVolumePrice	goods_info.htm	/^                  function addVolumePrice(obj)$/;"	f
+add_freecard	add_custom.htm	/^function add_freecard(user_id,user_name)$/;"	f
+checkGoodsSn	goods_info.htm	/^                  function checkGoodsSn(goods_sn, goods_id)$/;"	f
+checkMessage	index.htm	/^function checkMessage () {$/;"	f
+checkMessageResponse	index.htm	/^function checkMessageResponse (res)$/;"	f
+checkVolumeData	goods_info.htm	/^                  function checkVolumeData(isSubmit,validator)$/;"	f
+computePrice	goods_info.htm	/^            function computePrice(inputName, rate, priceName)$/;"	f
+dropImg	goods_info.htm	/^                  function dropImg(imgId)$/;"	f
+dropImgResponse	goods_info.htm	/^                  function dropImgResponse(result)$/;"	f
+getAttrList	goods_info.htm	/^            function getAttrList(goodsId)$/;"	f
+getValue	sch_platform_account.htm	/^function getValue() $/;"	f
+goBrandPage	goods_info.htm	/^                  function goBrandPage()$/;"	f
+goCatPage	goods_info.htm	/^                  function goCatPage()$/;"	f
+goTime	sch_platform_account.htm	/^function goTime(target) $/;"	f
+handleAutoThumb	goods_info.htm	/^                  function handleAutoThumb(checked)$/;"	f
+handlePromote	goods_info.htm	/^                  function handlePromote(checked)$/;"	f
+handleSpec	goods_info.htm	/^                  function handleSpec()$/;"	f
+hideBrandDiv	goods_info.htm	/^                  function hideBrandDiv()$/;"	f
+hideCatDiv	goods_info.htm	/^                  function hideCatDiv()$/;"	f
+integral_market_price	goods_info.htm	/^                  function integral_market_price()$/;"	f
+marketPriceSetted	goods_info.htm	/^            function marketPriceSetted()$/;"	f
+msg	current_order_detail.htm	/^      {if $im.qq}<span><a href="tencent:\/\/message\/?uin={$im.qq}" title="{$im.qq}" name="msg"><img alt="{$im.qq}" src="http:\/\/wpa.qq.com\/pa?p=1:{$im.qq}:17"><\/a><\/span>{\/if}$/;"	a
+msg	order_detail.htm	/^         {if $im.aliww}<a target="_blank" href="http:\/\/www.taobao.com\/webww\/ww.php?ver=3&touid={$im.aliww}&siteid=cntaobao&status=2&charset=utf-8" title="{$im.aliww}"><img border="0" src="http:\/\/amos.alicdn.com\/realonline.aw?v=2&uid={$im.aliww}&site=cntaobao&s=2&charset=utf-8" alt="{$im.aliww}" \/><\/a>{\/if}{if $im.qq}<a href="tencent:\/\/message\/?uin={$im.qq}" title="{$im.qq}" name="msg"><img alt="{$im.qq}" src="http:\/\/wpa.qq.com\/pa?p=1:{$im.qq}:17"><\/a>{\/if}$/;"	a
+msg	users_detail.htm	/^                                <a href="tencent:\/\/message\/?uin={$val}" title="{$val}" name="msg">$/;"	a
+msg	users_detail.htm	/^                    <td>{if $user.qq}<a href="tencent:\/\/message\/?uin={$user.qq}" title="{$user.qq}" name="msg"><img alt="{$user.qq}" src="http:\/\/wpa.qq.com\/pa?p=1:{$user.qq}:17"><\/a>{\/if}{$user.qq}<button value="users.php?act=edit&info=qq&id={$user.user_id}&type=text" title="修改QQ" onclick="sendEditInfo(this)"><\/button><\/td>$/;"	a
+parseint_integral	goods_info.htm	/^                  function parseint_integral()$/;"	f
+priceSetted	goods_info.htm	/^            function priceSetted()$/;"	f
+rapidBrandAdd	goods_info.htm	/^                  function rapidBrandAdd(conObj)$/;"	f
+rapidCatAdd	goods_info.htm	/^                  function rapidCatAdd()$/;"	f
+redirection	message.htm	/^function redirection()$/;"	f
+removeBrand	goods_info.htm	/^                  function removeBrand()$/;"	f
+removeCat	goods_info.htm	/^                  function removeCat()$/;"	f
+removeImg	goods_info.htm	/^                  function removeImg(obj)$/;"	f
+removeSpec	goods_info.htm	/^                  function removeSpec(obj)$/;"	f
+removeVolumePrice	goods_info.htm	/^                  function removeVolumePrice(obj)$/;"	f
+searchArticle	goods_info.htm	/^                  function searchArticle()$/;"	f
+searchGoods	goods_info.htm	/^                  function searchGoods(szObject, catId, brandId, keyword)$/;"	f
+setAttrList	goods_info.htm	/^            function setAttrList(result, text_result)$/;"	f
+set_price_note	goods_info.htm	/^            function set_price_note(rank_id)$/;"	f
+showDisease	add_custom.htm	/^function showDisease ()$/;"	f
+showres	add_custom.htm	/^function showres(res)$/;"	f
+showupdate	add_custom.htm	/^function showupdate(res)$/;"	f
+synchro	index.htm	/^function synchro ()$/;"	f
+synchroResponse	index.htm	/^function synchroResponse (res)$/;"	f
+timelyStockAlarm	left.htm	/^ function timelyStockAlarm(){$/;"	f
+update_free	add_custom.htm	/^function update_free()$/;"	f
+validate	goods_info.htm	/^            function validate(goods_id)$/;"	f
+validate	login.htm	/^        function validate()$/;"	f

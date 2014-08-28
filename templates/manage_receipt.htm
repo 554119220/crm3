@@ -1,0 +1,136 @@
+﻿<div class="content-head">
+  <div class="finder-title">{$curr_title}<font>{$num}</font></div>
+  <div class="finder-packet" id="">
+    <div class="packet-items" id="">
+      <ul class="clearfix">
+        <!-- 针对订单状态进行的分类 -->
+        <li class="current-tab">
+        <a>进货单列表</a>
+        </li>
+       
+      </ul>
+      <input type="hidden" id="cache_data" value="{$cache_data}"/>
+    </div>
+  </div>
+
+  <div class="gridlist-action">
+    
+  </div>
+  <div class="finder-header-wrapper" style="" id="" >
+    <table border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td class="left_scroll" style="display:none;" >
+          <!--*********左上-BEGIN***********-->
+          <table width="200px" height="100%" border="0" cellpadding="0" cellspacing="1" style="border-left:1px #ccc solid; display:none;">
+            <colgroup>
+              <col width="80px">
+              <col width="100px">
+              <col width="120px">
+            </colgroup>
+            <tr bgcolor="#FFFFFF">
+              <td align="center">进货单编号</td>
+            </tr>
+          </table>
+          <!--**************左上-END**********-->
+        </td>
+        <td width="50%">
+          <div id='scroll1' style="max-width:80%;overflow:hidden;">
+            <!--***********右上-BEGIN********-->
+            <table style="width:700px" height="100%" border="0" cellpadding="0" cellspacing="1" >
+              <colgroup>
+                <col width="60px">
+                <col width="60px">
+                <!--col width="100px"-->
+                <col width="100px">
+                <col width="140px">
+                <col width="100px">
+                <col width="100px">
+                <col width="100px">
+                <col width="100px">
+                <col width="100px">
+              </colgroup>
+              <tr bgcolor="#FFFFFF">
+                <td align="center">进货单编号</td>
+                <td align="center">操作</td>
+                <td align="center">进货单日期</td>
+                <td align="center">确认人员</td>
+                <td align="center">联系人</td>
+                <td align="center">联系电话</td>
+              </tr>
+            </table>
+            <!--************右上-END**********-->
+          </div> 
+        </td>
+      </tr>
+      <tr>
+        <td width="50%" align="left" valign="top" style="display:none;">
+          <div id='scroll2' style="display:none;">
+            <!--*************左下-BEGIN**************-->
+            <table width="199px" height="100%" border="0" cellpadding="0" cellspacing="1">
+              <colgroup>
+                <col width="40px">
+                <col width="160px">
+              </colgroup>
+
+            </table>
+            <!--*************左下-END***********-->
+          </div>
+        </td>
+        <td align="left" valign="top">
+          <div style="max-width:80%; max-height:420px;overflow:scroll" onscroll="javascript:syncscroll(this)">
+            <!--***********右下-BEGIN***********-->
+            <table style="width:700px" height="100%" border="0" cellpadding="0" cellspacing="1">
+              <colgroup>
+                <col width="60px">
+                <col width="60px">
+                <col width="100px">
+                <col width="140px">
+                <col width="100px">
+                <col width="100px">
+                <col width="100px">
+                <col width="100px">
+                <col width="100px">
+                <col width="100px">
+              </colgroup>
+             {foreach from=$stock_list item=v}
+             <tr bgcolor="#FFFFFF" id="tr_2_{$v.stock_id}" class="tr_list">
+                <td align="center">{$v.stock_sn}</td>
+                <td align="center">
+              <a href="storage.php?act=detail_stock&id={$v.stock_id}"
+                title="进货单编号">查看</a>
+               <a href="storage.php?act=edit&stock_id={$v.stock_id}">编辑</a>
+                </td>
+                <td height="20" align="center">{$v.arrival_day}</td>
+                <td align="center">{$v.confirmer}</td>
+                <td align="center">{$v.contacter}</td>
+                <td align="center">{$v.phone}</td>
+              </tr>
+              {/foreach}
+            </table>
+            <!--*************右下-END*****************-->
+          </div>
+        </td>
+      </tr>
+    </table>
+    <p id="y">&nbsp;</p>
+    <p id="x">&nbsp;</p>
+
+  </div>
+  <div class="bottom_tip">
+    <div class="tip_left"><p>每页显示14条&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到第<input type="text" name="num" size="4">&nbsp;页</p></div>
+    <div class="tip_center">
+      <span><a href=""><<</a></span>
+      <span class="cur">1</span>
+      <span><a href="">2</a></span>
+      <span><a href="">3</a></span>
+      <span><a href="">4</a></span>
+      <span>...</span>
+      <span><a href="">10</a></span>
+      <span><a href="">11</a></span>
+      <span><a href="">12</a></span>
+      <span><a href="">>></a></span>
+    </div>
+    <div class="tip_right">共223条记录,当前页:1-20条</div>
+  </div>
+</div>
+

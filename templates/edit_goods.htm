@@ -1,0 +1,207 @@
+<style type="text/css" media="screen">
+  .add_button{ background:orange; border:1px solid #666;" cursor:pointer;}
+</style>
+
+<br/>
+<!-- start goods form -->
+<div class="tab-div">
+      <!-- tab bar -->
+      <!--div id="tabbar-div">
+      <p>
+      <span class="tab-front" id="general-tab">{$lang.tab_general}</span>
+      <span class="tab-back" id="mix-tab">{$lang.tab_mix}</span>
+      <span class="tab-back" id="detail-tab">{$lang.tab_detail}</span>
+      <span class="tab-back" id="gallery-tab">{$lang.tab_gallery}</span>
+      <span class="tab-back" id="linkgoods-tab">{$lang.tab_linkgoods}</span>
+      <span class="tab-back" id="groupgoods-tab">{$lang.tab_groupgoods}</span>
+      <span class="tab-back" id="article-tab">{$lang.tab_article}</span>
+      </p>
+      </div-->
+
+      <!-- tab body -->
+      <div id="tabbody-div">
+                  <!-- 通用信息 -->
+                  <table width="90%" id="general-table" align="center">
+                        <tr>
+                          <td class="label">
+                            <strong>商品名称</strong>：<span id="goods_name">{$goods.goods_name}
+<button value="goods.php?act=ajax_edit&info=goods_name&gid={$goods.goods_id}&type=input" title="修改商品名称" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+                                alt="修改" title="修改"></button></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="label"><strong>商品编号：</strong>
+                         <span id="goods_sn">{$goods.goods_sn}
+<button value="goods.php?act=ajax_edit&info=goods_sn&gid={$goods.goods_id}&type=input" title="修改商品名称" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+                                alt="修改" title="修改"></button></span>
+                          </td>
+                              
+                        </tr>
+                        <tr>
+                          <td class="label">
+                            <strong>简要说明：</strong>
+                            <span id="goods_brief">{$goods.goods_brief}
+<button value="goods.php?act=ajax_edit&info=goods_brief&gid={$goods.goods_id}&type=textarea" title="修改商品名称" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+  alt="修改" title="修改"></button></span>
+                          </td>
+                            
+                        </tr>
+                        <tr>
+                          <td class="label"><strong>商品分类：</strong>
+                          
+                          </td>
+                              <td>
+                                <select name="cat_id" onchange="hideCatDiv()" >
+                                  <option value="0">请选择</option>
+                                  {$cat_list}
+                                  
+                                </select>
+                                    
+                                    <input type="button" value="添加分类"
+                                    onclick="rapidCatAdd()" class="add_button" />
+                                    <span id="category_add" style="display:none;">
+                                          <input class="text" size="10"
+                                            name="addedCategoryName" />
+                                          <input type="button" value="确定"
+                                          onclick="addCategory()" class="add_button" />
+                                          <input type="button" value="分类管理"
+                                          onclick="return goCatPage()"  class="add_button"/ >
+                                          <input type="button" value="<<<"
+                                          onclick="hideCatDiv()" />
+                                    </span>
+                                   
+                              </td>
+                        </tr>
+                        <tr>
+                              <td class="label">商品品牌</td>
+                              <td><select name="brand_id" onchange="hideBrandDiv()" ><option value="0">{$lang.select_please}{html_options options=$brand_list selected=$goods.brand_id}</select>
+                                   
+                                    <input type="button" value="添加品牌" 
+                                    onclick="rapidBrandAdd()" class="add_button" />
+                                    <span id="brand_add" style="display:none;">
+                                          <input class="text" size="15" name="addedBrandName" />
+                                          <input type="button" value="确定"
+                                          onclick="addBrand()" class="add_button" >
+                                          <input type="button" value="品牌管理"
+                                          onclick="return goBrandPage()" class="special" />
+                                          <input type="button" value="<<<"
+                                          onclick="hideBrandDiv()" />
+                                    </span>
+                                   
+                              </td>
+                        </tr>
+                        {if $suppliers_exists eq 1}
+                        <tr>
+                              <td class="label">{$lang.label_suppliers}</td>
+                              <td>
+                                <select name="suppliers_id" id="suppliers_id">
+                                          <option value="0">{$lang.suppliers_no}</option>
+                                          {html_options options=$suppliers_list_name selected=$goods.suppliers_id}
+                              </select></td>
+                        </tr>
+                        {/if}
+                        <tr>
+                          <td class="label"><strong>本店售价:</strong>
+                              <span id="shop_price">{$goods.shop_price}
+<button value="goods.php?act=ajax_edit&info=shop_price&gid={$goods.goods_id}&type=input" title="修改商品名称" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+  alt="修改" title="修改"></button></span>
+                         </td>
+                        </tr>
+
+                        <!-- 属性与规格 -->
+                        {if $goods_type_list}
+                        <!--tr>自定义字段
+                        <td class="label"><a href="javascript:showNotice('noticeGoodsType');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.lab_goods_type}</td>
+                        <td>
+                              <select name="goods_type" onchange="getAttrList({$goods.goods_id})">
+                                    <option value="0">{$lang.sel_goods_type}</option>
+                                    {$goods_type_list}
+                              </select><br />
+                              <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticeGoodsType">{$lang.notice_goods_type}</span></td>
+                  </tr>
+                  <tr>
+                        <td id="tbody-goodsAttr" colspan="2" style="padding:0">{$goods_attr_html}</td>
+                        </tr-->
+                        {/if}
+
+                        <tr>
+                          <td class="label"><strong>库存数量：</strong>
+                            <span id="goods_number">
+                              {$goods.goods_number}&nbsp;{$goods.goods_number_units}
+<button value="goods.php?act=ajax_edit&info1=goods_number&info2=goods_number_units&gid={$goods.goods_id}&name=goods_number&type=num_sel&num=1" title="修改商品名称" onclick="sendGoodsEditInfo(this)"><img src="images/edit.gif"
+  alt="修改" title="修改"></button></span>
+                          </td>
+
+                        </tr>
+                        <tr>
+                          <td class="label"><strong>库存警告数量:</strong>
+                            <span id="warn_number">{$goods.warn_number}
+<button value="goods.php?act=ajax_edit&info=warn_number&gid={$goods.goods_id}&type=input" title="修改库存警告数量" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+                                alt="修改" title="修改"></button></span>
+                          </td>
+                             
+                        </tr>
+                        <tr>
+                          <td class="label"><strong>包装方式：</strong>
+                           <span id="packing">{$goods.packing}
+<button value="goods.php?act=ajax_edit&info=packing&gid={$goods.goods_id}&type=select" title="修改包装方式" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+                                alt="修改" title="修改"></button></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="label">
+                            <strong>保质期：</strong><span id="shelflife">{$goods.shelflife}
+<button value="goods.php?act=ajax_edit&info=shelflife&gid={$goods.goods_id}&type=input" title="修改保质期" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+  alt="修改" title="修改"></button></span>个月
+                         </td>
+                        </tr>
+                        <tr>
+                          <td class="label">
+                            <strong>净含量：</strong><span id="per_unit_number">
+                              {$goods.per_unit_number}&nbsp;{$goods.per_number_units}
+<button value="goods.php?act=ajax_edit&info1=per_unit_number&info2=per_number_units&gid={$goods.goods_id}&name=per_unit_number&type=num_sel&num=2" title="修改商品名称" onclick="sendGoodsEditInfo(this)"><img src="images/edit.gif"
+  alt="修改" title="修改"></button></span>
+                          </td>
+                            
+                        </tr>
+                        <tr>
+                          <td class="label"><strong>总重量：</strong>
+                          <span id="goods_weight">{$goods.goods_weight}
+<button value="goods.php?act=ajax_edit&info=goods_weight&gid={$goods.goods_id}&type=input" title="修改总重量" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+  alt="修改" title="修改"></button></span>千克
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="label"><strong>每次服用量：</strong>
+                          <span id="every_num">
+                              {$goods.every_num}&nbsp;{$goods.every_num_units}
+<button value="goods.php?act=ajax_edit&info1=every_num&info2=every_num_units&gid={$goods.goods_id}&name=every_num&type=num_sel&num=3"  onclick="sendGoodsEditInfo(this)"><img src="images/edit.gif" alt="修改" title="修改"></button></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>每天服用次数：</strong>
+                               <span id="everyday_use">{$goods.everyday_use}
+<button value="goods.php?act=ajax_edit&info=everyday_use&gid={$goods.goods_id}&type=input" title="修改总重量" onclick="sendEditInfo(this)"><img src="images/edit.gif"
+  alt="修改" title="修改"></button></span>次
+                          </td>
+                             
+                        </tr>
+                        <!--tr>
+                        <td class="label">{$lang.lab_goods_brief}</td>
+                        <td><textarea name="goods_brief" cols="40" rows="3">{$goods.goods_brief|escape}</textarea></td>
+                  </tr>
+                  <tr>
+                        <td class="label">
+                              <a href="javascript:showNotice('noticeSellerNote');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a> {$lang.lab_seller_note} </td>
+                        <td><textarea name="seller_note" cols="40" rows="3">{$goods.seller_note}</textarea><br />
+                              <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticeSellerNote">{$lang.notice_seller_note}</span></td>
+                        </tr-->
+                  </table>
+
+                       <!-- 隐藏表单域：产品的ID -->
+<input type="hidden" id="goods_id" value="{$goods.goods_id}"/> 
+            </div>
+      </div>
+    
+
+

@@ -1,0 +1,36 @@
+<table width="101%" cellpadding="0" cellspacing="0" class="index_small tr_hover">
+  <tr>
+    <td class="home-stuff-heading" colspan="4">&nbsp;本月推广活动<img src="images/update.png"/></td>
+  </tr>
+  <tr>
+    <th width="15%">活动名</th>
+    <th width="30%">内容</th>
+    <th width="15">商品</th>
+    <th width="15%">开始时间</th>
+    <th width="20%">结束时间</th>
+  </tr>
+  {if $spread_activity_list}
+  {foreach from=$spread_activity_list item=val}
+  <tr>
+    <td>{$val.activity_name}</td>
+    <td style="text-align:left;">{$val.act_describe}</td>
+    <td><button class="btn_new" onclick="getActGoods({$val.activity_id})">查看商品</button></td>
+    <td>{$val.start_time}</td>
+    <td>{$val.end_time}</td>
+  </tr>
+  {/foreach}
+  {else}
+  <tr>
+    <td colspan=4>本月暂时没有推广活动</td>
+  </tr>
+  {/if}
+</table>
+<div class="index_filter_page">
+  <button onclick="getActivity(1,{$stock_alarm.filter.recorder_size})">&lt;&lt;</button>
+  <button onclick="getActivity({$stock_alarm.filter.page}-1,{$stock_alarm.filter.recorder_size})">上一页</button>
+  {foreach from=$stock_alarm.filter.list_page item=val}
+  <button class="{if $stock_alarm.filter.page eq $val}visted{/if}" onclick="getIndexAlarm({$val},{$stock_alarm.filter.recorder_size})">{$val}</button>
+  {/foreach}
+  <button onclick="getIndexAlarm({$stock_alarm.filter.page}+1,{$stock_alarm.filter.recorder_size})">下一页</button>
+  <button onclick="getIndexAlarm({$stock_alarm.filter.end},{$stock_alarm.filter.recorder_size})">&gt;&gt;</button>
+</div>

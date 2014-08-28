@@ -1,0 +1,55 @@
+<!--等级设置-->
+<div class="box_center user_list_info" style="width:840px;padding:3px;clear:both;display:{if $plan eq 1}block{else}none{/if}" id="mod_base_config">
+  <form id="mod_for_rank">
+    <table style="margin-left:15px" width="90%" class="table_form table_tr" cellspacing="0" border="0">
+      <tr>
+        <th>等级名称</th>
+        <td><input type="text" name="level_name" />{$rank.rank_name}</td>
+      </tr>
+      <tr>
+        <th>积分区间</th>
+        <td>
+          <input style="color:#8F8D8D" type="text" name="min_point" value="{$rank.min_points}" onclick="javacript:this.value=''"/>-
+          <input name="max_point" value="{$rank.max_points}" style="color:#8F8D8D" onclick="javacript:this.value=''"/>
+        </td>
+      </tr>
+      <tr>
+        <th>兑换比例</th>
+        <td><input type="text" name="convert_scale" value="{$rank.convert_scale}"/>（注：消费XX人民币自动兑换成1个积分，默认：10RMB=1积分）</td>
+      </tr>
+      <tr>
+        <th>折扣比例</th>
+        <td><input type="text" name="discount" value="{$rank.discount}"/>（注：达到此等级时，所能享受的折扣率，如：80表示八折，100表示不打折）</td>
+      </tr>
+      <tr>
+        <th>额外比例</th>
+        <td><input type="text" name="integral_discount" value="{$integral_discount}"/>（注：在所在等级兑换积分的基础上增加的额外积分比例）</td>
+      </tr>
+      <tr>
+        <th>适用平台</th>
+        <td>
+          <select name="platfrom">
+            <option value="0">全平台</option>
+            {foreach from=$platform item=val}
+            <option value="{$val.role_id}" {if in_array($val.role_id,$rank.role_id)}selected{/if}>{$val.role_name}</option>
+          {/foreach}
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>有效期限</th>
+      <td>
+        <input name="validity" type="text" size="12px" value="{$rank.validity}" />
+        <label><input type='radio' value="1" name="unit_data" /> 年</label>
+        <label><input type='radio' value="2" name="unit_data" checked="checked" /> 月</label>
+        <label><input type='radio' value="3" name="unit_data" /> 日</label>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center" id="btn_box">
+        <input type="button" class="input_submit" value="修改等级" onclick="mod_rank({$rank.rank_id})"/>
+      </td>
+    </tr>
+  </table>
+</form>
+</div>

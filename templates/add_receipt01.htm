@@ -1,0 +1,39 @@
+<br/>
+<h3>入库单管理</h3>
+<br/>
+<div class="receipt">
+  <form name="receipt_form" act="" method="post" onsubmit="addReceipt(this)">
+  <table cellspacing="0" cellpadding="0" name="receipt" border="1px" class="">
+    <caption>产品入库单</caption>
+    <tr>
+      <td colspan="14" align="right">编号：</td>
+      <td><input type="text" name="number" c/></td>
+    </tr>
+    <tr>
+      <td align="right">类型</td>
+      <td align="left" colspan="13"></td>
+      <td>
+        <input type="text" name="year" maxlength="4"/>年
+        <input type="text" name="month" maxlength="2"/>月
+        <input type="text" name="day" maxlength="2"/>日
+      </td>
+    </tr>
+    <tr>
+      {foreach from=$receipt_th item=val}
+      <th>{$val}</th>
+      {/foreach}
+    </tr>
+    {foreach from=$empty_receipt item=val}
+    <tr>
+      <td><input type="text" name="goods_name[]"/></td>
+      <td><input type="text" name="goods_number_units[]" /></td>
+      <td><input type="text" name="quantity[]" /></td>
+      <td><input type="text" name="produce_date[]" /></td>
+      <td><input type="text" name="" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+    </tr>
+    {/foreach}
+  </table>
+  </form>
+</div>

@@ -1,0 +1,40 @@
+﻿<div class="flt f30 bold sys sys-title sys_new"><font>康健人生会员管理系统{$sys-name}</font></div>
+<div id="info" class='hide'></div>
+<div class="rgt sys sys-nav sys_new">
+     <a href="search.php?act=search_view">公共查询</a>|
+     <!--init_rank_points.php-->
+     <strong>[<a href="">同步</a>|<a href="">暂停</a>]</strong>|
+     <a href="">服务信息</a>|
+     <a href="">应用中心</a>|
+     <a href="">控制面板</a>|
+     <a href="">回收站</a>|
+     <a href="index.php">桌面</a>|
+     <a href="index.php?act=add_date_in">系统设置</a>|
+     <a href="privilege.php?act=logout" target="_top">退出</a>
+</div>
+<div id="cont-nav">
+     {foreach from=$nav_1st item=v}
+     <a href="{$v.action}.php?act=menu" class="nav">{$v.label}</a>
+     <span class="hide">
+          {foreach from=$nav_2nd key=k item=a}
+          {if $k eq $v.action}
+          {foreach from=$a item=i}
+          <strong>{$i.label}</strong>
+          {foreach from=$nav_3rd key=e item=l}
+          {if $i.action eq $e}
+          <p>
+          {foreach from=$l item=t name=index}
+          <a href="{$v.action}.php?act={$t.action}&ext=top">{$t.label}</a>
+          {if $smarty.foreach.index.iteration%4 eq 0 and !$smarty.foreach.index.last}
+          </p><p>
+          {/if}
+          {/foreach}
+          </p>
+          {/if}
+          {/foreach}
+          {/foreach}
+          {/if}
+          {/foreach}
+     </span>
+     {/foreach}
+</div>

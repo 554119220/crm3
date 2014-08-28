@@ -1,0 +1,35 @@
+<div style="margin-top:10px">
+  <span class="title">事件提醒</span>
+  <form name="for_event_remind">
+    <table width="980" height="100%" class="table_form table_tr table_td" cellspacing="0" border="1" id="table_info">
+      <tr>
+        <th width="124">提醒类型 ：</th>
+        <td>
+          <label><input type="radio" name="remind_type" value="0"/>一次性</label>
+          <label><input type="radio" name="remind_type" value="1"/>每天</label>
+          <label><input type="radio" name="remind_type" value="2"/>每周</label>
+          <label><input type="radio" name="remind_type" value="3"/>每月</label>
+            <label><input type="radio" name="remind_type" value="4"/>每年
+        </td>
+      </tr>
+      <tr>
+        <th width="124">提醒时间 ：</th>
+        <td>
+          <input type="text" class="Wdate" name="date" onfocus="WdatePicker({dateFmt:'yyyy年M月d日',minDate:'2013-2-1',maxDate:'2018-12-1'})"/>&nbsp;&nbsp;
+          <input type="text" class="Wdate" id="time" onfocus="WdatePicker({dateFmt:'H:mm:ss',minDate:'8:00:00',maxDate:'24:00:00'})"/>
+        </td>
+      </tr>
+      <tr>
+        <th width="124">提醒内容 ：</th>
+        <td>
+          <textarea style="padding:10px" rows="5" cols="80" name="event_content"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" onclick="subEvent()" class="input_submit" value="保存" />
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>

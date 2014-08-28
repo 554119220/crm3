@@ -1,0 +1,186 @@
+﻿<div class="content-head">
+     <div class="finder-title">{$curr_title}<font>{$num}</font></div>
+     <div class="finder-packet" id="">
+          <div class="packet-items" id="">
+               <ul id="sub_tag" class="clearfix">
+                    <!-- 针对订单状态进行的分类 -->
+                    <li id="tag_0" class="current-tab">
+                    <a href="order.php?act=current_order&shipping_id=0">全部</a>
+                    </li>
+                    {foreach from=$shipping_list item=val}
+                    <li id="tag_{$val.shipping_id}" class="last">
+                    <a href="order.php?act=current_order&shipping_id={$val.shipping_id}">{$val.shipping_name}</a>
+                    </li>
+                    {/foreach}
+                    <li id="tag_{$other_shipping}" class="last">
+                    <a href="order.php?act=current_order&shipping_id={$other_shipping}">其它</a>
+                    </li>
+               </ul>
+          </div>
+     </div>
+
+     <div class="gridlist-action">
+          <div class="left">
+               <a href="">分派订单</a>
+          </div>
+
+          <div class="nav-search">
+               <select id="keyfields" onchange="changeKeywordsArae(this)">
+                    <option value="consignee"{if $kf eq 'consignee'} selected{/if}>收货人</option>
+                    <option value="order_sn"{if $kf eq 'order_sn'} selected{/if}>订单编号</option>
+                    <option value="qq"{if $kf eq 'qq'} selected{/if}>QQ</option>
+                    <option value="aliww"{if $kf eq 'aliww'} selected{/if}>旺旺</option>
+                    <option value="mobile"{if $kf eq 'mobile'} selected{/if}>手机号码</option>
+                    <option value="tel"{if $kf eq 'tel'} selected{/if}>固话</option>
+                    <option value="region"{if $kf eq 'region'} selected{/if}>收货地区</option>
+                    <option value="address"{if $kf eq 'address'} selected{/if}>收货地址</option>
+                    <option value="admin_name"{if $kf eq 'admin_name'} selected{/if}>健康顾问</option>
+                    <option value="add_time"{if $kf eq 'add_time'} selected{/if}>下单日期</option>
+               </select>
+               <span id="keywordsArea">
+                    <input type="text" id="keywords" value="{$kw}">
+               </span>
+               <button value="order.php?act={$act}" onclick="searchOrder(this)">搜索</button>
+          </div>
+     </div>
+
+     <!-- 查询订单 -->
+
+
+     <div class="finder-header-wrapper" style="" id="" >
+          <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                    <td class="left_scroll">
+                         <!--*********左上-BEGIN***********-->
+                         <table width="300px" height="100%" border="0" cellpadding="0" cellspacing="1" style="border-left:1px #ccc solid">
+                              <colgroup>
+                                   <col width="80px">
+                                   <col width="100px">
+                                   <col width="100px">
+                              </colgroup>
+                              <tr bgcolor="#FFFFFF">
+                                   <td height="20" align="center">用户名</td>
+                                   <td align="center">订单编号</td>
+                                   <td align="center" width="">打单</td>
+                              </tr>
+                         </table>
+                         <!--**************左上-END**********-->
+                    </td>
+                    <td width="50%">
+                         <div id='scroll1' style="max-width:80%;overflow:hidden;">
+                              <!--***********右上-BEGIN********-->
+                              <table style="width:1125px" height="100%" border="0" cellpadding="0" cellspacing="1" >
+                                   <colgroup>
+                                        <col width="60px">
+                                        <col width="80px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <!--col width="60px"-->
+                                        <col width="80px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                   </colgroup>
+                                   <tr bgcolor="#FFFFFF">
+                                        <td align="center">操作</td>
+                                        <td align="center">运单号</td>
+                                        <td align="center">订单状态</td>
+                                        <td height="20px" align="center">收货人</td>
+                                        <td align="center">旺旺/QQ</td>
+                                        <!--td align="center">平台</td-->
+                                        <td align="center">下单时间</td>
+                                        <td align="center">总金额</td>
+                                        <td align="center">发货必看</td>
+                                        <td align="center">健康顾问</td>
+                                        <td align="center">添加人</td>
+                                   </tr>
+                              </table>
+                              <!--************右上-END**********-->
+                         </div> 
+                    </td>
+               </tr>
+               <tr>
+                    <td width="50%" align="left" valign="top">
+                         <div id='scroll2'>
+                              <!--*************左下-BEGIN**************-->
+                              <table width="300px" height="100%" border="0" cellpadding="0" cellspacing="1">
+                                   <colgroup>
+                                        <col width="80px">
+                                        <col width="100px">
+                                        <col width="100px">
+                                   </colgroup>
+                                   {foreach from=$order_list item=val}
+                                   <tr bgcolor="#FFFFFF" id="tr_1_{$val.order_id}" class="tr_list">
+                                        <td width="54px" align="center" >{$val.buyer}</td>
+                                        <td align="center" width="100px" >{$val.role_describe}-{$val.order_sn}</td>
+                                        <td align="center" width="95px" ><a href="order.php?act=thanks_note&order_id={$val.order_id}" target="_blank"><img src="images/mail_active.png" alt="感谢信" title="感谢信"></a><button onclick="showPrompt('info',{$val.order_id})" ><img src="images/tree_folder.gif" alt="发货单" title="发货单"></button>
+                                             <button onclick="showPrompt('express',{$val.order_id})" target="_blank"><img class="border" src="images/kd_order.jpg" alt="快递单" title="快递单"></button></td>
+                                   </tr>
+                                   {/foreach}
+                              </table>
+                              <!--*************左下-END***********-->
+                         </div>
+                    </td>
+                    <td align="left" valign="top">
+                         <div style="max-width:80%; max-height:420px;overflow:scroll" onscroll="javascript:syncscroll(this)">
+                              <!--***********右下-BEGIN***********-->
+                              <table style="width:1125px" height="100%" border="0" cellpadding="0" cellspacing="1">
+                                   <colgroup>
+                                        <col width="60px">
+                                        <col width="80px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <!--col width="60px"-->
+                                        <col width="80px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                        <col width="60px">
+                                   </colgroup>
+                                   {foreach from=$order_list item=val}
+                                   <tr bgcolor="#FFFFFF" id="tr_2_{$val.order_id}" class="tr_list">
+                                        <td align="center">
+                                          <a href="order.php?act=order_detail&id={$val.order_id}&current=1" title="订单详情">查看</a>
+                                          <button onclick="showPrompt('info',{$val.order_id})" ><img src="images/tree_folder.gif" alt="发货单" title="发货单"></button>
+                                          <button onclick="showPrompt('express',{$val.order_id})"><img class="border" src="images/kd_order.jpg" alt="快递单" title="快递单"></button>
+                                        </td>
+                                        <td align="center" ondblclick="replaceToInput(this, {$val.order_id})">{$val.tracking_sn}</td>
+                                        <td align="center">{$val.order_status}</td>
+                                        <td height="20" align="center">{$val.consignee}</td>
+                                        <td align="center">{$val.aliww}{if $val.aliww && $val.qq}||{/if}{$val.qq}</td>
+                                        <!--td align="center">{$val.platform}</td-->
+                                        <td align="center">{$val.short_order_time}</td>
+                                        <td align="center">{$val.formated_total_fee}</td>
+                                        <td align="center">{$val.remarks}</td>
+                                        <td align="center">{$val.admin_name}</td>
+                                        <td align="center">{$val.add_admin}</td>
+                                   </tr>
+                                   {/foreach}
+                              </table>
+                              <!--*************右下-END*****************-->
+                         </div>
+                    </td>
+               </tr>
+          </table>
+     </div>
+
+     <!-- 分页 -->
+     <div class="bottom_tip">
+          <div class="tip_left">
+               <p>共{$record_count}条记录,当前页:1-10条，每页<input type="text" name="" size="4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+          <div class="tip_center">
+               <span><a href="order.php?act={$act}{$page_link}&page=1"><<</a></span>
+               <!--span class="cur">1</span-->
+               {foreach from=$page_set item=v}
+               <span{if $v eq $page} class="cur"{/if}>{if $v eq $page}{$v}{else}<a href="order.php?act={$act}{$page_link}&page={$v}">{$v}</a>{/if}</span>
+               {/foreach}
+               <span><a href="order.php?act={$act}{$page_link}&page={$page_count}">>></a></span>
+          </div>
+          <div class="tip_right">跳转到第
+               <input type="text" name="page" size="4">&nbsp;页</div>
+     </div>
+</div>

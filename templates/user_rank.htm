@@ -1,0 +1,384 @@
+<br/>
+<div class="toptitle">
+  <h2 style="display:inline">会员积分等级设置</h2>
+  <ul class="tab1" style="float:left">
+    <li class=""><button class="btn_s" name='base_config' onmouseover="tabSub(this)" onclick="tabSub(this)">会员等级设置</button></li>
+    <li class=""><button class="btn_a" name='cur_rank_div' onmouseover="tabSub(this)" onclick="tabSub(this)">会员等级列表</button></li>
+    <li class=""><button class="btn_a" name='strategy' onmouseover="tabSub(this)" onclick="tabSub(this)">积分策略设置</button></li>
+    <li class=""><button class="btn_a" name='cur_integral_rule' onmouseover="tabSub(this)" onclick="tabSub(this)">积分策略列表</button></li>
+  </ul>
+</div>
+
+<div id="box">
+  <div class="box_center" style="width:98%;padding:2px;clear:both" id="base_config">
+    <form id="for_add_rank" action="javascript:void(0)" name="for_add_rank" onsubmit="return addModRank('for_add_rank',0)">
+      <table style="margin-left:15px" width="90%" class="table_form table_tr" cellspacing="0" border="0">
+        <tr>
+          <th width="130px">等级名称</th>
+          <td><input type="text" name="rank_name" />
+            （注：新增会员等级时,请按会员等级从低到高依次添加）
+          </td>
+        </tr>
+        <tr>
+          <th width="130px">积分区间</th>
+          <td>
+            <input style="color:#8F8D8D" type="text" maxlength="6" title="必须是整数" name="min_point" value="最少积分" required pattern="\d+"  onclick="javacript:this.value=''"  />-
+            <input name="max_point" value="最大积分" maxlength="6" title="必须是整数" style="color:#8F8D8D" onclick="javacript:this.value=''" required pattern="\d+" />
+          </td>
+        </tr>
+        <tr>
+          <th width="130px">兑换比例</th>
+          <td><input type="text" name="convert_scale" title="必须是整数" required pattern="\d+" maxlength="3"/>（注：消费XX人民币自动兑换成1个积分，默认：10RMB=1积分）</td>
+        </tr>
+        <tr>
+          <th width="130px">折扣比例</th>
+          <td>
+            <input type="text" name="discount" maxlength="3" title="必须是整数" />（注：达到此等级时，所能享受的折扣率，如：80表示八折，100表示不打折）</td>
+        </tr>
+        <tr>
+          <th width="130px">额外比例</th>
+          <td><input type="text" name="integral_discount" title="必须是整数" maxlength="3"/>（注：在所在等级兑换积分的基础上增加的额外积分比例,如<font color="red">额外比例100</font>,额外积分=所获积分*<font color="red">100</font>*100%）</td>
+        </tr>
+        <tr>
+          <th width="130px">平台</th>
+          <td>
+            <select name="platform">
+              <option value="0">全平台</option>
+              {foreach from=$platform item=val}
+              <option value="{$val.role_id}" >{$val.role_name}</option>
+              {/foreach}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th width="130px">有效期限</th>
+          <td>
+            <input name="validity" type="text" size="12px" style="text-align:center" title="必须是整数" require pattern="\d+" maxlength="3"/>
+            <label><input type='radio' value="1" name="unit_data" /> 年</label>
+            <label><input type='radio' value="2" name="unit_data" checked="checked" /> 月</label>
+            <label><input type='radio' value="3" name="unit_data" /> 日</label>
+          </td>
+        </tr>
+      </table>
+      <p class="right_btn"><input style="margin-left:30px" type="submit" class="input_submit" value="新增等级" /></p>
+    </form>
+  </div>
+
+  <div class="box_center " style="width:98%;padding:3px;clear:both;display:none" id="cur_rank_div">
+    <!--已经存在的等级-->
+    <br/>
+    <span style="float:right;margin-right:10px;margin-bottom:5px;">
+      <select name="platform" onchange="getRankPart(this.value)">
+        <option value="-1">所有</option>
+        <option value="0">全平台</option>
+        {foreach from=$platform item=val}
+        <option value="{$val.role_id}">{$val.role_name}</li>
+        {/foreach}
+      </select>
+    </span>
+    <ins_div id="ins_div">
+    <table style="margin-left:15px;margin-bottom:15px" id="cur_rank" border="0" cellpadding="0" cellspacing="0" width="98%" class="wu_table_list rb_border tr_hover">
+      <tr id="caption">
+        <th width="10%">会员等级</th>
+        <th width="8%">积分下限</th>
+        <th width="8%">积分上限</th>
+        <th width="8%">兑换比例</th>
+        <th width="8%">额外比例</th>
+        <th width="8%">折扣比例</th>
+        <th width="10%">修改时间&nbsp;↓</th>
+        <th width="8%">修改人</th>
+        <th width="10%">平台</th>
+        <th width="10%">有效期</th>
+        <th width="10%" style="width:80px !important;">操作</th>
+      </tr>
+      {if $user_rank eq null}
+      <tr><td colspan="12">没有记录</td></tr>
+      {else}
+      {foreach from=$user_rank item=val}
+      <tr>
+        <td>{$val.rank_name}</td>
+        <td>{$val.min_points}</td>
+        <td>{$val.max_points}</td>
+        <td>{$val.convert_scale}</td>
+        <td>{$val.integral_discount}</td>
+        <td>{$val.discount}</td>
+        <td>{$val.modify_time}</td>
+        <td>{$val.modify_admin}</td>
+        <td>{if $val.role_id eq 0}全平台{else}{$val.role_name}{/if}</td>
+        <td>{$val.validity}月</td>
+        <td>
+          <button class="btn_new" id="btn_mod_rank" onclick="modTem(this,{$val.rank_id},1)">修&nbsp;改</button>
+          <button class="btn_new" id="btn_del_rank" onclick="delRank(this,{$val.rank_id},'{$val.rank_name}')">删&nbsp;除</button>
+        </td>
+      </tr>
+      {/foreach}
+      {/if}
+    </table>
+    </ins_div>
+  </div>
+
+  <!--批量修改会员等级-->
+  <!--
+  <div class="box_center" style="width:98%;padding:2px;clear:both;display:none" id="batch_modify">
+    <form name="batch_modify_form">
+      <table style="margin-left:15x" width="60%" class="table_form table_tr" cellspacing="0" border="0">
+        <tr>
+          <th style="width:25%;text-align:right">购买次数：</th>
+          <td>
+            <input type="text" maxlength="3" name="min_order_times" />&nbsp;-&nbsp;
+            <input type="text" maxlength="3" name="max_order_times" />
+          </td>
+        </tr>
+        <tr>
+          <th style="width:25%;text-align:right">成功消费总金额：</th>
+          <td >
+            <input type="text" maxlength="8" name="min_order_amount" />&nbsp;-&nbsp;
+            <input type="text" maxlength="8" name="max_order_amount" />
+          </td>
+        </tr>
+        <tr>
+          <th style="width:25%;text-align:right">一次消费金额：</th>
+          <td><input type="text" maxlength="3" name="once_order"/></td>
+        </tr>
+        <tr>
+          <th style="width:25%;text-align:right">所属部门：</th>
+          <td>
+            <select name="role">
+              <option>请选择部门</option>
+              {foreach from=$platform item=val}
+              <option value="{$val.role_id}">{$val.role_name}</option>
+              {/foreach}
+            </select>
+            <input type="button" onclick="schBatch(this.form)" class="b_submit" value="搜索"/>
+          </td>
+        </tr>
+        <tr>
+          <th></th>
+          <td>
+            <select name="rank_list">
+              <option>选择等级</option>
+              {foreach from=$user_rank item=val}
+              <option value="{$val.rank_id}">{$val.rank_name}</option>
+              {/foreach}
+            </select>
+            <input type="button" value="确认修改0个顾客等级" class="b_submit" id="btn_submit" onclick="modifyRank(this.form)" />
+            <input type="hidden" value="" name="schContent" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  -->
+
+  <!--积分策略-->
+  <div class="box_center " style="width:98%;padding:3px;clear:both;display:none" id="strategy">
+    <form id="for_add_inte" action="javascript:void(0)" onsubmit=" return addModInte('for_add_inte',0)">
+      <table width="96%" class="table_form table_tr" cellspacing="0" border="0" >
+        <tr>
+          <th width="130px">规则名称</th>
+          <td>
+            <input type="text" name="integral_title" />
+            <label><input type="checkbox" name="first_available" /><font color="red">&nbsp;第一次消费启用 
+            </font></label>【当前第一次消费时启用规则：<strong>{if $first_available neq null}{$first_available}{else}无{/if}</strong>】
+          </td>
+        </tr>
+        <tr>
+          <th width="130px">赠送条件</th>
+          <td>
+            <select name="integral_way" >
+              <option value="1">消费送积分</option>
+              <option value="2">推荐送积分</option>
+              <option value="3">充值送积分</option>
+              <option value="4">生日送积分</option>
+              <option value="5">其它</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th width="130px">赠送比例</th>
+          <td><input type="text" name="scale" title="必须是有效的数字" require pattern="[0-9.]+" />（如：0.08表示 积分=0.08*1*[消费金额或者推荐顾客数]）</td>
+        </tr>
+        <tr>
+          <th width="130px">平台</th>
+          <td>
+            <select name="platform">
+              <option value="">所有平台</option>
+              {foreach from=$platform item=val}
+              <option value="{$val.role_id}">{$val.role_name}</option>
+              {/foreach}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th width="130px">品牌</th>
+          <td>
+            <select name="suit_brand">
+              <option value="0">全品牌</option>
+              {foreach from=$brand item=val} 
+              <option value="{$val.brand_id}"/>{$val.brand_name}</option>
+              {/foreach}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th wdith="130px">启动时间</th>
+          <td>
+            <input name="present_start" type="text" onClick="WdatePicker()"/>&nbsp;-
+            <input name="present_end" type="text" onClick="WdatePicker()"/>&nbsp;终止时间
+            <label><input name="available" type="checkbox" checked="checked" value="1" /><font color="red">是否启用</font></label>
+          </td>
+        </tr>
+        <tr>
+          <th width="130px">消费下限</th> 
+          <td>
+            <input type="text" name="min_consume" />&nbsp;-
+            <input type="text" name="max_consume" />&nbsp;消费上限（注：单位元）
+          </td>
+        </tr>
+      </table>
+      <p class="right_btn">
+      <input type="submit" class="input_submit" value="添 加"  />
+      </p>
+    </form>
+  </div>
+
+  <!-- 已经存在积分规则-->
+  <div class="box_center" style="width:98%;padding:3px;clear:both;display:none" id="cur_integral_rule">
+    <br/>
+    <span style="float:right;margin-right:20px;margin-bottom:5px;">
+      平台
+      <select id="role" onchange="schIntegral()">
+        <option value="0">全部规则</option>
+        {foreach from=$platform item=val}
+        <option value="{$val.role_id}">{$val.role_name}</option>
+        {/foreach}
+      </select>
+      <input type="button" class="b_submit" value="已启用" id="enable" onmouseover="tabAvailable(1)"/>
+      <input type="button" style="background:#E0E0E0" class="b_submit" id="disable" value="未启用" onmouseover="tabAvailable(0)"/>
+      <input type="button" style="background:#E0E0E0" class="b_submit" id="past_due" value="已过期" onmouseover="tabAvailable(2)"/>
+    </span>
+    <ins_div2 id="ins_div2">
+    <table id="cur_integral" style="margin-left:10px;margin-bottom:15px" border="0" cellpadding="0" cellspacing="0" width="98%" class="wu_table_list rb_border c_b tr_hover" >
+      <tr id="caption">
+        <th style="width:8%">规则</th>
+        <th style="width:8%">方式</th>
+        <th style="width:6%">比例</th>
+        <th style="width:10%">启动时间</th>
+        <th style="width:10%">结束时间</th>
+        <th style="width:10%">平台</th>
+        <th style="width:10%">品牌</th>
+        <th style="width:10%">消费下/上限</th>
+        <th style="width:7%">添加人</th>
+        <th style="width:10%">修改时间</th>
+        <th style="width:5%">状态</th>
+        <th style="width:10%">操作</th>
+      </tr>
+      {if $en_integral eq null}
+      <tr><td colspan="12">没有记录</td></tr>
+      {else}
+      {foreach from=$en_integral item=val}
+      <tr>
+        <td>{$val.integral_title}</td>
+        <td>{$val.integral_way}</td>
+        <td>{$val.scale}</td>
+        <td>{$val.present_start}</td>
+        <td>{$val.present_end}</td>
+        <td>{$val.role_name}</td>
+        <td>{$val.brand_name}</td>
+        <td>{$val.min_consume}/{$val.max_consume}</td>
+        <td>{$val.user_name}</td>
+        <td>{$val.add_time}</td>
+        <td>已启用</td>
+        <td>
+          <button class="btn_new" id="btn_mod_inte" onclick="modTem(this,{$val.integral_id},2)">修&nbsp;改</button>
+          <button class="btn_new" id="btn_del_inte" onclick="delIntegral(this,{$val.integral_id},'{$val.integral_title}')">删&nbsp;除</button>
+        </td>
+      </tr>
+      {/foreach}
+      {/if}
+    </table>
+
+    <!-- 未启用 -->
+    <table id="dis_integral" style="margin-left:10px;margin-bottom:15px;display:none" border="0" cellpadding="0" cellspacing="0" width="98%" class="wu_table_list rb_border c_b tr_hover" >
+      <tr>
+        <th style="width:8%">规则</th>
+        <th style="width:8%">方式</th>
+        <th style="width:6%">比例</th>
+        <th style="width:10%">启动时间</th>
+        <th style="width:10%">结束时间</th>
+        <th style="width:10%">平台</th>
+        <th style="width:10%">品牌</th>
+        <th style="width:10%">消费下/上限</th>
+        <th style="width:7%">添加人</th>
+        <th style="width:10%">修改时间</th>
+        <th style="width:5%">状态</th>
+        <th style="width:10%">操作</th>
+      </tr>
+      {if $dis_integral eq null}
+      <tr><td colspan="12">没有记录</td></tr>
+      {else}
+      {foreach from=$dis_integral item=val}
+      <tr>
+        <td>{$val.integral_title}</td>
+        <td>{$val.integral_way}</td>
+        <td>{$val.scale}</td>
+        <td>{$val.present_start}</td>
+        <td>{$val.present_end}</td>
+        <td>{$val.role_name}</td>
+        <td>{$val.brand_name}</td>
+        <td>{$val.min_consume}/{$val.max_consume}</td>
+        <td>{$val.user_name}</td>
+        <td>{$val.add_time}</td>
+        <td>未启用</td>
+        <td>
+          <button class="btn_new" id="btn_mod_inte" onclick="enableInte(this,{$val.integral_id})">启&nbsp;用</button>
+          <button class="btn_new" id="btn_del_inte" onclick="delIntegral(this,{$val.integral_id})">删&nbsp;除</button>
+        </td>
+      </tr>
+      {/foreach}
+      {/if}
+    </table>
+
+    <!--已过期-->
+    <table id="past_due_integral" style="margin-left:10px;margin-bottom:15px;display:none" border="0" cellpadding="0" cellspacing="0" width="98%" class="wu_table_list rb_border c_b tr_hover" >
+      <tr>
+        <th style="width:8%">规则</th>
+        <th style="width:8%">方式</th>
+        <th style="width:6%">比例</th>
+        <th style="width:10%">启动时间</th>
+        <th style="width:10%">结束时间</th>
+        <th style="width:10%">平台</th>
+        <th style="width:10%">品牌</th>
+        <th style="width:10%">消费下/上限</th>
+        <th style="width:7%">添加人</th>
+        <th style="width:10%">修改时间</th>
+        <th style="width:5%">状态</th>
+        <th style="width:10%">操作</th>
+      </tr>
+      {if $past_due_integral eq null}
+      <tr><td colspan="12">没有记录</td></tr>
+      {else}
+      {foreach from=$past_due_integral item=val}
+      <tr>
+        <td>{$val.integral_title}</td>
+        <td>{$val.integral_way}</td>
+        <td>{$val.scale}</td>
+        <td>{$val.present_start}</td>
+        <td>{$val.present_end}</td>
+        <td>{$val.role_name}</td>
+        <td>{$val.brand_name}</td>
+        <td>{$val.min_consume}/{$val.max_consume}</td>
+        <td>{$val.user_name}</td>
+        <td>{$val.add_time}</td>
+        <td>未启用</td>
+        <td>
+          <button class="btn_new" id="btn_mod_inte" onclick="enableInte(this,{$val.integral_id})">启&nbsp;用</button>
+          <button class="btn_new" id="btn_del_inte" onclick="delIntegral(this,{$val.integral_id})">删&nbsp;除</button>
+        </td>
+      </tr>
+      {/foreach}
+      {/if}
+    </table>
+    <ins_div2>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div style="margin:1px 3px;background:#2673C4;color:#FFF;text-align:center;padding:5px;border-radius:3px">
+  {$user_name}的资金变动
+  <label style="float:right;margin-right:6px;cursor:pointer" onclick="close_pop()" ><b>X</b></label>
+</div>
+<div class="main-div">
+  <form name="theForm">
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" class="table_form">
+      <tr>
+        <td colspan="2">
+          <strong>{$lang.user_id}：</strong>{$user_name} &nbsp;&nbsp;<strong>{$lang.surplus_amount}：</strong>{$surplus.amount} &nbsp;&nbsp;<strong>{$lang.add_date}：</strong>{$surplus.add_time}
+          &nbsp;&nbsp;<strong>{$lang.process_type}：</strong>{$process_type}
+          {if $surplus.pay_method}&nbsp;&nbsp;<strong>{$lang.pay_method}：</strong>{$surplus.payment}{/if}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><strong>{$lang.surplus_desc}：</strong>{$surplus.user_note}</td>
+      </tr>
+      <tr>
+        <th width="15%" valign="middle" align="right">
+          <font color="red"><b>*</b></font>&nbsp;{$lang.surplus_notic}：</th>
+        <td width="85%">
+          <textarea name="admin_note" style="resize:none;padding:6px" cols="55" rows="5">{$surplus.admin_note}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <th width="15%" valign="middle" align="right">{$lang.status}：</th>
+        <td>
+          <label><input type="radio" name="is_paid" value="0" checked="true" />{$lang.unconfirm}</label>
+          <label><input type="radio" name="is_paid" value="1" />{$lang.confirm}</label>
+        </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+          <input type="hidden" name="id" value="{$id}" />
+          <input name="submit" type="button" value="{$lang.button_submit}" class="b_submit" onclick="confirmCheck(this.form,this.parentNode.parentNode)" />
+          <input type="reset" value="{$lang.button_reset}" class="b_submit" />
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>

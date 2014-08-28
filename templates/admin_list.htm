@@ -1,0 +1,31 @@
+<div>
+  <div class="layout">
+    <div class="box_nav" style="font-size:12px;">
+      <div class="detail_tab" style="margin:0">
+        <ul>
+          {foreach from=$platform item=val name=i}
+          <li type="role_{$val.role_id}" {if $smarty.foreach.i.index eq 0}class="o_select"{/if} onclick="switchSubTab(this)"><span>{$val.role_name}</span></li>
+          {/foreach}
+        </ul>
+      </div>
+    </div>
+
+    <div class="select_admin_box" id="select_admin_box">
+      {foreach from=$platform item=val name=i}
+      <div id="role_{$val.role_id}" class="{if $smarty.foreach.i.index eq 1}show{else}hide{/if}">
+        <table cellpadding="0" cellspacing="0" width="100%" border="0">
+          <tr>
+          {foreach from=$val.admin_list item=ad name=i}
+          {if $smarty.foreach.i.index neq 0 && $smarty.foreach.i.index%7 eq 0}<br/>{/if}
+          <td>
+            <label>
+              <input type="checkbox" name="admin" value="{$val.user_id}"/> {$ad.user_name}</label>
+          </td>
+          {/foreach}
+        </tr>
+      </table>
+    </div>
+    {/foreach}
+  </div>
+</div>
+</div>

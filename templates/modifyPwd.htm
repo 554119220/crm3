@@ -1,0 +1,45 @@
+<div id="eject">
+  <h2>修改密码</h2>
+  <form name="for_modifyPwd" method="">
+    <table id="tb_eject">
+      <tr>
+        <td>帐号:</td>
+        <td>{$account.user_name}</td>
+      </tr>
+      <tr>
+        <td>原密码:</td>
+        <td>{$account.password}</td>
+      </tr>
+      <tr>
+        <td>新密码:</td>
+        <td>
+          <input type="text" name="first_input" onblur="chePassword(this.value)"/>
+          <span style="color:red" id="password">123</span>
+        </td>
+      </tr>
+      <tr>
+        <td>确认密码:</td>
+        <td>
+          <input type="text" name="second_input" onblur="cheRepeatPwd(this.value)"/>
+          <input type="hidden" name="account_id" value="{$account.account_id}" />
+          <span style="color:red" id="password2">123</span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" class="b_submit" onclick="subPassword()" value="提交">
+          <input type="reset" class="b_submit" value="取消">
+          <input type="button" class="b_submit" onclick="EV_closeAlert()" value="返回">
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--样式-->
+<style type="text/css" >
+  #eject{
+    background-color:#FFF;
+    line-height:24px;
+  }
+</style>

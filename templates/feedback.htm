@@ -1,0 +1,40 @@
+<!doctype htm>
+<html lang="zh">
+  <head>
+    <title>意见、BUG反馈</title>
+    <link rel="stylesheet" href="styles/general.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="styles/new.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="styles/index.css" type="text/css" charset="utf-8"/>
+  </head>
+  <body>
+    <div style="width:70%;">
+      <center style="background:#ccc">
+        <h1>建议反馈</h1><hr width="80%">
+        <p style="font-size:18px;padding:12px;">
+        您好，欢迎您给我们提出使用中遇到的问题或建议！感谢您对技术部的支持。
+        </p>
+      </center>
+      <div class="box_center" style="width:98%;height:430px;margin:0px;font-size:14px;">
+        <form name="feedback_form" action="feedback.php?act=feedback_done" method="POST">
+          <div>
+            <span>
+              <label>
+                <input type="radio" name="feedback_class" value="0" checked/> BUG问题
+              </label>
+              <label>
+                <input type="radio" name="feedback_class" value="1"/> 体验问题
+              </label>
+            </span>
+            <span>
+              <font color="{if $res.code}green{else}red{/if}">{$res.message}</font>
+            </span>
+          </div>
+          <div>{$FCKeditor}</div>
+          <span style="float:right;">
+            <input type="submit" value="提 交" class="input_submit"/>
+          </span>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

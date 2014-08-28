@@ -1,0 +1,18 @@
+/* 报表样式 */
+#pageSearch {margin-bottom:10px}
+
+/* 页面标题 */
+div[id='ur_here'] {margin-top:10px; font-size:20px; font-weight:bolder}
+
+/*#dataList {width:660px;}*/
+table[id='dataList'] {border:1px solid #CCC}
+table[id='dataList'] thead tr {height:27px}
+table[id='dataList'] thead tr th {padding:5px 5px; text-align:center; min-width:40px}
+table[id='dataList'] thead tr:nth-child(2) th {padding:1px 1px; text-align:center; min-width:25px}
+table[id='dataList'] tbody tr {height:19px}
+table[id='dataList'] tbody tr td {text-align:center; min-width:30px}
+table[id='dataList'] tbody tr:nth-child(even) {background:#ddd; color:#000}
+table[id='dataList'] tbody tr th:first-child {color:#192E32; min-width:40px}
+table[id='dataList'] tbody tr:hover {background:#0060c0; color:#fff; font-weight:bolder}
+
+input[name='order_month'] {width:100px}

@@ -1,0 +1,16 @@
+<style type="text/css" media="screen">
+  .check_batch{ background:#ccc;}
+  .check_batch tr{ background:#fff;}
+  .check_batch tr td{  text-align:center; padding:2px; border: 1px #f1f1f1 solid;}
+</style>
+<table border="0" class="check_batch" >
+  {foreach from=$check_list item=v}
+    <tr>
+      <td>生产日期：</td>
+      <td>{$v.production_day}</td>
+      <td>剩余数量:</td>
+      <td>{$v.quantity}</td>
+    </tr>
+{/foreach}
+</table>
+<br/>

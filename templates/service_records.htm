@@ -1,0 +1,15 @@
+{if $service}
+<div style="height:240px;text-align:left;">
+{foreach from=$service item=val}
+<p> 
+【{$val.service_time}】<font style="color:rgb(141, 141, 93)">{$val.admin_name}</font>通过<font  style="color:rgb(141, 141, 93)">{$val.manner}</font>进行了<font style="color:rgb(141, 141, 93)">{$val.class}</font>：{$val.logbook}
+</p>
+{/foreach}
+</div>
+<div class="service_box">
+  <btn class="btn_new btn_down_up" onclick="searchService({if $page}{$page}{else}0{/if}-1)" class="btn_new" >▲向上</btn>
+  <btn class="btn_new btn_down_up" onclick="searchService({if $page}{$page}{else}0{/if}+1)" class="btn_new" >向下▼</btn>
+</div>
+{else}
+<p><font color="red">没有查找到相关记录</font></p>
+{/if}

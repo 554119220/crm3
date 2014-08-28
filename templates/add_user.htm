@@ -1,0 +1,53 @@
+<br />
+<h3 style="float:left">基本信息</h3>
+<span style="clear:right"><a href="system.php?act=operator_manager" onclik="sendToServer()">返回</a></span>
+<div class="newdiv">
+  <form action="" method="post"  name="form" >
+    <table class="new_table table_form table_tr" cellpadding="0" cellspacing="0" border="0" width="100%">
+      <tr>
+        <th width="13%">用户名<font color="red">*</font>：</th>
+        <td><input type="text" name="username" onBlur="user()" />
+          <span id="users" style="margin-left:5px;color:red"></span>
+        </td>
+      </tr>
+      <tr>
+        <th width="13%">初始密码<font color="red">*</font>：</th>
+        <td><input type="password" name="password" /><span id="password" style="margin-left:5px;color:red">长度不能少于6</span></td>
+      </tr>
+      <tr>
+        <th width="13%">确认密码<font color="red">*</font>：</th>
+        <td><input type="password" name="pass" /><span id="pass" style="margin-left:5px;color:red"></span></td>
+      </tr>
+      <tr>
+        <th width="13%">手机<font color="red">*</font>：</th>
+        <td><input type="text" name="mobile" />
+          <span id="mobile" style="margin-left:5px;color:red"></span>
+        </td>
+      </tr>
+      <tr>
+        <th width="13%">姓名<font color="red">*</font>：</th>
+        <td><input type="text" name="name" /></td>
+      </tr>
+      <th width="13%">角色名称<font color="red">*</font>：</th>
+      <td><select name="roles">
+          <option>请选择</option>
+          {foreach  from=$select item=role}
+          <option value="{$role.role_id}">{$role.role_name}</option>
+          {/foreach}
+        </select>&nbsp;&nbsp;
+        <input type="button" value="确定" id="btn_submit_add" class="b_submit" onclick="sumit(this)" />
+      </td>
+    </table>
+  </form>
+</div>
+
+<style type="text/css">
+  .newdiv{
+    border-nadius:5px;
+    background:#FFF;
+    padding:13px;
+  }
+  .newdiv table th{
+    text-align:right;
+  }
+</style>

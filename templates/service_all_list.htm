@@ -1,0 +1,487 @@
+﻿<style type="text/css" media="screen">
+  .team_style{ background:#ccc;}
+  .team_style tr{ background:#fff;}
+  .team_style tr td{  text-align:center; padding:2px; border: 1px #f1f1f1 solid;}
+  .team_style tr:nth-child(even) { background:#ccc; }
+  .team_style tr:first-child { background:#FC3; }
+  .order_details { width:650px; }
+  .order_details { padding:2px; }
+  .order_details { margin: 0 0 10px 0px; }
+  .detail_tab { margin-top:5px; }
+  .o_select {font-weight:bold;}
+  .top_tip {padding: 5px 5px 5px 5px;}
+  #service_style{ background:#ccc;}
+  #service_style tr{ background:#fff;}
+  #service_style .cen { text-align:center; background:#FC3;}
+  #service_style .cen  td{ width:80px;}
+  .mid { text-align:center;}
+  #ad_table td{ width:80px;}
+  #ad_table { background:#fff; }
+  #ad_table tr:nth-child(1) { background:#FF00FF;}
+  #ad_table tr:nth-child(2) { background:#6699FF;}
+  #ad_table tr:nth-child(3) { background:#CC9966;}
+  #ad_table tr:nth-child(4) { background:#00CCCC;}
+  
+
+</style>
+<div id="detail">
+     <div class="detail_tab">
+          <ul>
+               <li type="general" class="o_select" onclick="switchSubTab(this)">
+               <span>查看所有</span>
+               </li>
+               <li type="qq" onclick="switchSubTab(this)"><span>QQ商城</span></li>
+               <li type="Tmall" onclick="switchSubTab(this)"><span>天猫商城 </span></li>
+               <li type="jingdong" onclick="switchSubTab(this)"><span>京东商城</span></li>
+               <li type="official" onclick="switchSubTab(this)"><span>官方商城</span></li>
+               <li type="kuba" onclick="switchSubTab(this)"><span>库巴</span></li>
+          </ul>
+     </div>
+
+  <!-- 基本信息 -->
+<div id="general">
+  {if $admin_role eq 1}
+<table border="0" id="service_style">
+        <tbody>
+              <tr class="cen">
+                <td>提交日期</td>
+               
+                <td>
+                  <table>
+                   <tr class="cen">
+                          <td>平台</td>
+                          <td>导购咨询</td>
+                          <td>成交订单数</td>
+                          <td>销售额</td>
+                          <td>咨询方式</td>
+                          <td>咨询类型</td>
+                          <td>成功率</td>
+                       </tr>
+                  </table>
+                </td>
+                 <td>总成功率</td>
+                <td>操作</td>
+              </tr>
+            {foreach from=$service_list  item=value}
+              <tr class="mid" >
+                <td>{$value.add_time} &nbsp; {$value.user_name}</td>
+                <td>
+          {if $value.data != ''}     
+                  <table border="0" id="ad_table">         
+    {foreach from=$value.data key=key item=v}
+    <tr class="mid">
+      <td>   
+        {foreach from=$role_name item=val}
+        {if $val.role_id eq $v.rid}
+          {$val.role_name}
+        {/if}
+          {/foreach}   
+      </td>
+      <td>{$v.guide_consulting}次&nbsp;</td>
+      <td>{$v.success_deal}</td>
+      <td>{$v.amount}元&nbsp;</td>
+      <td>
+          {foreach from=$way_name item=val}
+            {if $val.way_id eq $v.way_id}
+                 {$val.way_name}         
+            {/if}
+          {/foreach}   
+      </td>
+      <td>
+          {foreach from=$type_name item=val}
+          {if $val.type_id eq $v.type_id} 
+               {$val.type_name} 
+          {/if}
+          {/foreach}   
+        </td>
+        <td>{$v.success_rate}</td>
+    </tr>   
+    {/foreach}
+  
+  </table>
+    {/if}
+</td>
+                <td>{$value.success_all}</td>
+                <td><a href="performance.php?act=service_personal_edit&work_id={$value.work_id}">编辑</a>
+                  <input type="button"  onclick="delService({$value.work_id})" value="删除">     
+                </td>
+              </tr>
+           {/foreach}
+       </tbody>
+</table> 
+{/if}
+</div>
+
+<div id="qq" class="hide">
+  { if $every_name eq 'QQ商城' }
+<table border="0" id="service_style">
+        <tbody>
+              <tr class="cen">
+                <td>提交日期</td>
+               
+                <td>
+                  <table>
+                   <tr class="cen">
+                          <td>平台</td>
+                          <td>导购咨询</td>
+                          <td>成交订单数</td>
+                          <td>销售额</td>
+                          <td>咨询方式</td>
+                          <td>咨询类型</td>
+                          <td>成功率</td>
+                       </tr>
+                  </table>
+                </td>
+                 <td>总成功率</td>
+                <td>操作</td>
+              </tr>
+            {foreach from=$service_list  item=value}
+              <tr class="mid" >
+                <td>{$value.add_time} &nbsp; {$value.user_name}</td>
+                <td>
+          {if $value.data != ''}     
+                  <table border="0" id="ad_table">         
+    {foreach from=$value.data key=key item=v}
+    <tr class="mid">
+      <td>   
+        {foreach from=$role_name item=val}
+        {if $val.role_id eq $v.rid}
+          {$val.role_name}
+        {/if}
+          {/foreach}   
+      </td>
+      <td>{$v.guide_consulting}次&nbsp;</td>
+      <td>{$v.success_deal}</td>
+      <td>{$v.amount}元&nbsp;</td>
+      <td>
+          {foreach from=$way_name item=val}
+            {if $val.way_id eq $v.way_id}
+                 {$val.way_name}         
+            {/if}
+          {/foreach}   
+      </td>
+      <td>
+          {foreach from=$type_name item=val}
+          {if $val.type_id eq $v.type_id} 
+               {$val.type_name} 
+          {/if}
+          {/foreach}   
+        </td>
+        <td>{$v.success_rate}</td>
+    </tr>   
+    {/foreach}
+  
+  </table>
+    {/if}
+</td>
+                <td>{$value.success_all}</td>
+                <td><a href="performance.php?act=service_personal_edit&work_id={$value.work_id}">编辑</a>
+                  <input type="button"  onclick="delService({$value.work_id})" value="删除">     
+                </td>
+              </tr>
+           {/foreach}
+       </tbody>
+</table> 
+ {/if}
+
+</div>
+ 
+<div id="Tmall" class="hide">
+  {if $every_name eq '天猫商城'}
+<table border="0" id="service_style">
+        <tbody>
+              <tr class="cen">
+                <td>提交日期</td>
+               
+                <td>
+                  <table>
+                   <tr class="cen">
+                          <td>平台</td>
+                          <td>导购咨询</td>
+                          <td>成交订单数</td>
+                          <td>销售额</td>
+                          <td>咨询方式</td>
+                          <td>咨询类型</td>
+                          <td>成功率</td>
+                       </tr>
+                  </table>
+                </td>
+                 <td>总成功率</td>
+                <td>操作</td>
+              </tr>
+            {foreach from=$service_list  item=value}
+              <tr class="mid" >
+                <td>{$value.add_time} &nbsp; {$value.user_name}</td>
+                <td>
+          {if $value.data != ''}     
+                  <table border="0" id="ad_table">         
+    {foreach from=$value.data key=key item=v}
+    <tr class="mid">
+      <td>   
+        {foreach from=$role_name item=val}
+        {if $val.role_id eq $v.rid}
+          {$val.role_name}
+        {/if}
+          {/foreach}   
+      </td>
+      <td>{$v.guide_consulting}次&nbsp;</td>
+      <td>{$v.success_deal}</td>
+      <td>{$v.amount}元&nbsp;</td>
+      <td>
+          {foreach from=$way_name item=val}
+            {if $val.way_id eq $v.way_id}
+                 {$val.way_name}         
+            {/if}
+          {/foreach}   
+      </td>
+      <td>
+          {foreach from=$type_name item=val}
+          {if $val.type_id eq $v.type_id} 
+               {$val.type_name} 
+          {/if}
+          {/foreach}   
+        </td>
+        <td>{$v.success_rate}</td>
+    </tr>   
+    {/foreach}
+  
+  </table>
+    {/if}
+</td>
+                <td>{$value.success_all}</td>
+                <td><a href="performance.php?act=service_personal_edit&work_id={$value.work_id}">编辑</a>
+                  <input type="button"  onclick="delService({$value.work_id})" value="删除">     
+                </td>
+              </tr>
+           {/foreach}
+       </tbody>
+</table> 
+{/if} 
+</div>
+
+  <div id="jingdong" class="hide">
+     {if $every_name eq '京东商城'}
+<table border="0" id="service_style">
+        <tbody>
+              <tr class="cen">
+                <td>提交日期</td>
+               
+                <td>
+                  <table>
+                   <tr class="cen">
+                          <td>平台</td>
+                          <td>导购咨询</td>
+                          <td>成交订单数</td>
+                          <td>销售额</td>
+                          <td>咨询方式</td>
+                          <td>咨询类型</td>
+                          <td>成功率</td>
+                       </tr>
+                  </table>
+                </td>
+                 <td>总成功率</td>
+                <td>操作</td>
+              </tr>
+            {foreach from=$service_list  item=value}
+              <tr class="mid" >
+                <td>{$value.add_time} &nbsp; {$value.user_name}</td>
+                <td>
+          {if $value.data != ''}     
+                  <table border="0" id="ad_table">         
+    {foreach from=$value.data key=key item=v}
+    <tr class="mid">
+      <td>   
+        {foreach from=$role_name item=val}
+        {if $val.role_id eq $v.rid}
+          {$val.role_name}
+        {/if}
+          {/foreach}   
+      </td>
+      <td>{$v.guide_consulting}次&nbsp;</td>
+      <td>{$v.success_deal}</td>
+      <td>{$v.amount}元&nbsp;</td>
+      <td>
+          {foreach from=$way_name item=val}
+            {if $val.way_id eq $v.way_id}
+                 {$val.way_name}         
+            {/if}
+          {/foreach}   
+      </td>
+      <td>
+          {foreach from=$type_name item=val}
+          {if $val.type_id eq $v.type_id} 
+               {$val.type_name} 
+          {/if}
+          {/foreach}   
+        </td>
+        <td>{$v.success_rate}</td>
+    </tr>   
+    {/foreach}
+  
+  </table>
+    {/if}
+</td>
+                <td>{$value.success_all}</td>
+                <td><a href="performance.php?act=service_personal_edit&work_id={$value.work_id}">编辑</a>
+                  <input type="button"  onclick="delService({$value.work_id})" value="删除">     
+                </td>
+              </tr>
+           {/foreach}
+       </tbody>
+</table> 
+{/if} 
+
+</div>
+
+<div id="official" class="hide">
+  
+  {if $every_name eq '官方商城'}
+<table border="0" id="service_style">
+        <tbody>
+              <tr class="cen">
+                <td>提交日期</td>
+               
+                <td>
+                  <table>
+                   <tr class="cen">
+                          <td>平台</td>
+                          <td>导购咨询</td>
+                          <td>成交订单数</td>
+                          <td>销售额</td>
+                          <td>咨询方式</td>
+                          <td>咨询类型</td>
+                          <td>成功率</td>
+                       </tr>
+                  </table>
+                </td>
+                 <td>总成功率</td>
+                <td>操作</td>
+              </tr>
+            {foreach from=$service_list  item=value}
+              <tr class="mid" >
+                <td>{$value.add_time} &nbsp; {$value.user_name}</td>
+                <td>
+          {if $value.data != ''}     
+                  <table border="0" id="ad_table">         
+    {foreach from=$value.data key=key item=v}
+    <tr class="mid">
+      <td>   
+        {foreach from=$role_name item=val}
+        {if $val.role_id eq $v.rid}
+          {$val.role_name}
+        {/if}
+          {/foreach}   
+      </td>
+      <td>{$v.guide_consulting}次&nbsp;</td>
+      <td>{$v.success_deal}</td>
+      <td>{$v.amount}元&nbsp;</td>
+      <td>
+          {foreach from=$way_name item=val}
+            {if $val.way_id eq $v.way_id}
+                 {$val.way_name}         
+            {/if}
+          {/foreach}   
+      </td>
+      <td>
+          {foreach from=$type_name item=val}
+          {if $val.type_id eq $v.type_id} 
+               {$val.type_name} 
+          {/if}
+          {/foreach}   
+        </td>
+        <td>{$v.success_rate}</td>
+    </tr>   
+    {/foreach}
+  
+  </table>
+    {/if}
+</td>
+                <td>{$value.success_all}</td>
+                <td><a href="performance.php?act=service_personal_edit&work_id={$value.work_id}">编辑</a>
+                  <input type="button"  onclick="delService({$value.work_id})" value="删除">     
+                </td>
+              </tr>
+           {/foreach}
+       </tbody>
+</table> 
+{/if} 
+
+</div>
+
+<div id="kuba" class="hide">
+  
+  {if $every_name eq '库巴'}
+<table border="0" id="service_style">
+        <tbody>
+              <tr class="cen">
+                <td>提交日期</td>
+               
+                <td>
+                  <table>
+                   <tr class="cen">
+                          <td>平台</td>
+                          <td>导购咨询</td>
+                          <td>成交订单数</td>
+                          <td>销售额</td>
+                          <td>咨询方式</td>
+                          <td>咨询类型</td>
+                          <td>成功率</td>
+                       </tr>
+                  </table>
+                </td>
+                 <td>总成功率</td>
+                <td>操作</td>
+              </tr>
+            {foreach from=$service_list  item=value}
+              <tr class="mid" >
+                <td>{$value.add_time} &nbsp; {$value.user_name}</td>
+                <td>
+          {if $value.data != ''}     
+                  <table border="0" id="ad_table">         
+    {foreach from=$value.data key=key item=v}
+    <tr class="mid">
+      <td>   
+        {foreach from=$role_name item=val}
+        {if $val.role_id eq $v.rid}
+          {$val.role_name}
+        {/if}
+          {/foreach}   
+      </td>
+      <td>{$v.guide_consulting}次&nbsp;</td>
+      <td>{$v.success_deal}</td>
+      <td>{$v.amount}元&nbsp;</td>
+      <td>
+          {foreach from=$way_name item=val}
+            {if $val.way_id eq $v.way_id}
+                 {$val.way_name}         
+            {/if}
+          {/foreach}   
+      </td>
+      <td>
+          {foreach from=$type_name item=val}
+          {if $val.type_id eq $v.type_id} 
+               {$val.type_name} 
+          {/if}
+          {/foreach}   
+        </td>
+        <td>{$v.success_rate}</td>
+    </tr>   
+    {/foreach}
+  
+  </table>
+    {/if}
+</td>
+                <td>{$value.success_all}</td>
+                <td><a href="performance.php?act=service_personal_edit&work_id={$value.work_id}">编辑</a>
+                  <input type="button"  onclick="delService({$value.work_id})" value="删除">     
+                </td>
+              </tr>
+           {/foreach}
+       </tbody>
+</table> 
+{/if} 
+
+  </div>
+
+
+</div>

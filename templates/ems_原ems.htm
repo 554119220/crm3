@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+            <meta http-equiv="content-type" content="text/html; charset=utf-8">
+            <title>EMS快递单打印</title>
+            <style type="text/css">
+                  body {background:url(images/ems.jpg) no-repeat;  margin:101px 116px; padding:0; padding-left:55px; width:433px; height:153px; font-size:15px; font-weight:bold;color:#000}
+                  ul {float:left}
+                  li {list-style-type:none; height:18px}
+            </style>
+      </head>
+      <body>
+      <div style="position:absolute; top:65px; left:270px">
+            {$date.year}&nbsp;{$date.month}&nbsp;{$date.day}
+      </div>
+            <ul>
+                  <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1547</li>
+                  <li>{if $order.secrecy eq 0}康健人生健康管理{/if}&nbsp;</li>
+                  <li>广东省</li>
+                  <li>广州市白云区</li>
+                  <li>梅花园梅宾北路117号902</li>
+                  <li>&nbsp;&nbsp;&nbsp;&nbsp;020-87098117</li>
+            </ul>
+            <ul style="position:absolute; top:145px; left:400px">
+                  <li>{$order.consignee}</li>
+                  <li>{$order.addr}</li>
+                  <li>{$order.address}</li>
+                  <li></li>
+                  <li>{$order.mobile}</li>
+            </ul>
+
+            <div style="position:absolute; top:235px; left:155px">{foreach from=$order.big5 item=v}{$v}&nbsp;&nbsp;&nbsp;{/foreach}</div>
+            <div style="position:absolute; top:260px; left:150px">{$order.goods_amount}&nbsp;&nbsp;保健食品</div>
+      </body>
+</html>

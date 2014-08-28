@@ -1,0 +1,54 @@
+<style type="text/css" media="screen">
+  #ad_table td:nth-child(odd) {padding-left:20px}
+  #ad_table td:last-child {padding-left:0}
+  #ad_table td:first-child {padding-left:0}
+  .ad_table {padding-left:20px}
+  .text {line-height:77px; float:left}
+</style>
+<h1> 推广登记表 </h1>
+<form method="post" name="spread">
+  <table border="0" class="spread">
+    <tr>
+      <th>PV：<input type="text" name="spread_pv" value="" size="10"/></th>
+      <th>UV：<input type="text" name="spread_uv" value="" size="10"/></th>
+      <th>订单数：<input type="text" name="orders" value="" size="10"/></th>
+      <th>销售额：<input type="text" name="sale" value="" size="10"/>元&nbsp;</th>
+      <th>刷单数量：<input type="text" name="scalping_num" value="" size="10"/>&nbsp;</th>
+      <th>刷单金额：<input type="text" name="scalping_amount" value="" size="10"/>元</th>
+    </tr>
+
+    <tr>
+      <td colspan="8" class="ad_table">
+        <table border="0" id="ad_table">
+          <tr>
+            <td>广告：</td>
+            <td>
+              <select name="adname_id[]" id="ad_name1">
+                {foreach from=$ad_list item=v}
+                <option value="{$v.id}">{$v.activity_name}</option>
+                {/foreach}   
+              </select>
+            </td>
+            <td>广告费用：</td>
+            <td><input type="text" name="ad_costs[]" id="ad_costs1" size="6" value=""/>元</td>
+            <td>收益：</td>
+            <td><input type="text" name="ad_revenue[]" id="ad_revenue1" size="6" value=""/>元</td>
+            <td>收藏数：</td>
+            <td><input type="text" name="favorite_num[]" id="favorite_num1" size="6" value=""/></td>
+            <td>转化订单数：</td>
+            <td><input type="text" name="change_order[]" id="change_order1" size="6" value=""/></td>
+            <td><span style="cursor:pointer;" onclick="insertRowElement(this)">[&nbsp;+&nbsp;]</span></td>
+          </tr>   
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <th align="left" colspan="4"><span class="text">工作内容：</span><textarea name="job_content" rows="5" cols="50"></textarea></th>
+    </tr>
+    <tr>
+      <th align="left" colspan="4"><span class="text">总结分析：</span><textarea name="summary" rows="5" cols="50"></textarea></th>
+    </tr>
+  </table>
+
+  <p><input type="button" value="提交" onclick="addSpread(this)"/></p>
+</form>

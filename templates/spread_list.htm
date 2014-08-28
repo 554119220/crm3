@@ -1,0 +1,497 @@
+﻿<style type="text/css" media="screen">
+  .team_style{ background:#ccc;}
+  .team_style tr{ background:#fff;}
+  .team_style tr td{  text-align:center; padding:2px; border: 1px #f1f1f1 solid;}
+  .team_style tr:nth-child(even) { background:#ccc; }
+  .team_style tr:first-child { background:#FC3; }
+  .order_details { width:650px; }
+  .order_details { padding:2px; }
+  .order_details { margin: 0 0 10px 0px; }
+  .detail_tab { margin-top:5px; }
+  .o_select {font-weight:bold;}
+  .top_tip {padding: 5px 5px 5px 5px;}
+</style>
+<div id="detail">
+     <div class="detail_tab">
+          <ul>
+               <li type="general" class="o_select" onclick="switchSubTab(this)">
+               <span>QQ商城</span>
+               </li>
+               <li type="Tmall" onclick="switchSubTab(this)"><span>天猫商城 </span></li>
+               <li type="jingdong" onclick="switchSubTab(this)"><span>京东商城</span></li>
+               <li type="official" onclick="switchSubTab(this)"><span>官方商城</span></li>
+               <li type="kuba" onclick="switchSubTab(this)"><span>库巴</span></li>
+          </ul>
+     </div>
+
+  <!-- 基本信息 -->
+<div id="general">
+  <div class="top_tip">
+  
+      <h2>推广相关数据</h2>
+      <table border="0" cellspacing="1" class="team_style">
+        <tbody>
+              <tr>
+                <td>提交日期</td>
+                <td>PV</td>
+                <td>UV</td>
+                <td>订单数</td>
+                <td>销售额</td>
+                <td>广告费用</td>
+                <td>收益</td>
+                <td>刷单数量</td>
+                <td>刷单金额</td>
+                <td>提交人</td>
+              </tr>
+              {foreach from=$list key=k item=val}
+              {if $k eq 'QQ商城'}
+              {foreach from=$val  item=v}
+              <tr>
+                <td>{$v.add_time}</td>
+                <td>{$v.spread_pv}</td>
+                <td>{$v.spread_uv}</td>
+                <td>{$v.orders}</td>
+                <td>{$v.sale}</td>
+                <td>{$v.ad_costs}</td>
+                <td>{$v.ad_revenue}</td>
+                <td>{$v.scalping_num}</td>
+                <td>{$v.scalping_amount}</td>
+                <td>{$v.admin_id}</td>
+              </tr>
+              {/foreach}
+              {/if}
+              {/foreach}
+       </tbody>
+</table>
+    </div>
+  <div >
+    <div class="top_tip">
+    
+        <h2>客服相关数据</h2>
+       <table border="0" cellspacing="1" class="team_style">
+        <tr>
+              <td>提交日期</td>
+              <td>咨询方式</td>
+              <td>咨询类别</td>
+              <td>咨询次数</td>
+              <td>成交订单</td>
+              <td>成交金额</td>
+              <td>提交人</td>
+            </tr>
+            {foreach from=$service_list key=k item=val}
+            {if $k eq 'QQ商城'}
+            {foreach from=$val item=v}
+        <tr>
+              <td>{$v.add_time}</td>
+              <td>{$v.way_id}</td>
+              <td>{$v.type_id}</td>
+              <td>{$v.guide_consulting}</td>
+              <td>{$v.success_deal}</td>
+              <td></td>
+              <td>{$v.admin_id}</td>
+            </tr>
+            {/foreach}
+            {/if}
+            {/foreach}
+</table>
+      </div>
+    </div>
+    <div>
+      <div class="top_tip">
+    
+        <h2>工作总结相关数据</h2>
+<table border="0" cellspacing="1" class="team_style">
+ {foreach from=$summary_list key=k item=val}
+    {if $k eq 'QQ商城'}
+      {foreach from=$val item=v}
+      <p><span style="color:red;">{$v.add_time}</span></p>
+      【{$v.user_name}】<span style="color:red;">总结：</span>{$v.job_content} &nbsp; <span style="color:red;">分析：</span> {$v.summary} 
+      <br/>
+      {/foreach}
+    {/if}
+ {/foreach}
+</table>
+
+      </div>
+
+  </div>
+</div>
+
+  <!-- 作为第二个选项卡用 -->
+<div id="Tmall" class="hide">
+  <div class="top_tip">
+  
+      <h2>推广相关数据</h2>
+      <table border="0" cellspacing="1" class="team_style">
+        <tbody>
+              <tr>
+                <td>提交日期</td>
+                <td>PV</td>
+                <td>UV</td>
+                <td>订单数</td>
+                <td>销售额</td>
+                <td>广告费用</td>
+                <td>收益</td>
+                <td>刷单数量</td>
+                <td>刷单金额</td>
+                <td>提交人</td>
+              </tr>
+              {foreach from=$list key=k item=val}
+              {if $k eq '天猫商城'}
+              {foreach from=$val  item=v}
+              <tr>
+                <td>{$v.add_time}</td>
+                <td>{$v.spread_pv}</td>
+                <td>{$v.spread_uv}</td>
+                <td>{$v.orders}</td>
+                <td>{$v.sale}</td>
+                <td>{$v.ad_costs}</td>
+                <td>{$v.ad_revenue}</td>
+                <td>{$v.scalping_num}</td>
+                <td>{$v.scalping_amount}</td>
+                <td>{$v.admin_id}</td>
+              </tr>
+              {/foreach}
+              {/if}
+              {/foreach}
+       </tbody>
+</table>
+    </div>
+  <div>
+    <div class="top_tip">
+    
+        <h2>客服相关数据</h2>
+       <table border="0" cellspacing="1" class="team_style">
+        <tr>
+              <td>提交日期</td>
+              <td>咨询方式</td>
+              <td>咨询类别</td>
+              <td>咨询次数</td>
+              <td>成交订单</td>
+              <td>成交金额</td>
+              <td>提交人</td>
+            </tr>
+            {foreach from=$service_list key=k item=val}
+            {if $k eq '天猫商城'}
+            {foreach from=$val item=v}
+        <tr>
+              <td>{$v.add_time}</td>
+              <td>{$v.way_id}</td>
+              <td>{$v.type_id}</td>
+              <td>{$v.guide_consulting}</td>
+              <td>{$v.success_deal}</td>
+              <td></td>
+              <td>{$v.admin_id}</td>
+            </tr>
+            {/foreach}
+            {/if}
+            {/foreach}
+</table>
+      </div>
+    </div>
+    <div>
+      <div class="top_tip">
+     
+        <h2>工作总结相关数据</h2>
+<table border="0" cellspacing="1" class="team_style">
+ {foreach from=$summary_list key=k item=val}
+    {if $k eq '天猫商城'}
+      {foreach from=$val item=v}
+      <p><span style="color:red;">{$v.add_time}</span></p>
+      【{$v.user_name}】<span style="color:red;">总结：</span>{$v.job_content} &nbsp; <span style="color:red;">分析：</span> {$v.summary} 
+      <br/>
+      {/foreach}
+    {/if}
+ {/foreach}
+</table>
+
+      </div>
+  </div>
+
+  </div>
+
+  <div id="jingdong" class="hide">
+    <div class="top_tip">
+     
+      <h2>推广相关数据</h2>
+      <table border="0" cellspacing="1" class="team_style">
+        <tbody>
+              <tr>
+                <td>提交日期</td>
+                <td>PV</td>
+                <td>UV</td>
+                <td>订单数</td>
+                <td>销售额</td>
+                <td>广告费用</td>
+                <td>收益</td>
+                <td>刷单数量</td>
+                <td>刷单金额</td>
+                <td>提交人</td>
+              </tr>
+              {foreach from=$list key=k item=val}
+              {if $k eq '京东商城'}
+              {foreach from=$val  item=v}
+              <tr>
+                <td>{$v.add_time}</td>
+                <td>{$v.spread_pv}</td>
+                <td>{$v.spread_uv}</td>
+                <td>{$v.orders}</td>
+                <td>{$v.sale}</td>
+                <td>{$v.ad_costs}</td>
+                <td>{$v.ad_revenue}</td>
+                <td>{$v.scalping_num}</td>
+                <td>{$v.scalping_amount}</td>
+                <td>{$v.admin_id}</td>
+              </tr>
+              {/foreach}
+              {/if}
+              {/foreach}
+       </tbody>
+</table>
+    </div>
+  <div>
+    <div class="top_tip">
+    
+        <h2>客服相关数据</h2>
+       <table border="0" cellspacing="1" class="team_style">
+        <tr>
+              <td>提交日期</td>
+              <td>咨询方式</td>
+              <td>咨询类别</td>
+              <td>咨询次数</td>
+              <td>成交订单</td>
+              <td>成交金额</td>
+              <td>提交人</td>
+            </tr>
+            {foreach from=$service_list key=k item=val}
+            {if $k eq '京东商城'}
+            {foreach from=$val item=v}
+        <tr>
+              <td>{$v.add_time}</td>
+              <td>{$v.way_id}</td>
+              <td>{$v.type_id}</td>
+              <td>{$v.guide_consulting}</td>
+              <td>{$v.success_deal}</td>
+              <td></td>
+              <td>{$v.admin_id}</td>
+            </tr>
+            {/foreach}
+            {/if}
+            {/foreach}
+</table>
+      </div>
+    </div>
+    <div>
+      <div class="top_tip">
+      
+        <h2>工作总结相关数据</h2>
+<table border="0" cellspacing="1" class="team_style">
+ {foreach from=$summary_list key=k item=val}
+    {if $k eq '京东商城'}
+      {foreach from=$val item=v}
+      <p><span style="color:red;">{$v.add_time}</span></p>
+      【{$v.user_name}】<span style="color:red;">总结：</span>{$v.job_content} &nbsp; <span style="color:red;">分析：</span> {$v.summary} 
+      <br/> 
+      {/foreach}
+    {/if}
+ {/foreach}
+</table>
+
+      </div>
+  </div>
+
+</div>
+
+<div id="official" class="hide">
+  
+    <div class="top_tip">
+   
+      <h2>推广相关数据</h2>
+      <table border="0" cellspacing="1" class="team_style">
+        <tbody>
+              <tr>
+                <td>提交日期</td>
+                <td>PV</td>
+                <td>UV</td>
+                <td>订单数</td>
+                <td>销售额</td>
+                <td>广告费用</td>
+                <td>收益</td>
+                <td>刷单数量</td>
+                <td>刷单金额</td>
+                <td>提交人</td>
+              </tr>
+              {foreach from=$list key=k item=val}
+              {if $k eq '官方商城'}
+              {foreach from=$val  item=v}
+              <tr>
+                <td>{$v.add_time}</td>
+                <td>{$v.spread_pv}</td>
+                <td>{$v.spread_uv}</td>
+                <td>{$v.orders}</td>
+                <td>{$v.sale}</td>
+                <td>{$v.ad_costs}</td>
+                <td>{$v.ad_revenue}</td>
+                <td>{$v.scalping_num}</td>
+                <td>{$v.scalping_amount}</td>
+                <td>{$v.admin_id}</td>
+              </tr>
+              {/foreach}
+              {/if}
+              {/foreach}
+       </tbody>
+</table>
+    </div>
+  <div>
+    <div class="top_tip">
+    
+        <h2>客服相关数据</h2>
+       <table border="0" cellspacing="1" class="team_style">
+        <tr>
+              <td>提交日期</td>
+              <td>咨询方式</td>
+              <td>咨询类别</td>
+              <td>咨询次数</td>
+              <td>成交订单</td>
+              <td>成交金额</td>
+              <td>提交人</td>
+            </tr>
+            {foreach from=$service_list key=k item=val}
+            {if $k eq '官方商城'}
+            {foreach from=$val item=v}
+        <tr>
+              <td>{$v.add_time}</td>
+              <td>{$v.way_id}</td>
+              <td>{$v.type_id}</td>
+              <td>{$v.guide_consulting}</td>
+              <td>{$v.success_deal}</td>
+              <td></td>
+              <td>{$v.admin_id}</td>
+            </tr>
+            {/foreach}
+            {/if}
+            {/foreach}
+</table>
+      </div>
+    </div>
+    <div>
+      <div class="top_tip">
+      
+        <h2>工作总结相关数据</h2>
+<table border="0" cellspacing="1" class="team_style">
+ {foreach from=$summary_list key=k item=val}
+    {if $k eq '官方商城'}
+      {foreach from=$val item=v}
+      <p><span style="color:red;">{$v.add_time}</span></p>
+      【{$v.user_name}】<span style="color:red;">总结：</span>{$v.job_content} &nbsp; <span style="color:red;">分析：</span> {$v.summary} 
+      <br/> 
+      {/foreach}
+    {/if}
+ {/foreach}
+</table>
+
+      </div>
+  </div>
+
+
+</div>
+
+<div id="kuba" class="hide">
+  
+  <div class="top_tip">
+  
+   <h2>推广相关数据</h2>
+      <table border="0" cellspacing="1" class="team_style">
+        <tbody>
+              <tr>
+                <td>提交日期</td>
+                <td>PV</td>
+                <td>UV</td>
+                <td>订单数</td>
+                <td>销售额</td>
+                <td>广告费用</td>
+                <td>收益</td>
+                <td>刷单数量</td>
+                <td>刷单金额</td>
+                <td>提交人</td>
+              </tr>
+              {foreach from=$list key=k item=val}
+              {if $k eq '库巴'}
+              {foreach from=$val  item=v}
+              <tr>
+                <td>{$v.add_time}</td>
+                <td>{$v.spread_pv}</td>
+                <td>{$v.spread_uv}</td>
+                <td>{$v.orders}</td>
+                <td>{$v.sale}</td>
+                <td>{$v.ad_costs}</td>
+                <td>{$v.ad_revenue}</td>
+                <td>{$v.scalping_num}</td>
+                <td>{$v.scalping_amount}</td>
+                <td>{$v.admin_id}</td>
+              </tr>
+              {/foreach}
+              {/if}
+              {/foreach}
+       </tbody>
+</table>
+    </div>
+  <div>
+    <div class="top_tip">
+    
+        <h2>客服相关数据</h2>
+       <table border="0" cellspacing="1" class="team_style">
+        <tr>
+              <td>提交日期</td>
+              <td>咨询方式</td>
+              <td>咨询类别</td>
+              <td>咨询次数</td>
+              <td>成交订单</td>
+              <td>成交金额</td>
+              <td>提交人</td>
+            </tr>
+            {foreach from=$service_list key=k item=val}
+            {if $k eq '库巴'}
+            {foreach from=$val item=v}
+        <tr>
+              <td>{$v.add_time}</td>
+              <td>{$v.way_id}</td>
+              <td>{$v.type_id}</td>
+              <td>{$v.guide_consulting}</td>
+              <td>{$v.success_deal}</td>
+              <td></td>
+              <td>{$v.admin_id}</td>
+            </tr>
+            {/foreach}
+            {/if}
+            {/foreach}
+</table>
+      </div>
+    </div>
+    <div>
+      <div class="top_tip">
+      
+        <h2>工作总结相关数据</h2>
+<table border="0" cellspacing="1" class="team_style">
+ {foreach from=$summary_list key=k item=val}
+    {if $k eq '库巴'}
+      {foreach from=$val item=v}
+      <p><span style="color:red;">{$v.add_time}</span></p>
+      【{$v.user_name}】<span style="color:red;">总结：</span>{$v.job_content} &nbsp; <span style="color:red;">分析：</span> {$v.summary} 
+      <br/> 
+      {/foreach}
+    {/if}
+ {/foreach}
+</table>
+
+      </div>
+  </div>
+
+  </div>
+
+
+
+
+  <!-- 隐藏表单域：记录订单ID -->
+  <input type="hidden" id="order_id" value="{$order_info.order_id}"/>
+</div>

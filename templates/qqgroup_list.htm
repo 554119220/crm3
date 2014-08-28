@@ -1,0 +1,35 @@
+<div class="content-head">
+     <div class="finder-header-wrapper" style="" id="qqgGrouplist" >
+     <table border="0" cellpadding="0" cellspacing="0" style="clear:both">
+          <tr>
+               <td width="1024px">
+                    <div id='scroll1' style="max-width:100%;overflow:hidden;"> 
+                      <hr class="wuhr" width="100%">
+                      <table style="width:980px" height="100%" border="0" cellpadding="0" cellspacing="1" bgcolor="#666">               
+                              <tr bgcolor="#ddedfb">
+                                   <td align="center">QQ</td>
+                                   <td height="20px" align="center">群号</td>
+                                   <td align="center">Q名</td>
+                                   <td align="center">Q类别</td>
+                                   <td align="center">管理员</td>
+                              </tr>
+                                {foreach from=$qq_group item=val}
+                              <tr bgcolor="#FFFFFF" id="tr_2_{$val.account_id}">
+                                   <td height="20" align="center">{$val.qq}</td>
+                                   <td align="center">{$val.qqgroup}</td>
+                                   <td align="center">{$val.subject}</td>
+                                   <td align="center">{$val.category}</td>
+                                   <td align="center">
+                                     {foreach from=$qqgroup_admin item=val}
+                                        {$val.admin}&nbsp;
+                                     {/foreach}
+                                   </td>
+                              </tr>
+                              {/foreach}
+                         </table>
+                   </div> 
+               </td>
+          </tr>
+     </table>
+     </div>
+</div> 

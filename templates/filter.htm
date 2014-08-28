@@ -1,0 +1,49 @@
+<br /><h3 >智选器</h3><br />
+<div class='white_bg_filter' style="width:60%">
+  {if $power eq 1 || $power eq 2}
+  <h3 class="title_font">操作（目的）</h3><br/>
+  <form name="filter_form" action="filter_search" method="POST">
+    {if $power eq 1}<span>部门</span>
+    <select name="role_list" id="role_list" onchange="getRoleAdmin(this.value)">
+      <option>选择部门</option>
+      {foreach from=$role_list item=val}
+      <option value="{$val.role_id}">{$val.role_name}</option>
+      {/foreach}
+    </select>
+    {/if}
+    {if $power eq 2 || $power eq 1}<span>管理员</span>
+    <select name="admin_list" id="admin_list" style="width:120px" onchange="getAdmOpt(this.value)">
+      <option>选择管理员</option>
+      {foreach from=$admin_list item=val}
+      <option value="{$val.user_id}">{$val.user_name}</option>
+      {/foreach}
+    </select>
+    {/if}
+    <select name="r_operater_list" id="r_operater_list" style="width:124px">
+      <option>选择操作</option>
+      {foreach from=$operater_list item=val}
+      <option id="{$val.operater_id}">{$val.operater_name}</option>
+      {/foreach}
+    </select>
+
+    <input type="button" onclick="showadd()" id="enable" style="display:none" />
+    <input type="button" disabled="disabled" id="disable" style="display:none"/>
+    <input type="button" onclick="addOpt(this.form)" value="添加新操作" style="float:right" class="b_submit" />
+    <input type="text" onblur="checkOpt(this.form)" name="operater_name" id="operater_name" style="float:right"/>
+  </form>
+  {/if}
+
+  <div id="div_add_operater"></div>
+  <br/><br/><br/>
+  <br/><br/><br/>
+  <!--添加智选器-->
+  <h3 class="title_font">添加/编辑智选器</h3><br/>
+  <div id="div_filter" >
+    <select name="operater_list" style="width:124px">
+      <option>选择操作</option>
+      {foreach from=$operater_list item=val}
+      <option id="{$val.operater_id}">{$val.operater_name}</option>
+      {/foreach}
+    </select>
+  </div>
+</div>

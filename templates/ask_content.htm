@@ -1,0 +1,62 @@
+<input type="hidden" id="title" value="{$customer.type}">
+<table width="100%" class="wu_table_list rb_border wu_rb_border tr_hover" cellpadding="0" cellspacing="0" >
+  <tr>
+    <th width="5%"><input type="checkbox" onclick="selectAll(this)"></th>
+    <th width="10%">顾客姓名</th>
+    <th width="10%">客服</th>
+    <th width="15%">最后购买</th>
+    <th width="15%">最后服务</th>
+    <th width="20%">操作</th>
+  </tr>
+  {foreach from=$customer.customer item=val}
+  <tr id="{$val.user_id}">
+    <td><input type="checkbox"/></td>
+    <td><button onclick="getUserInfo({$val.user_id})">{$val.user_name}</button></td>
+    <td>{$val.admin_name}</td>
+    <td>{$val.add_time}</td>
+    <td>
+      {if $val.service_time eq 0}无服务
+      {else}{$val.service_time}
+      {/if}
+    </td>
+    {if $customer.type eq 0}
+    {if $admin.admin_id neq 1}
+    <td><button class="btn_new" onclick="askControl({$val.user_id},'askCustomer')">我淘了</button></td>
+    {else}
+    <td><button class="btn_new"  onclick="askControl({$val.user_id},'banAsk')">禁止被淘</button></td>
+    {/if}
+    {elseif $customer.type eq 1}
+    {if $costomer.admin.admin_id neq 1}
+    <td><button class="btn_new" onclick="askControl({$val.user_id},'cancelAsk')">放弃</button></td>
+    {else}
+    <td>无操作</td>
+    {/if}
+    {elseif $customer.type eq 2}
+    <td><button class="btn_new" onclick="askControl({$val.user_id},'replaceAsk')">恢复可陶</button></td>
+    {/if}
+  </tr>
+  {/foreach}
+</table>
+
+<input type="hidden" value="{$admin.operater}" />
+
+<!-- 分页 -->
+<div class="bottom_tip" width="96%">
+  <div class="tip_left">
+    共{$filter.total}条记录,当前页:1-{$filter.filter.page_size}条，每页显示<input type="text" name="" size="4" onkeydown="limit(this.value,event)"> &nbsp;{$filter.filter.page_size}条记录&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+  </div>
+  <div class="tip_center">
+    <span>
+      <a href="users.php?act={$filter.act}&page=1&page_size={$filter.filter.page_size}{$condition}">&lt;&lt;</a>
+    </span>
+    {foreach from=$filter.page_set item=val}
+    <span{if $val eq $filter.page} class="cur"{/if}>{if $val eq $filter.page}{$val}{else}<a href="users.php?act={$filter.act}&page={$val}&page_size={$filter.filter.page_size}{$condition}">{$val}</a>{/if}</span>
+    {/foreach}
+    <span><a href="users.php?act={$filter.act}&page={$filter.page_count}&page_size={$filter.page_size}{$condition}">&gt;&gt;</a></span>
+  </div>
+  <div class="tip_right">
+    总共{$filter.page_total} 页
+    跳转到第
+    <input type="text" name="page" size="4" onkeydown="pageTurn(this.value,{$filter.page_size},event)">&nbsp;页
+  </div>
+</div>

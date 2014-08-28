@@ -1,0 +1,38 @@
+<br/>
+<div style="text-align:right;padding-right:3.4%;height:28px;">
+  <h3 style="float:left;">合并顾客</h3>
+  <form name="combine_user_config_form">
+    <span class="block_span" id="combine_user_config">请选择两个顾客</span> 
+  </form>
+</div>
+<div class="sch_div">
+  <form name="sch_repeat_user" onsubmit="schRepeatUser(this)" action="javascript:void(0)">
+    <table cellpadding="0" cellspacing="0" width="100%" border="0">
+      <tr>
+        <td>
+          <select name="contact_way" style="width:88px;">
+            {foreach from=$contact_way item=val}
+            <option value="{$val.contact_way_label}">{$val.contact_way_name}</option>
+            {/foreach}
+          </select>
+        </td>
+        <td>
+          <input type="text" name="keyword" value="" placeholder="关键字(按确定键直接搜索)" style="width:250px"/>
+        </td>
+        <th> 具有相同的：</th>
+        <td>
+          <label><input type="checkbox" name="same_item" value="name"/>&nbsp;姓名</label>
+          <label><input type="checkbox" name="same_item" value="tel"/>&nbsp;电话</label>
+          <label><input type="checkbox" name="same_item" value="address"/>&nbsp;地址</label>
+        </td>
+        <td>
+          <input type="submit" value="搜索" class="b_submit"/>
+          <input type="button" value="对照" class="b_submit" id="btn_combine" onclick="compareUser()" />
+          <input type="button" value="合并" class="b_submit" id="btn_combine" onclick="combineUser()" />
+        </td>
+      </tr> 
+    </table>
+  </form>
+</div>
+<div id="compare_user_div"></div>
+<div id="resource">{$repeat_user_div}</div>

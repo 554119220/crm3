@@ -1,0 +1,48 @@
+<br />
+<div class="content-head w830">
+  <div style="display:inline;clear:none" class="finder-title mt10">角色管理<font>{$num}</font></div>
+  <span style="float:right;">
+    <a class="a_btn" href="system.php?act=addrole">添加角色</a>
+  </span>
+  <table height="100%" border="0" width="824px" cellpadding="0" cellspacing="0" class="wu_table_list tr_hover rb_border">
+    <tr>
+      <th width="15%">角色名</th>
+      <th width="20%" align="center">角色描述</th>
+      <th width="15%">内部竞争</th>
+      <th width="20%">管理</th>
+      <th width="20%">类型</th>
+      <th width="20%">操作</th>
+    </tr>
+    {foreach from=$role_list item=list} 
+    <tr bgcolor="#FFFFFF" id="tr_2_{$val.order_id}" class="tr_list">
+      <td align="center" width="15%">{$list.role_name}</td>
+      <td align="center" width="20%">{$list.role_describe}</td>
+      <td align="center" width="15%">{$list.compete}</td>
+      <td align="center" width="20%">{$list.manager}</td>
+      <td align="center" width="20%">{$list.role_type}</td>
+      <td align="center" width="20%">
+        <a class="btn" href="system.php?act=assign_authority&role_id={$list.role_id}">编辑</a>
+      </td>
+    </tr>
+    {/foreach}
+  </table>
+</div>
+
+<style type="text/css">
+  .a_btn{
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2673C4), to(#75A6DA));
+    border : 1px solid ;
+    border-radius : 5px;
+    color : #FFF; 
+    padding : 2px 5px;
+    height : 22px;
+    font-size : 12px;
+    text-align : center;
+  }
+
+  .a_btn:hover{
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#033b74), to(#2e78c6));
+    color:#FFF;
+    text-decoration:none;
+  }
+</style>

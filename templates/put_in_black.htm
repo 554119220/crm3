@@ -1,0 +1,61 @@
+<div style="display:{if $put_account_in_blacklist eq 1}none{else}block{/if}"> 
+  <div class="pop_title">
+    把{$user_name}拉入黑名单&nbsp;&nbsp;&nbsp;
+    <span id="alarm_span"></span>
+    <label onclick="close_pop()" ><b>X</b></label>
+  </div>
+  <table width="520px" cellspacing="0" cellpadding="0" border="0" class="table_form">
+    <tr>
+      <th width="30%">类型：</th>
+      <td>
+        <select id="blacklist_type">
+          {foreach from=$blacklist_type item=val}
+          <option value="{$val.type_id}">{$val.type_name}</option>
+          {/foreach}
+        </td>
+      </tr>
+      <tr>
+        <th width="30%">拦入黑名单原因：</th>
+        <td>
+          <textarea id="reason" style="resize:none;padding:6px" cols="60" rows="4"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align:right">
+          <input type="button" class="input_submit" style="margin-righ:5px" value="确认" onclick="putInBlack({$user_id})">
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="display:{if $put_account_in_blacklist eq 1}block{else}none{/if}">
+    <div class="pop_title">
+      添加黑名单&nbsp;&nbsp;&nbsp;
+      <span id="alarm_span"></span>
+      <label onclick="close_pop()" ><b>X</b></label>
+    </div>
+    <br/>
+    <form action="users.php?act=import_blacklist" method="post" enctype="multipart/form-data" name="import_form">
+      <table width="520px" cellspacing="0" cellpadding="0" border="0" class="table_form">
+        <tr>
+          <td colspan="2">
+        导入EXCEL文件一定要严格按照规定的格式，注意有选择的数据内容 允许类型：XLS,XLSX
+          </td>
+        </tr>
+        <tr>
+          <th width="60%">导入黑名单：</th>
+          <td>
+            <input type="file" name="blacklist_file" accept=".xls,.xlsx" required/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+           <div class="alert_error" id="alert_error" style="display:none"></div> 
+          </td>
+          <td align="right">
+            <input type="submit" class="input_submit" value="拉入黑名单" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>

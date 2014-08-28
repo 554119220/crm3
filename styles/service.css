@@ -1,0 +1,8 @@
+button [onclick='collectTape()'] {font-size:21px; margin-left:10px}
+
+/*多选员工容器*/
+#select_admin_box{width:97%;border 1px solid #ccc; padding:10px;font-size:12px;font-weight:normal !important}
+#select_admin_box td {padding:6px;}
+
+.btn_down_up{margin-left:32px;}
+.service_box{text-align:center;background:#ccc}

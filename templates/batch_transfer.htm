@@ -1,0 +1,143 @@
+<br/>
+<h3>批量转移顾客</h3>
+
+<div class="while_bg">
+  <form action="" method="" name="transfer">
+    将<select name="from_admin">：
+      <option>请选择目标客服</option> 
+      {foreach from=$admin_list item=val}
+      <option value="{$val.user_id}">{$val.user_name}</option> 
+      {/foreach}
+      <option value='-1'>删除</option> 
+    </select>的顾客转给
+    <select name="to_admin">：
+      <option>请选择目标客服</option> 
+      {foreach from=$admin_list item=val}
+      <option value="{$val.user_id}">{$val.user_name}</option> 
+      {/foreach}
+      <option value='-1'>删除</option> 
+    </select>
+    转移顾客人数<input type="text" name="transfer_num" value="默认全部" >
+    <input type="hidden" name="user_id" value="{$user.user_id}">
+    <input type="hidden" name="user_name" value="{$user.user_name}">
+    <input type="button" value="确定" class="b_submit" onclick="batch(this.form)">
+  </form>
+</div>
+<br />
+<h3>高级转移</h3>
+<div class="while_bg" style="margin-bottom:15px;padding-bottom:15px">
+  <table width="100%">
+    <tr>
+      <td width="10%" style="border-right:1px solid #999;" valign="top">
+        <form name="advance_transfer_form">
+          <table class='form_table'>
+            <tr>
+              <th>源客服</th>
+              <td><select name="adv_from_admin">
+                  <option>请选择源客服</option> 
+                  {foreach from=$admin_list item=val}
+                  <option value="{$val.user_id}">{$val.user_name}</option> 
+                  {/foreach}
+                  <option value='-1'>删除</option> 
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>目标客服</th>
+              <td>
+                <select name="adv_to_admin">：
+                  <option>请选择目标客服</option> 
+                  {foreach from=$admin_list item=val}
+                  <option value="{$val.user_id}">{$val.user_name}</option> 
+                  {/foreach}
+                  <option value='-1'>删除</option> 
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>顾客类型</th>
+              <td>
+                <select name="active">
+                  <option>请选择顾客类型</option> 
+                  {foreach from=$active item=val}
+                  <option value="$val.active_id">{$val.active_name}</option>
+                  {/foreach}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>顾客分类</th>
+              <td>
+                <select name="eff_id">
+                  <option>请选择顾客分类</option>
+                  {foreach from=$effects item=val}
+                  <option value="{$val.eff_id}">{$val.eff_name}</option>
+                  {/foreach}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>服务时间起始</th>
+              <td><input name="ser_startTime" style="width:114px !important" type="text" maxlength="12" onClick="WdatePicker()"/></td>
+            </tr>
+            <tr>
+              <th>服务时间终止</th>
+              <td><input name="ser_endTime" style="width:114px !important" type="text" maxlength="12" onClick="WdatePicker()"/></td>
+            </tr>
+            <tr>
+              <th>顾客添加时间起始</th>
+              <td><input name="add_startTime" style="width:114px !important" type="text" maxlength="12" onClick="WdatePicker()"/></td>
+            </tr>
+            <tr>
+              <th>顾客添加时间终止</th>
+              <td><input name="add_endTime" style="width:114px !important" type="text" maxlength="12" onClick="WdatePicker()"/></td>
+            </tr>
+            <tr>
+              <th>
+                <input type="button" value="搜索" class="b_submit" width="80px" onclick="advanceBatch(this.form)" />
+              </th>
+              <td>
+                <input type="button" value="确定" class="b_submit" width="80px" onclick="advanceBatch(this.form)" />
+              </td>
+            </tr>
+          </table>
+        </form>
+      </td>
+      <td valign="top" width="90%">
+        <div id="resource">
+          <table style="margin-left:10px" width="96%" cellspacing="0" cellpadding="0" class="all_table_list rb_borde" >
+            <tr >
+              <th width="3%"><input type="checkbox" id="all_user" onclick="getAllUse(this)"/></th>
+              <th width="10%">用户名</th>
+              <th width="10%">所属部门</th>
+              <th width="15%">添加时间</th>
+              <th width="15%">最近购买时间</th>
+              <th width="15%">最近服务时间</th>
+              <th width="10%">顾客类型</th>
+              <th width="10%">疾病分类</th>
+            </tr>
+            <tr>
+              <td colspan="8" align="center">没有任何记录</td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<style type="text/css" >
+  .while_bg{
+    background:#FFF;
+    border-radius:5px;
+    padding:12px;
+  }
+  .while_bg input,select{
+    margin:1px 8px 1px 8px;
+  }
+  .form_table th{
+    width:130px;
+    text-align:right;
+    font-weight:normal;
+  }
+</style>

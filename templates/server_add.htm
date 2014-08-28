@@ -1,0 +1,82 @@
+﻿<form action="service.php?act=add_service" name="for_service" method="POST">
+<table width="980" height=100% border="1" cellpadding="0" cellspacing="0">
+    <tr>
+      <td height="32px" style="background:#EAEEF4" colspan="2">&nbsp;<strong>添加服务</strong></font></td>
+    </tr>
+    <tr height="32px">
+      <td>&nbsp;顾客姓名：</td>
+      <td>
+        &nbsp;<input name="user_name" type="text"  size="24" onblur="cheUser(this.value)" />
+        <span id="user_name" style="color:red">123<span>
+      </td>
+    </tr>
+    <tr height="32px">
+      <td>&nbsp;客服姓名：</td>
+      <td>
+        &nbsp;<input name="admin_name" id="txtadminName" type="text" size="24" onblur="cheAdmin(this.value)"/>
+        &nbsp;<select name="admin_list" id="admin_list" onchange="getServiceAdmin()">
+          {foreach from=$adminList item=val}
+          <option value="{$val.user_id}">{$val.user_name}</option> 
+          {/foreach}
+        </select>
+        <span id="admin_name" style="color:red">123<span>
+        </td>
+      </tr>
+    <tr height="32px">
+      <td>&nbsp;服务类型：</td>
+      <td>
+        &nbsp;<select name="service_class" id="service_class" style="padding:2px">
+          {foreach from=$service_class item=val}
+          <option value="{$val.class_id}">{$val.class}</option>
+          {/foreach}
+        </select>
+      </td>
+    </tr>
+    <tr height="32px">
+      <td>&nbsp;服务方式：</td>
+      <td >
+         &nbsp;<select name="service_manner" id="service_manner" style="padding:2px">
+           {foreach from=$service_manner item=val}
+           <option value="{$val.manner_id}">{$val.manner}</option>
+           {/foreach}
+         </select>
+     </td></tr>
+      <tr height="32px">
+      <td>&nbsp;服务时间：</td>
+      <td>
+      &nbsp;<input id="service_time" name="service_time" type="text" onClick="WdatePicker()"/>
+    </td>
+    </tr>
+    <tr height="32px">
+      <td>&nbsp;后续处理：</td>
+      <td>
+        &nbsp;
+        <input type="radio" name="service_status" value="1"/>已完成
+        <input type="radio" name="service_status" value="2" checked="checked"/>未处理
+        <input type="radio" name="service_status" value="3"/>提交售后
+        <input type="radio" name="service_status" value="4"/>提交主管
+      </td>
+    </tr>
+    <tr height="32px">
+      <td>&nbsp;服务过程：</td>
+      <td>
+        &nbsp;<input name="logbook" type="text" onblur="cheLogbook(this.value)"/>
+        <span id="logbook" style="color:red">123</span>
+      </td></tr>
+    <tr> 
+    <tr height="32px">
+      <td>&nbsp;专项反馈：</td>
+      <td> 
+        &nbsp;<input type="textarea" name="special_feedback"  style="resize:none;disabled:true" size="24" />
+        <span>暂不可编辑</span>
+      </td>
+    </tr>
+      <tr height="32px">
+      <td>&nbsp;预约时间：</td>
+      <td> 
+        &nbsp;<input id="handler" name="handler" type="text" onClick="WdatePicker()"/>
+        <input name="sub" style="padding:0 10px 0 10px;backgrounp-color:#87CEFA" type="button" onclick="submitService(this)" onmouseover="change_gb(this)" value="提交" />
+    </td>
+  </tr>
+</table>
+</form>

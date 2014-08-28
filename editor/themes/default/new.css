@@ -1,0 +1,60 @@
+body {
+  background: gray;
+  padding: 0;
+  margin: 0;
+}
+
+div{
+  display:block;
+}
+
+body, td, input, button, select {
+  font-size: 13px;
+  line-height: 1.2;
+  font-family: 'lucida Grande',arial,sans-serif;
+}
+
+.topdata {
+  /*
+  background: #354b66;
+  background: moz linear gradient(top,#364d68,#2c3f55 100%);
+  */
+  background: -webkit-gradient(linear,0 0,0 100%,from(#364d68),to(#2c3f55));
+  padding: 1px 0 3px 12px;
+  font-size: 16px;
+  color: #FFF;
+}
+
+.topdata {
+  height: 66px;
+  width: 100%;
+  margin:0 auto;
+}
+
+.topdata h2 {
+  font-family: '微软雅黑','宋体',sans-serif,arial;
+}
+
+.toolbg {
+  background: -webkit-gradient(linear,0 0,0 100%,from(#cdd1d9),to(#bcc2cd));
+  /*background: -moz-linear-gradient(top,#cdd1d9,#bcc2cd);*/
+  background-color: #bcc2cd;
+}
+
+.middle {
+  height:90% !important;
+  margin: 0;
+}
+
+.ke-hr
+{
+  display:none;
+}
+
+.toolbg input{
+  border: 1px solid #888;
+  color: #000;
+  background: -webkit-linear-gradient(top,#ffffff 0%,#ebebeb 90%,#F3F3F3 100%);
+  display: inline-block;
+  cursor:pointer;
+}

@@ -1,0 +1,54 @@
+<div class="box_center user_list_info" style="width:96%;padding:3px;clear:both" id="fast_sale">
+  <form id="for_add_rank">
+    <table style="margin-left:15px" width="90%" class="table_form table_tr" cellspacing="0" border="0">
+      <tr>
+        <th><font color="red">*</font>所属平台 ：</th><td>{$rank.role_name}</td>
+      </tr>
+      <tr>
+        <th><font color="red">*</font>活动名称 ：</th><td>{$rank.rank_name}</td>
+      </tr>
+      <tr><th>活动开始时间 ：</th><td><input type="text" name="present_start" onclick="WdatePicker()"/></td></tr>
+      <tr><th>活动结束时间 ：</th><td><input type="text" name="present_end" onclick="WdatePicker()"/></td></tr>
+      <tr><th>活动方式 ：</th><td>
+          <select name="inte_rule" style="width:138px">
+            {foreach from=$integral item=val}
+            <option value="{$val.integral_id}">{$val.integral_title}</option>
+            {/foreach}
+          </select>
+      </td></tr> 
+      <tr><th>活动描述：</th><td><input type="text" name="activity_remark"/></td></tr>
+      <tr><th>预计成本：</th><td><input type="text" name="costing"/></td></tr>
+      <tr>
+        <th>优惠券发送 ：</th><td>
+          <label style="float:left !important"><input type="radio" name="coupon" value="1">是</label>
+          <label><input type="radio" name="coupon" value="0" checked/>否</label></td>
+      </tr>
+    </table>
+    <table style="margin-left:15px" width="90%" class="table_form table_tr" cellspacing="0" border="0">
+      <th> </th>
+      <td>
+        <input type="button" class="b_submit" style="margin-right:30px" onclick="fastSaleSet({$rank_id})" value="确 定"/>
+        <input type="button" class="b_submit" onclick="closeTr()" value="取 消"/>
+      </td>
+    </table>
+  </form>
+</div>
+
+<style type="text/css" >
+  #fast_sale{
+    margin:15px;
+  }
+  #fast_sale span {
+    float:left;
+    background:#D3DCE3;
+    font-family:"微软雅黑";
+    line-height:14px;
+  }
+  #fast_sale table td{
+    text-align:left;
+  }
+  #fast_sale table th{
+    width:120px;
+    text-align:right;
+  }
+</style>

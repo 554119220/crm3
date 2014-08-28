@@ -1,0 +1,91 @@
+<div style="float:left;">
+  <ul class="tab1" style="float:none !important">
+    {foreach from=$room_info item=val}
+    <li style="float:none !important;">
+    <button class="btn_s" name='{$val.room}' onmouseover="tabSub(this)" onclick="tabSub(this)">{$val.room}</button>
+    </li>
+    {/foreach}
+  </ul>
+</div>
+<div id="box" style="width:80%;float:left">
+  <!--
+  座位<input type="text" name="seat" value="" maxlength="7" plcaceholder="座号"/>
+  位置<button>空闲</button><button>占有</button>
+  电脑<input type="text" maxlength="8" name="pc_number" plcaceholder="座号"/>
+  <button>正常</button><button>待维修</button>
+  -->
+  <form method="POST" action="" name="pc_manager_for">
+    {foreach from=$room_info item=val}
+    <div id="{$val.room}" {$val.status}>
+      <table class="wu_table_list rb_border tr_hover wu_rb_border" style="width:97%;border:1px solid;border-spacing: 1px !important;">
+        <tr> 
+          <th width="10%">座位号</th>
+          <th width="15%">使用者</th>
+          <th width="18%">电脑编号</th>
+          <th width="8%">主机</th>
+          <th width="8%">显示器</th>
+          <th width="15%">备注</th>
+        </tr>
+        {foreach from=$val.seat_info item=seat}
+        <tr style="background:{if $seat.is_use eq 1}blue{elseif $seat.is_use eq 2}red{/if}">
+          <td>{$seat.seat}</td>
+          <td>
+            <input {if $seat.admin_id neq 0}style="display:none"{/if} type="text" id="in_{$seat.seat}" list=admin_list placeholder="输入员工姓名" onclick="getTemAdmin(this,{$seat.seat})" onmouseout="setAdmin(this.value,{$seat.seat})"/>
+            <span id="tem_admin_list_{$seat.seat}"></span>
+            <span id="btn_{$seat.seat}" {if $seat.admin_id eq 0}style="display:none"{/if}>
+              <button class="btn_new" id="btn_{$seat.seat}_val" onfocus="getAccount($val.user_id)">{$seat.admin_name}</button>
+              <span style="float:right;margin-right:15px">
+                <img src="images/edit.gif" onclick="setInput({$seat.seat},'{$seat.admin_name}',0)" title="修改使用者" >
+                <img src="images/0.gif" onclick="delAdmin($seat.admin_name)" title="删除使用者">
+              </span>
+            </span>
+            <!--如果已经有员工就座-->
+            <!--
+            <span id="{$seat.seat}_admin_filed" style="width:60%"></span>
+            <span id="{$seat.seat}_control_field" style="float:right;margin-right:15px">
+              {if $seat.admin_id neq 0}
+              <label class="btn_new" onmouseover="getAdminAccount({$seat.admin_id})">{$seat.admin_name}</label>
+              <img src="images/edit.gif" onclick="getinfo({$seat.seat},'{$seat.admin_id}',0)" title="修改使用者" >
+              <img src="images/0.gif" onclick="delAdmin($seat.admin_id)" title="删除使用者">
+              {else}
+              <img src="images/contact_add.png" title="添加员工" onclick="setInput({$seat.seat},0,1)" />
+              {/if}
+            </span>
+            -->
+          </td>
+          <td>
+            {if $seat.pc_number eq ''}
+            <input type="text" name="pc_number" id="{$seat.seat}_pc_nu" />
+            {else}
+            <button class="btn_new" >{$seat.pc_number}</button>
+            <img src="images/edit.gif" onclick="setInputEdit({$seat.seat},'{$seat.pc_number}',1)" title="修改电脑编号">
+            <img src="images/0.gif" onclick="delAdmin({$seat.pc_number})" title="删除电脑">
+            {/if}
+          </td>
+          <td>{if $seat.case_status eq ''}
+            <select name="case_status">
+              <option value="0">正常</option>
+              <option value="1">待维修</option>
+            </select>
+            {else}
+            <button class="btn_new" onclick="set_info">{$seat.case_status}{/if}</button>
+          </td>
+          <td>
+            {if $seat.monitor_status eq ''}
+            <select name="monitor_status" onchange="alert(1)">
+              <option value="0">正常</option>
+              <option value="1">待维修</option>
+            </select>
+            {else}
+            <button class="btn_new">{$seat.moniotor_status}</button>
+            {/if}
+          </td>
+          <td>说明</td>
+        </tr>
+        {/foreach}
+      </table>
+      <br/>
+    </div>
+    {/foreach}
+  </form>
+</div>

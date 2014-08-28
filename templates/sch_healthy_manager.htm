@@ -1,0 +1,30 @@
+<br />
+<div>
+  <h3>健康档案查询</h3>
+  <div class="list_panel">
+    <form name="sch_healthy">
+      <input type="text" name="user_name" value="" placeholder="顾客姓名" />   
+      <input type="text" name="phone" value="" placeholder="顾客电话" />   
+      <input type="text" name="disease" value="" placeholder="疾病名称" />   
+      <input type="button" class="b_submit" name="submit" value="搜 索" onclick="schHealthy(this.form)"/>   
+    </form>
+  </div>
+  <div id="resource">
+    <table class="wu_table_list tr_hover rb_border" cellpadding="1" cellspacing="0" width="100%">
+      <tr>
+        <th width="10%">姓名</th>
+        <th width="20%">基本情况</th>
+        <th width="20%">疾病情况</th>
+        <th width="50%">医师备注</th>
+      </tr>
+      {foreach from=$healthy_file item=val}
+      <tr>
+        <td>{$val.user_name}</td>
+        <td>{$val.base_infon}</td>
+        <td>{$val.seace_info}</td>
+        <td>{$val.user_name}</td>
+      </tr>
+      {/foreach}
+    </table>
+  </div>
+</div>

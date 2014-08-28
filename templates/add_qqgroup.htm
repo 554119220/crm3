@@ -1,0 +1,54 @@
+<br>
+<h1 bgcolor="#192E32">添加Q群：</h1>
+<hr width="100%">
+
+<br>
+<form style="width:1024" id="for_account" name="for_account" action="" method="POST">
+  主题分类
+  <select class="input_text" id="DepartmentID">
+    <{foreach from=$department item=val }>
+    <option value="{$val.eff_id}">{$val.eff_name}</option>
+    <{/foreach}>
+  </select>        
+  QQ
+  <input type="text" class="input_text" name="txtqq" id="qq" onkeypress="isNum(event)"/>
+  <label id="account_qqlist" style="display:none">
+    <select  id="qqlist" onchange="getQq(this)" >
+      {foreach from=$account_qq item=val}
+      <option value="{$val.user_name}">{$val.user_name}</option>
+      {/foreach}
+    </select>
+  </label>
+  QQ群
+  <input type="text" class="input_text" id="qqgroup" onblur="isExistQg()" onkeypress="isNum(event)" />
+  群名
+  <input type="text" id="subject" />
+  管理员
+  <input type="text" id="txtAdminId" onkeypress="getAdminqq(event)">
+  <span id="adminqqList" style="display:none">
+    <select name="seladmin_id" id="admin_id" style="size:16px" onchange="getAdmin(this)">
+      <{foreach from=$admin_list item=val }>
+      <option value="{$val.account_id}">{$val.user_name}</option>
+      <{/foreach}>
+    </select> 
+  </span>
+  <input type="button" class="b_submit"  id="btnadd" disabled="true" value="提交" onclick="addQqgroup()" />
+  <input type="reset" class="b_submit" value="取消" />
+</form>
+
+<div id="grouplist" style="width:1024px;position:relative;border:1px solid green;margin:6px;padding:5px;height:34px">已经添加管理员:</div>
+<div class="content-head" style="position:absolute;margin-top:10px;margin-left:6px">
+  <div class="finder-header-wrapper" style="">
+    <table width="1024px" height="100%" border="0" cellpadding="0" cellspacing="1" bgcolor="#666">               
+      <tr bgcolor="#ddedfb">
+        <td align="center" width="15%">QQ</td>
+        <td height="20px" width="15%"align="center">群号</td>
+        <td width="20%" align="center">主题</td>
+        <td width="30%" align="center">管理员</td>
+        <td width="20%" align="center">操作</td>
+      </tr>
+    </table>
+    <table id="addedGrouplist" width="1024px" height="100%" border="0" cellpadding="0" cellspacing="1" bgcolor="#666">
+    </table>
+  </div>
+</div> 

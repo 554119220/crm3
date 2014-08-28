@@ -1,0 +1,20 @@
+{foreach from=$userlist item=val}
+<tr bgcolor="#ddedfb">
+           <td align="center" height="20px" width="5%">{$val.user_id}</td>
+           <td align="center" width="5%">{$val.user_name}</td>
+           <td align="center" width="5%">
+           {if $val.user eq 1}
+              男
+            {else}
+              女
+           {/if}    
+           </td>
+           <td align="center" width="15%">{$val.age_group}</td>
+           <td align="center" width="10%">{$val.add_time}</td>
+           <td align="center" width="10%">{$val.hme_phone}</td>
+           <td align="center" width="10%">{$val.service_time}</td>
+           <td align="center" width="5%">{$val.admin_name}</td>
+           <td align="center" width="20">{$val.logbook}</td>
+           <td align="center" width="10%"></td>
+         </tr>
+{/foreach}

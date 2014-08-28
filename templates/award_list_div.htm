@@ -1,0 +1,34 @@
+<table class="wu_table_list wu_rb_border rb_border tr_hover" cellspacing=0 cellpadding=0 border=0 width="100%">
+  <tr>
+    <th width="10%">部门</th>
+    <th width="10%">小组</th>
+    <th width="10%">姓名</th>
+    <th width="10%">销量</th>
+    <th width="10%">退货量</th>
+    <th width="10%">服务量</th>
+    <th width="10%">大单量</th>
+    <th width="10%">滞销品销量</th>
+    <th width="10%">特定产品销量</th>
+    <th width="10%">转介绍量</th>
+  </tr>
+  {if $award_list neq null}
+  {foreach from=$award_list item=val}
+  <tr>
+    <td>{$val.role_name}</td>
+    <td>{$val.group_name}</td>
+    <td>{$val.admin_name}</td>
+    <td>{$val.sales}</td>
+    <td>{$val.return_num}</td>
+    <td>{$val.service_num}</td>
+    <td>{$val.big_order_num}</td>
+    <td>{$val.dead_stock_num}</td>
+    <td>{$val.specail_goods_num}</td>
+    <td>{$val.transfer_num}</td>
+  </tr>
+  {/foreach}
+  {else}
+  <tr>
+    <td colspan=10>没有统计记录</td>
+  </tr>
+  {/if}
+</table>

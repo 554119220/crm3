@@ -1,0 +1,108 @@
+﻿<div class="x-scroll">
+  <div class="finder-title">服务记录</div>
+  <div align="left" class="tools_div" width="100%">
+    <form name="for_serverSearch" method="POST" class="pb5">
+      起始 <input name="startTime" type="text" maxlength="12" onClick="WdatePicker()"/>
+      终止 <input name="endTime" type="text" maxlength="12" onClick="WdatePicker()"> 
+      顾客 <input type="text" name="user_name" onclick="this.value='';" onblur="this.value == '' ?this.value='' : this.value=this.value;" maxlength="6"/>
+      服务类别 <select name="service_class">
+        <option value=0>不限</option>
+        {foreach from=$service_class item=val}
+        <option value="{$val.class_id}">{$val.class}</option>
+        {/foreach}
+      </select>
+      服务方式 <select name="service_manner">
+        <option value=0>不限</option>
+        {foreach from=$service_manner item=val}
+        <option value="{$val.manner_id}">{$val.manner}</option>
+        {/foreach}
+      </select>
+      <br/><br/>
+      {if $power eq 0 OR $power eq 1}顾客类型
+      <select name="user_active">
+        <option value=0>不限</option>
+        {foreach from=$user_active item=val}
+        <option value="{$val.active_id}">{$val.active_name}</option>
+        {/foreach}
+      </select>
+      {/if}
+      {if $power eq 0 OR $power eq 1}
+      <span id="admin">
+        <select name="platform" id="platform" onchange="getGroupList(this)">
+          <option value="0">请选择部门</option>
+          {foreach from=$role_list item=val}
+          <option value="{$val.role_id}">{$val.role_name}</option>
+          {/foreach}
+        </select>
+        <select name="group_id" id="group_id" onchange="getAdminList(this)">
+          <option value="0">请选择组</option>
+          {foreach from=$group_list item=val}
+          <option value="{$val.group_id}">{$val.group_name}</option>
+          {/foreach}
+        </select>
+        <select name="customer" id="admin_id">
+          <option value=-1>请选择客服</option>
+          <option value=0>不限</option>
+          {foreach from=$admin_list item=val}
+          <option value="{$val.user_id}" {if $records.admin_id eq $val.user_id}selected{/if}>{$val.user_name}</option>
+          {/foreach}
+        </select>
+      </span>
+      {/if}
+      <input type="button" class="input_submits" onclick="fullSearch()" value="搜索" />
+    </form>
+  </div>
+  <div class="content-head" id="resource">
+    <div class="finder-header-wrapper" id="records" >
+      <table border="0" cellpadding="0" cellspacing="0" class="all_table_list rb_border c_b" width="100%">
+        <tr>
+          <th width="10%">顾客姓名</th>
+          <th width="10%">服务类别</th>
+          <th width="10%">服务方式</th>
+          <th width="10%">客服</th>
+          <th width="45%">过程记录</th>
+          <th width="15%">服务时间</th>
+          {if $role_id eq 5}
+          <th>操作</th>
+          {/if}
+        </tr>
+        {foreach from=$records.service item=val}
+        <tr style="color:{if $val.show_sev eq 0}#777 !important{/if}"/>
+          <td height="20">{$val.user_name}</td>
+          <td>{$val.class}</td>
+          <td>{$val.manner}</td>
+          <td>{$val.admin_name}</td>
+          <td style="text-align:left !important;padding-left:5px; line-height:18px">{$val.logbook}</td>
+          <td>{$val.service_time}</td>
+          {if $role_id eq 5}
+          <td align="center"><a href="service.php?act=service_delete&service_id={$val.service_id}" ><img src="images/no.gif" alt="删除" title="删除"></a>
+            <a onclick="javascript:update_service({$val.service_id})" href="#" ><img src="images/edit.gif" alt="修改" title="修改"></a>
+          </td>
+          {/if}
+        </tr>
+        {/foreach}
+      </table>
+
+      <!-- 分页 -->
+      <div class="bottom_tip" width="98%">
+        <div class="tip_left">
+          共{$records.total}条记录,当前页:1-{$records.filter.page_size}条，每页显示<input type="text" name="" size="4" onkeydown="limit(this.value,event)"> &nbsp;{$records.filter.page_size}条记录&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        </div>
+        <div class="tip_center">
+          <span>
+            <a href="service.php?act={$records.filter.action}&page={$records.filter.page_pre}&page_size={$records.filter.page_size}{$condition}"><<</a>
+          </span>
+          {foreach from=$records.page_set item=val}
+          <span{if $val eq $records.filter.page} class="cur"{/if}>{if $val eq $records.filter.page}{$val}{else}<a href="service.php?act={$records.filter.action}&page={$val}&page_size={$records.filter.page_size}{$condition}">{$val}</a>{/if}</span>
+          {/foreach}
+          <span><a href="service.php?act={$records.filter.action}&page={$records.filter.page_next}&page_size={$records.filter.page_size}{$condition}">>></a></span>
+        </div>
+        <div class="tip_right">
+          总共{$records.filter.page_total} 页
+          跳转到第
+          <input type="text" name="page" size="4" onkeydown="pageTurn(this.value,{$records.filter.page_size},event,{$records.page_total})">&nbsp;页
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

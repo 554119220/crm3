@@ -1,0 +1,36 @@
+/* 员工档案  表格 */
+* {margin:0; padding:0}
+body {width:100%; overflow:hidden}
+#staff {width:740px; margin:20px auto; padding:5px 5px}
+#staff table {border:1px solid skyblue}
+#staff table tr td, #staff table tr th {border:1px solid skyblue}
+#staff table thead td {font-size:22px; font-weight:bolder; height:40px; padding-top:10px; padding-left:265px}
+#staff table thead td h6 {float:right; padding-top:20px}
+#staff tbody tr {height:25px}
+#staff tbody tr th {width:80px}
+#staff tbody tr td {width:100px; height:25px; background:#fff}
+#staff tbody tr td[rowspan='7'] {width:140px; text-align:center; font-size:14px; font-weight:bold}
+#staff input[type='text'], #staff input[type='file'] {border:0; padding:0; margin:0; height:100%; width:100%}
+#staff table tbody td input[name='stature']{background:url(../images/stature.jpg)}
+#staff select {margin:0; padding:0; width:100%; height:100%; line-height:100%}
+/*#staff input[name='sex'] {margin-top:5px}*/
+#staff label {vertical-align:baseline}
+#staff input[name='sex'] {vertical-align:bottom}
+#staff td[class='notice'] {font-size:13px; font-weight:bolder}
+
+/* datePicker */
+.datePicker {background:#fff url(../images/datePicker.gif) no-repeat right}
+
+/* 毕业证等证件上传 */
+#staff table tfoot:last-child {text-align:right}
+#staff input[type='submit'], #staff input[type='reset'] {height:28px; width:96px; font-size:14px; padding:4px; margin:5px}
+
+/* 照片 */
+#staff label[for='avator'] {padding-top:45%; pointer:cursor; height:100%; display:block}
+#staff input[name='avator'] {display:none}
+
+/* 修正 区级行政地址 的隐藏*/
+#staff #selDistricts {display:block !important}
+
+/* 优化毕业选项 */
+#staff select[name='graduater[]'] {}
