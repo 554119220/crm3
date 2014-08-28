@@ -5162,7 +5162,7 @@ function get_user_services ($user_id)
     $sql_select = 'SELECT s.user_name,s.user_id,s.logbook,s.admin_name,s.service_time,c.class,m.manner FROM '.
         $GLOBALS['ecs']->table('service').' s,'.$GLOBALS['ecs']->table('service_class').' c,'.
         $GLOBALS['ecs']->table('service_manner').' m WHERE s.service_manner=m.manner_id AND '.
-        " s.service_class=c.class_id AND s.user_id=$user_id ORDER BY s.service_time DESC LIMIT 0,7";
+        " s.service_class=c.class_id AND s.user_id=$user_id ORDER BY s.service_time DESC";
 
     $res = $GLOBALS['db']->getAll($sql_select);
 

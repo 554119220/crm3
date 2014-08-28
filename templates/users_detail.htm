@@ -586,7 +586,7 @@
           终止:&nbsp;<input id="endTime" type="text" onClick="WdatePicker()"/> 
           <input type="button" onclick="searchService(1)" class="b_submit" value="搜索">
         </form>
-        <div id="service" sytle="display:block">
+        <div id="service" sytle="display:block;overflow:scroll">
           {foreach from=$service item=val}
           <p align="left"> 
           【{$val.service_time}】
