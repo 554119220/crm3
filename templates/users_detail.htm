@@ -586,7 +586,7 @@
           终止:&nbsp;<input id="endTime" type="text" onClick="WdatePicker()"/> 
           <input type="button" onclick="searchService(1)" class="b_submit" value="搜索">
         </form>
-        <div id="service" sytle="display:block;overflow:scroll">
+        <div id="service" style="display:block;height:240px;overflow-y:scroll">
           {foreach from=$service item=val}
           <p align="left"> 
           【{$val.service_time}】
@@ -603,254 +603,197 @@
         </div>
       </div>
 
-        <!--资金管理-->
-        <div id="user_account_manager" class="hide">
-          <span style="float:left;margin-bottom:5px">
-            <input type="button" value="充值" class="b_submit" onclick="changeAccountTap('account_deposit')"/>
-            <input type="button" value="提现" class="b_submit" onclick="changeAccountTap('account_raply')"/>
-            <input type="button" value="调节会员帐号" class="b_submit" onclick="changeAccountTap('alert_account_info')" />
-            <input type="button" value="查看账号明细" class="b_submit" onclick="changeAccountTap('account_detail')"/>
-            <input type="button" value="查看申请记录" class="b_submit" onclick="changeAccountTap('account_log')"/>
-          </span>
-          <div id="account_surplus">
-            {if $action eq "account_log"}
-            <div id="account_log">
-              <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
-                <tr align="center">
-                  <th width="20%">{$lang.process_time}</th>
-                  <th width="15%">{$lang.surplus_pro_type}</th>
-                  <th width="20%">{$lang.money}</th>
-                  <th width="15%">{$lang.process_notic}</th>
-                  <th width="15%">{$lang.admin_notic}</th>
-                  <th width="15%">{$lang.is_paid}</th>
+      <!--资金管理-->
+      <div id="user_account_manager" class="hide">
+        <span style="float:left;margin-bottom:5px">
+          <input type="button" value="充值" class="b_submit" onclick="changeAccountTap('account_deposit')"/>
+          <input type="button" value="提现" class="b_submit" onclick="changeAccountTap('account_raply')"/>
+          <input type="button" value="调节会员帐号" class="b_submit" onclick="changeAccountTap('alert_account_info')" />
+          <input type="button" value="查看账号明细" class="b_submit" onclick="changeAccountTap('account_detail')"/>
+          <input type="button" value="查看申请记录" class="b_submit" onclick="changeAccountTap('account_log')"/>
+        </span>
+        <div id="account_surplus">
+          {if $action eq "account_log"}
+          <div id="account_log">
+            <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
+              <tr align="center">
+                <th width="20%">{$lang.process_time}</th>
+                <th width="15%">{$lang.surplus_pro_type}</th>
+                <th width="20%">{$lang.money}</th>
+                <th width="15%">{$lang.process_notic}</th>
+                <th width="15%">{$lang.admin_notic}</th>
+                <th width="15%">{$lang.is_paid}</th>
+              </tr>
+              {foreach from=$account_log item=item}
+              <tr>
+                <td>{$item.add_time}</td>
+                <td>{$item.type}</td>
+                <td>{$item.amount}</td>
+                <td>{$item.short_user_note}</td>
+                <td>{$item.short_admin_note}</td>
+                <td>{$item.pay_status}</td>
+              </tr>
+              {/foreach}
+              <tr>
+                <td colspan="7" style="text-align:right;background:#FFF">{$lang.current_surplus}{$surplus_amount}</td>
+              </tr>
+            </table>
+            {/if}
+            <span style="float:right;text-align:right;color:#006bd0">
+              <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
+            </span>
+          </div>
+
+          <!--充值--> 
+          <div id="account_deposit" style="display:none" class="backgroud_div">
+            <form name="formSurplus">
+              <table width="750" cellpadding="0" cellspacing="0" id="new_apply_form">
+                <tr height="46px"><td align="right">类型 ：</td>
+                  <td border="0" align="left">
+                    <label style="display:inline;margin-right:15px"><input type="radio" name="surplus_type" value="0" checked/>充值</label>
+                    <label style="display:inline"><input type="radio" name="surplus_type" value="1">提现</label>
+                  </td>
+                  <td border="0" align="right">金额 ：</td>
+                  <td border="0" align="left"><input type="text" maxlength="6" name="amount"></td>
+                  <td border="0" align="center">支付方式 ：</td>
+                  <td border="0" align="left">
+                    <select id="payment">
+                      {foreach from=$surplus_payment item=val}
+                      <option value="{$val.pay_id}">{$val.pay_name}</option>
+                      {/foreach}
+                    </select>
+                  </td>
                 </tr>
-                {foreach from=$account_log item=item}
-                <tr>
-                  <td>{$item.add_time}</td>
-                  <td>{$item.type}</td>
-                  <td>{$item.amount}</td>
-                  <td>{$item.short_user_note}</td>
-                  <td>{$item.short_admin_note}</td>
-                  <td>{$item.pay_status}</td>
+                <tr height="46px">
+                  <td border="0" align="right">会员描述 ：</td>
+                  <td border="0" align="left" colspan="5">
+                    <textarea name="user_note" style="resize:none;padding:5px;" cols="72" rows="3" ></textarea>
+                  </td>
                 </tr>
-                {/foreach}
-                <tr>
-                  <td colspan="7" style="text-align:right;background:#FFF">{$lang.current_surplus}{$surplus_amount}</td>
+                <tr height="46px">
+                  <td colspan="6" align="rgiht">
+                    <input type="button" class="input_submit" style="float:right" value="确定" id="btn_submitSurplus" onClick="submitSurplus()"/>
+                    <input type="hidden" name="user_id" value="{$user.user_id}" />
+                  </td>
                 </tr>
               </table>
-              {/if}
-              <span style="float:right;text-align:right;color:#006bd0">
-                <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
-              </span>
-            </div>
+            </form>
+          </div>
 
-            <!--充值--> 
-            <div id="account_deposit" style="display:none" class="backgroud_div">
-              <form name="formSurplus">
-                <table width="750" cellpadding="0" cellspacing="0" id="new_apply_form">
-                  <tr height="46px"><td align="right">类型 ：</td>
-                    <td border="0" align="left">
-                      <label style="display:inline;margin-right:15px"><input type="radio" name="surplus_type" value="0" checked/>充值</label>
-                      <label style="display:inline"><input type="radio" name="surplus_type" value="1">提现</label>
-                    </td>
-                    <td border="0" align="right">金额 ：</td>
-                    <td border="0" align="left"><input type="text" maxlength="6" name="amount"></td>
-                    <td border="0" align="center">支付方式 ：</td>
-                    <td border="0" align="left">
-                      <select id="payment">
-                        {foreach from=$surplus_payment item=val}
-                        <option value="{$val.pay_id}">{$val.pay_name}</option>
-                        {/foreach}
-                      </select>
-                    </td>
-                  </tr>
-                  <tr height="46px">
-                    <td border="0" align="right">会员描述 ：</td>
-                    <td border="0" align="left" colspan="5">
-                      <textarea name="user_note" style="resize:none;padding:5px;" cols="72" rows="3" ></textarea>
-                    </td>
-                  </tr>
-                  <tr height="46px">
-                    <td colspan="6" align="rgiht">
-                      <input type="button" class="input_submit" style="float:right" value="确定" id="btn_submitSurplus" onClick="submitSurplus()"/>
-                      <input type="hidden" name="user_id" value="{$user.user_id}" />
-                    </td>
-                  </tr>
-                </table>
-              </form>
-            </div>
-
-            <!--提现-->
-            <div id="account_raply" style="display:none" class="backgroud_div">
-              功能尚未开放
-            </div>
-            <!--调节帐号-->
-            <div id="alert_account_info" style="display:none" class="backgroud_div">
-              <form name="modify_account_form">
-                <input type="hidden" value="{$user.user_id}" name="user_id" />
-                <table width="100%" cellpadding="0" cellspacing="0" class="table_form" width="100%">
-                  <tr height="46px">
-                    <td align="right">帐号变动原因 ：</td>
-                    <td align="left" colspan="3">
-                      <textarea name="change_desc" style="resize:none;padding:5px;margin-top:10px;" cols="72" rows="3" ></textarea>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="right" style="display:none">可用资金 ：</td>
-                    <td align="left" style="display:none">
-                      <select name="add_sub_user_money" style="width:100px">
-                        <option value="1" selected>增加</option>
-                        <option value="-1" >减少</option>
-                      </select>
-                      <input name="user_money" type="text" style="display:none"/>
-                      {$user_account_info.formated_user_money}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="right">等级：</td>
-                    <td align="left">
-                      <select name="user_rank" style="width:100px">
-                        {foreach from=$user_rank item=val}
-                        <option value="{$val.rank_id}" {if $val.rank_id eq $user.user_rank}selected{/if}>{$val.rank_name}</option>
-                        {/foreach}
-                      </select>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="right" style="display:none">等级积分：</td>
-                    <td align="left" style="display:none">
-                      <select style="display:none" name="add_sub_rank_points" style="width:100px">
-                        <option value="1">增加</option>
-                        <option value="-1">减少</option>
-                      </select>
-                      <input style="display:none" name="rank_points" type="text" />
-                      {$user_account_info.rank_points}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="display:none" align="right">消费积分：</td>
-                    <td  style="display:none" align="left">
-                      <select name="add_sub_pay_points" style="width:100px">
-                        <option value="1">增加</option>
-                        <option value="-1">减少</option>
-                      </select>
-                      <input name="pay_points" type="text" />
-                      {$user_account_info.pay_points}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="2"><input type="button" value="确认" style="float:right;margin-right:5px" class="input_submit" onclick="modifyAccountInfo()" /></td> 
-                  </tr>
-                </table>
-              </form>
-            </div>
-
-            <!--查看帐号明细-->
-            <div id="account_detail" style="display:none">
-              <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
-                <tr align="center">
-                  <th>{$lang.process_time}</th>
-                  <th>{$lang.surplus_pro_type}</th>
-                  <th>{$lang.money}</th>
-                  <th>{$lang.change_desc}</th>
+          <!--提现-->
+          <div id="account_raply" style="display:none" class="backgroud_div">
+            功能尚未开放
+          </div>
+          <!--调节帐号-->
+          <div id="alert_account_info" style="display:none" class="backgroud_div">
+            <form name="modify_account_form">
+              <input type="hidden" value="{$user.user_id}" name="user_id" />
+              <table width="100%" cellpadding="0" cellspacing="0" class="table_form" width="100%">
+                <tr height="46px">
+                  <td align="right">帐号变动原因 ：</td>
+                  <td align="left" colspan="3">
+                    <textarea name="change_desc" style="resize:none;padding:5px;margin-top:10px;" cols="72" rows="3" ></textarea>
+                  </td>
                 </tr>
-                {foreach from=$account_detail item=item}
                 <tr>
-                  <td align="center">{$item.change_time}</td>
-                  <td align="center">{$item.type}</td>
-                  <td align="center">{$item.user_money}</td>
-                  <td title="{$item.change_desc}">&nbsp;&nbsp;{$item.short_change_desc}</td>
+                  <td align="right" style="display:none">可用资金 ：</td>
+                  <td align="left" style="display:none">
+                    <select name="add_sub_user_money" style="width:100px">
+                      <option value="1" selected>增加</option>
+                      <option value="-1" >减少</option>
+                    </select>
+                    <input name="user_money" type="text" style="display:none"/>
+                    {$user_account_info.formated_user_money}
+                  </td>
                 </tr>
-                {/foreach}
                 <tr>
-                  <td style="text-align:right" colspan="4" align="right" bgcolor="#ffffff"><span>{$lang.current_surplus}{$surplus_amount}</span></td>
+                  <td align="right">等级：</td>
+                  <td align="left">
+                    <select name="user_rank" style="width:100px">
+                      {foreach from=$user_rank item=val}
+                      <option value="{$val.rank_id}" {if $val.rank_id eq $user.user_rank}selected{/if}>{$val.rank_name}</option>
+                      {/foreach}
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" style="display:none">等级积分：</td>
+                  <td align="left" style="display:none">
+                    <select style="display:none" name="add_sub_rank_points" style="width:100px">
+                      <option value="1">增加</option>
+                      <option value="-1">减少</option>
+                    </select>
+                    <input style="display:none" name="rank_points" type="text" />
+                    {$user_account_info.rank_points}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="display:none" align="right">消费积分：</td>
+                  <td  style="display:none" align="left">
+                    <select name="add_sub_pay_points" style="width:100px">
+                      <option value="1">增加</option>
+                      <option value="-1">减少</option>
+                    </select>
+                    <input name="pay_points" type="text" />
+                    {$user_account_info.pay_points}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2"><input type="button" value="确认" style="float:right;margin-right:5px" class="input_submit" onclick="modifyAccountInfo()" /></td> 
                 </tr>
               </table>
-              <span style="float:right;text-align:right;color:#006bd0">
-                <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
-              </span>
-            </div>
+            </form>
           </div>
-        </div>
 
-        <!--朋友圈-->
-        <div id="user_friends" class="hide">
-          <div style="margin-bottom:3px">
-            {if $user_friends.friends_total neq 0}
-            以下是他的<font color="#FF9224">{$user_friends.friends_total}</font>个朋友：
-            {/if}
+          <!--查看帐号明细-->
+          <div id="account_detail" style="display:none">
+            <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
+              <tr align="center">
+                <th>{$lang.process_time}</th>
+                <th>{$lang.surplus_pro_type}</th>
+                <th>{$lang.money}</th>
+                <th>{$lang.change_desc}</th>
+              </tr>
+              {foreach from=$account_detail item=item}
+              <tr>
+                <td align="center">{$item.change_time}</td>
+                <td align="center">{$item.type}</td>
+                <td align="center">{$item.user_money}</td>
+                <td title="{$item.change_desc}">&nbsp;&nbsp;{$item.short_change_desc}</td>
+              </tr>
+              {/foreach}
+              <tr>
+                <td style="text-align:right" colspan="4" align="right" bgcolor="#ffffff"><span>{$lang.current_surplus}{$surplus_amount}</span></td>
+              </tr>
+            </table>
+            <span style="float:right;text-align:right;color:#006bd0">
+              <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
+            </span>
           </div>
-          <table class="wu_table_list rb_border tr_hover wu_rb_border" cellspacing="0" cellpadding="0" width="100%" id="table_family_user">
-            <tr>
-              <th width="10%">姓名</th>
-              <th width="10%">健康档案</th>
-              <th width="20%">联系方式</th>
-              <th width="10%">添加时间</th>
-              <th width="30%">操作</th>
-            </tr>
-            {if $user_friends.user_friends neq null}
-            {foreach from=$user_friends.user_friends item=val}
-            <tr>
-              <td>
-                <label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{if $val.first eq 1} <img src="images/yes.gif" />{/if}{$val.user_name}
-                </label>
-              </td>
-              <td>
-                {if $val.healthy_file eq 0}
-                &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})">健康档案</label>
-                {else}
-                &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="cheHealthy({$val.user_id})">健康档案</label>
-                {/if}
-              </td>
-              <td>{$val.mobile_phone}<font size="4" color="red">|</font></td>
-              <td>{$val.add_time}</td>
-              <td>
-                {if $val.first eq 1}
-                <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">删除介绍人</label></td>
-              {else}
-              <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">移出朋友圈</label></td>
-            {/if}
-          </tr>
-          {/foreach}
-          {else}
-          <td colspan="6" align="center">暂时没有添加朋友</td>
-          {/if}
-        </table>
-        <div style="text-align:right;margin-top:5px">
-          <form name="form_sch_family" style="margin-bottom:5px">
-            继续添加朋友：
-            <input id="friend_phone" maxlength="11" placeholder="联系电话"/>
-            <input type="button" class="b_submit" onclick="schForFamily(1)" value="搜 索" />
-          </form>
         </div>
       </div>
 
-      <!--家庭成员管理-->
-      <div id="user_family" class="hide">
+      <!--朋友圈-->
+      <div id="user_friends" class="hide">
         <div style="margin-bottom:3px">
-          {if $family.family_total eq 0}
-          <font color="red">
-            暂时没有家庭成员，请添加！
-          </font>
-          {else}
-          {$family.family_name},以下是他的<font color="#FF9224">{$family.family_total}</font>个成员：
+          {if $user_friends.friends_total neq 0}
+          以下是他的<font color="#FF9224">{$user_friends.friends_total}</font>个朋友：
           {/if}
         </div>
         <table class="wu_table_list rb_border tr_hover wu_rb_border" cellspacing="0" cellpadding="0" width="100%" id="table_family_user">
           <tr>
-            <th width="15%">辈份</th>
             <th width="10%">姓名</th>
             <th width="10%">健康档案</th>
             <th width="20%">联系方式</th>
             <th width="10%">添加时间</th>
             <th width="30%">操作</th>
           </tr>
-          {if $family_users neq null}
-          {foreach from=$family_users item=val}
+          {if $user_friends.user_friends neq null}
+          {foreach from=$user_friends.user_friends item=val}
           <tr>
-            <td id="parent_{$val.user_id}">{if $val.grade_id eq 99}<font color="#007500">{$val.grade_name}</font>{else}
-              {$val.grade_name}{/if}{if $val.real_parent eq 1}<font color="#3367AC">【家长】</font>{/if}</td>
-            <td><label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{$val.user_name}</label>
+            <td>
+              <label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{if $val.first eq 1} <img src="images/yes.gif" />{/if}{$val.user_name}
+              </label>
             </td>
             <td>
               {if $val.healthy_file eq 0}
@@ -860,47 +803,104 @@
               {/if}
             </td>
             <td>{$val.mobile_phone}<font size="4" color="red">|</font></td>
-            <td>{$val.input_time}</td>
-            <td style="text-align:left">
-              {if $val.grade_id neq 99}
-              &nbsp;&nbsp;<label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFamilyUser({$val.user_id},'{$val.user_name}')">移出家庭</label>
-              {/if}
-              {if $val.real_parent eq 1}
-              &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#3367ac" onclick="setRealParent({$val.user_id},'{$val.grade_name}','del')">取消家长</label></span>
-              {else}
-              &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#777" onclick="setRealParent({$val.user_id},'{$val.grade_name}','upd')">设为家长</label></span>
-              {/if}
-            </td>
-          </tr>
-          {/foreach}
-          {else}
-          <td colspan="6" align="center">暂时没有添加家长成员</td>
+            <td>{$val.add_time}</td>
+            <td>
+              {if $val.first eq 1}
+              <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">删除介绍人</label></td>
+            {else}
+            <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">移出朋友圈</label></td>
           {/if}
-        </table>
-        <div style="text-align:right;margin-top:5px">
-          <form name="form_sch_family" style="margin-bottom:5px">
-            继续添加家庭成员：
-            <input id="family_phone" maxlength="11" placeholder="联系电话"/>
-            <input type="button" class="b_submit" onclick="schForFamily(0)" value="搜 索" />
-          </form>
-        </div>
-      </div>
-
-      <!-- 健康档案 -->
-      <div id="healthy_archive" class="hide">
-        {if $isexistHF neq 1}
-        <center>
-          <input type="button" class="input_submit" value="新建健康档案" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})"/>
-        </center>
+        </tr>
+        {/foreach}
         {else}
-        <!-- 顾客基本信息 -->
-        {$healthy_lifestyle}
-        <br />
+        <td colspan="6" align="center">暂时没有添加朋友</td>
+        {/if}
+      </table>
+      <div style="text-align:right;margin-top:5px">
+        <form name="form_sch_family" style="margin-bottom:5px">
+          继续添加朋友：
+          <input id="friend_phone" maxlength="11" placeholder="联系电话"/>
+          <input type="button" class="b_submit" onclick="schForFamily(1)" value="搜 索" />
+        </form>
+      </div>
+    </div>
+
+    <!--家庭成员管理-->
+    <div id="user_family" class="hide">
+      <div style="margin-bottom:3px">
+        {if $family.family_total eq 0}
+        <font color="red">
+          暂时没有家庭成员，请添加！
+        </font>
+        {else}
+        {$family.family_name},以下是他的<font color="#FF9224">{$family.family_total}</font>个成员：
         {/if}
       </div>
-
-      <input type="hidden" value="users.php" id="URI"/>
-      <input type="hidden" value="user_id" id="field"/>
-      <input type="hidden" value="{$user.user_id}" id="ID"/>
+      <table class="wu_table_list rb_border tr_hover wu_rb_border" cellspacing="0" cellpadding="0" width="100%" id="table_family_user">
+        <tr>
+          <th width="15%">辈份</th>
+          <th width="10%">姓名</th>
+          <th width="10%">健康档案</th>
+          <th width="20%">联系方式</th>
+          <th width="10%">添加时间</th>
+          <th width="30%">操作</th>
+        </tr>
+        {if $family_users neq null}
+        {foreach from=$family_users item=val}
+        <tr>
+          <td id="parent_{$val.user_id}">{if $val.grade_id eq 99}<font color="#007500">{$val.grade_name}</font>{else}
+            {$val.grade_name}{/if}{if $val.real_parent eq 1}<font color="#3367AC">【家长】</font>{/if}</td>
+          <td><label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{$val.user_name}</label>
+          </td>
+          <td>
+            {if $val.healthy_file eq 0}
+            &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})">健康档案</label>
+            {else}
+            &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="cheHealthy({$val.user_id})">健康档案</label>
+            {/if}
+          </td>
+          <td>{$val.mobile_phone}<font size="4" color="red">|</font></td>
+          <td>{$val.input_time}</td>
+          <td style="text-align:left">
+            {if $val.grade_id neq 99}
+            &nbsp;&nbsp;<label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFamilyUser({$val.user_id},'{$val.user_name}')">移出家庭</label>
+            {/if}
+            {if $val.real_parent eq 1}
+            &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#3367ac" onclick="setRealParent({$val.user_id},'{$val.grade_name}','del')">取消家长</label></span>
+            {else}
+            &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#777" onclick="setRealParent({$val.user_id},'{$val.grade_name}','upd')">设为家长</label></span>
+            {/if}
+          </td>
+        </tr>
+        {/foreach}
+        {else}
+        <td colspan="6" align="center">暂时没有添加家长成员</td>
+        {/if}
+      </table>
+      <div style="text-align:right;margin-top:5px">
+        <form name="form_sch_family" style="margin-bottom:5px">
+          继续添加家庭成员：
+          <input id="family_phone" maxlength="11" placeholder="联系电话"/>
+          <input type="button" class="b_submit" onclick="schForFamily(0)" value="搜 索" />
+        </form>
+      </div>
     </div>
+
+    <!-- 健康档案 -->
+    <div id="healthy_archive" class="hide">
+      {if $isexistHF neq 1}
+      <center>
+        <input type="button" class="input_submit" value="新建健康档案" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})"/>
+      </center>
+      {else}
+      <!-- 顾客基本信息 -->
+      {$healthy_lifestyle}
+      <br />
+      {/if}
+    </div>
+
+    <input type="hidden" value="users.php" id="URI"/>
+    <input type="hidden" value="user_id" id="field"/>
+    <input type="hidden" value="{$user.user_id}" id="ID"/>
   </div>
+</div>
