@@ -20,873 +20,886 @@
   </div>
   <!--导航样式 end-->
 
-    <div class="box_center user_list_info">
-        <!-- 顾客基本信息 -->
-        <div id="general" class="show">
-            <table cellspacing="0" cellpadding="0" border="0">
-                <tr>
-                    <th align="right"><font color="red">*</font>姓名 ：</th>
-                    <td width="160">{$user.user_name}<button value="users.php?act=edit&info=user_name&id={$user.user_id}&type=text" title="修改姓名" onclick="sendEditInfo(this)"></button></td>
-                    <th align="right">出生日期：</th>
-                    <td width="160">
-                        {$user.birthday}<button value="users.php?act=edit&info=birthday&id={$user.user_id}&type=text" title="出生日期" onclick="sendEditInfo(this)"></button>
-                    </td>
-                    <th align="right">电话：</th>
-                    <td>{$user.home_phone}<button value="users.php?act=edit&info=home_phone&id={$user.user_id}&type=text" title="修改固话" onclick="sendEditInfo(this)"></button></td>
-                </tr>
-                <tr>
-                    <th align="right">身份证：</th>
-                    <td width="160">{$user.id_card}<button value="users.php?act=edit&info=id_card&id={$user.user_id}&type=text" title="出生日期" onclick="sendEditInfo(this)"></button></td>
-                    <th align="right"><font color="red">*</font>性别：</th>
-                    <td class="w70">{if $user.sex eq 1}男{elseif $user.sex eq 2}女{elseif $user.sex eq 0}不详{/if}<button value="users.php?act=edit&info=sex&id={$user.user_id}&type=radio" title="修改性别" onclick="sendEditInfo(this)"></button></td>
-                    <th align="right">手机：</th>
-                    <td>{$user.mobile_phone}<button value="users.php?act=edit&info=mobile_phone&id={$user.user_id}&type=text" title="修改手机" onclick="sendEditInfo(this)"></button></td>
-                </tr>
-                <tr>
-                    <th>会员等级：</th>
-                    <td>{$user.rank_name}{if $user.card_number}：{$user.card_number}{/if}</td>
-                    <th>已有积分：</th>
-                    <td>{$user.rank_points}</td>
-                    <th>阿里旺旺：</th>
-                    <td>{if $user.aliww}<a target="_blank" href="http://www.taobao.com/webww/ww.php?ver=3&touid={$user.aliww}&siteid=cntaobao&status=2&charset=utf-8" title="{$user.aliww}"><img border="0" src="http://amos.alicdn.com/realonline.aw?v=2&uid={$user.aliww}&site=cntaobao&s=2&charset=utf-8" alt="{$user.aliww}" /></a>{/if}{$user.aliww}<button value="users.php?act=edit&info=aliww&id={$user.user_id}&type=text" title="修改旺旺" onclick="sendEditInfo(this)"></button></td>
-                </tr>
-                <tr>
-                    <th>顾客类型：</th>
-                    <td>{$user.customer_type}<button value="users.php?act=edit&info=customer_type&id={$user.user_id}&type=select" title="修改顾客类型" onclick="sendEditInfo(this)"></button></td>
-                    <th align="right">经济来源：</th>
-                    <td>{$user.income}<button value="users.php?act=edit&info=income&id={$user.user_id}&type=select" title="修改经济来源" onclick="sendEditInfo(this)"></button></td>
-                    <th> QQ： </th>
-                    <td>{if $user.qq}<a href="tencent://message/?uin={$user.qq}" title="{$user.qq}" name="msg"><img alt="{$user.qq}" src="http://wpa.qq.com/pa?p=1:{$user.qq}:17"></a>{/if}{$user.qq}<button value="users.php?act=edit&info=qq&id={$user.user_id}&type=text" title="修改QQ" onclick="sendEditInfo(this)"></button></td>
-                </tr>
-                <tr>
-                    <th align="right">需求：</th>
-                    <td>{$user.eff_name}<button value="users.php?act=edit&info=eff_id&id={$user.user_id}&type=select" title="修改需求" onclick="sendEditInfo(this)"></button></td>
-                    <!--th> 销售平台 ：</th>
-                <td>{$user.platform}<button value="users.php?act=edit&info=role_id&id={$user.user_id}&type=select" title="修改平台" onclick="sendEditInfo(this)"></button>
-                    </td-->
-                    <th>顾客来源：</th>
-                    <td>{$user.from_where}<button value="users.php?act=edit&info=from_where&id={$user.user_id}&type=select" title="修改顾客来源" onclick="sendEditInfo(this)"></button></td>
-                    <th> E-mail：</th>
-                    <td>{$user.email}<button value="users.php?act=edit&info=email&id={$user.user_id}&type=text" title="修改邮箱" onclick="sendEditInfo(this)"></button></td>
-                </tr>
-                <tr>
-                    <th>地址：</th>
-                    <td colspan="3">
-                        <span>{$user.province}{$user.city}{$user.district}<button value="users.php?act=edit&info=district&id={$user.user_id}&type=select" title="修改地址" onclick="sendEditInfo(this)"></button></span>
-                        <span>{$user.address}<button value="users.php?act=edit&info=address&id={$user.user_id}&type=text" title="修改地址" onclick="sendEditInfo(this)"></button></span>
-                    </td>
-                    <th> 微信：</th>
-                    <td>{$user.wechat}<button value="users.php?act=edit&info=wechat&id={$user.user_id}&type=text" title="修改微信" onclick="sendEditInfo(this)"></button></td>
-                </tr>
-                <tr>
-                    <th>能接受的&nbsp;<br/>沟通方式&nbsp;</th>
-                    <td colspan="3" id="marketing">
-                        {$marketing_checked_list}
-                        <button value="users.php?act=edit&info=marketing&id={$user.user_id}&type=checkbox" title="修改优先联系方式" onclick="sendEditInfo(this)"></button>
-                    </td>
-                    <th>介绍人 ：</th>
-                    <td><a href="javascript:;" target="_blank" onclick="referralsDetail({$user.referrals_id});">{$user.referrals}</a></td>
-                </tr>
-                <!--tr>
-                <th>备注：</th>
-                <td colspan="5">{$user.remarks}<button value="users.php?act=edit&info=remarks&id={$user.user_id}&type=text" title="修改备注" onclick="sendEditInfo(this)"></button></td>
+  <div class="box_center user_list_info">
+    <!-- 顾客基本信息 -->
+    <div id="general" class="show">
+      <table cellspacing="0" cellpadding="0" border="0">
+        <tr>
+          <th align="right"><font color="red">*</font>姓名 ：</th>
+          <td width="160">{$user.user_name}<button value="users.php?act=edit&info=user_name&id={$user.user_id}&type=text" title="修改姓名" onclick="sendEditInfo(this)"></button></td>
+          <th align="right">出生日期：</th>
+          <td width="160">
+            {$user.birthday}<button value="users.php?act=edit&info=birthday&id={$user.user_id}&type=text" title="出生日期" onclick="sendEditInfo(this)"></button>
+          </td>
+          <th align="right">电话：</th>
+          <td>{$user.home_phone}<button value="users.php?act=edit&info=home_phone&id={$user.user_id}&type=text" title="修改固话" onclick="sendEditInfo(this)"></button></td>
+        </tr>
+        <tr>
+          <th align="right">身份证：</th>
+          <td width="160">{$user.id_card}<button value="users.php?act=edit&info=id_card&id={$user.user_id}&type=text" title="出生日期" onclick="sendEditInfo(this)"></button></td>
+          <th align="right"><font color="red">*</font>性别：</th>
+          <td class="w70">{if $user.sex eq 1}男{elseif $user.sex eq 2}女{elseif $user.sex eq 0}不详{/if}<button value="users.php?act=edit&info=sex&id={$user.user_id}&type=radio" title="修改性别" onclick="sendEditInfo(this)"></button></td>
+          <th align="right">手机：</th>
+          <td>{$user.mobile_phone}<button value="users.php?act=edit&info=mobile_phone&id={$user.user_id}&type=text" title="修改手机" onclick="sendEditInfo(this)"></button></td>
+        </tr>
+        <tr>
+          <th>会员等级：</th>
+          <td>{$user.rank_name}{if $user.card_number}：{$user.card_number}{/if}</td>
+          <th>已有积分：</th>
+          <td>{$user.rank_points}</td>
+          <th>阿里旺旺：</th>
+          <td>{if $user.aliww}<a target="_blank" href="http://www.taobao.com/webww/ww.php?ver=3&touid={$user.aliww}&siteid=cntaobao&status=2&charset=utf-8" title="{$user.aliww}"><img border="0" src="http://amos.alicdn.com/realonline.aw?v=2&uid={$user.aliww}&site=cntaobao&s=2&charset=utf-8" alt="{$user.aliww}" /></a>{/if}{$user.aliww}<button value="users.php?act=edit&info=aliww&id={$user.user_id}&type=text" title="修改旺旺" onclick="sendEditInfo(this)"></button></td>
+        </tr>
+        <tr>
+          <th>顾客类型：</th>
+          <td>{$user.customer_type}<button value="users.php?act=edit&info=customer_type&id={$user.user_id}&type=select" title="修改顾客类型" onclick="sendEditInfo(this)"></button></td>
+          <th align="right">经济来源：</th>
+          <td>{$user.income}<button value="users.php?act=edit&info=income&id={$user.user_id}&type=select" title="修改经济来源" onclick="sendEditInfo(this)"></button></td>
+          <th> QQ： </th>
+          <td>{if $user.qq}<a href="tencent://message/?uin={$user.qq}" title="{$user.qq}" name="msg"><img alt="{$user.qq}" src="http://wpa.qq.com/pa?p=1:{$user.qq}:17"></a>{/if}{$user.qq}<button value="users.php?act=edit&info=qq&id={$user.user_id}&type=text" title="修改QQ" onclick="sendEditInfo(this)"></button></td>
+        </tr>
+        <tr>
+          <th align="right">需求：</th>
+          <td>{$user.eff_name}<button value="users.php?act=edit&info=eff_id&id={$user.user_id}&type=select" title="修改需求" onclick="sendEditInfo(this)"></button></td>
+          <!--th> 销售平台 ：</th>
+        <td>{$user.platform}<button value="users.php?act=edit&info=role_id&id={$user.user_id}&type=select" title="修改平台" onclick="sendEditInfo(this)"></button>
+          </td-->
+          <th>顾客来源：</th>
+          <td>{$user.from_where}<button value="users.php?act=edit&info=from_where&id={$user.user_id}&type=select" title="修改顾客来源" onclick="sendEditInfo(this)"></button></td>
+          <th> E-mail：</th>
+          <td>{$user.email}<button value="users.php?act=edit&info=email&id={$user.user_id}&type=text" title="修改邮箱" onclick="sendEditInfo(this)"></button></td>
+        </tr>
+        <tr>
+          <th>地址：</th>
+          <td colspan="3">
+            <span>{$user.province}{$user.city}{$user.district}<button value="users.php?act=edit&info=district&id={$user.user_id}&type=select" title="修改地址" onclick="sendEditInfo(this)"></button></span>
+            <span>{$user.address}<button value="users.php?act=edit&info=address&id={$user.user_id}&type=text" title="修改地址" onclick="sendEditInfo(this)"></button></span>
+          </td>
+          <th> 微信：</th>
+          <td>{$user.wechat}<button value="users.php?act=edit&info=wechat&id={$user.user_id}&type=text" title="修改微信" onclick="sendEditInfo(this)"></button></td>
+        </tr>
+        <tr>
+          <th>能接受的&nbsp;<br/>沟通方式&nbsp;</th>
+          <td colspan="3" id="marketing">
+            {$marketing_checked_list}
+            <button value="users.php?act=edit&info=marketing&id={$user.user_id}&type=checkbox" title="修改优先联系方式" onclick="sendEditInfo(this)"></button>
+          </td>
+          <th>介绍人 ：</th>
+          <td><a href="javascript:;" target="_blank" onclick="referralsDetail({$user.referrals_id});">{$user.referrals}</a></td>
+        </tr>
+        <!--tr>
+        <th>备注：</th>
+        <td colspan="5">{$user.remarks}<button value="users.php?act=edit&info=remarks&id={$user.user_id}&type=text" title="修改备注" onclick="sendEditInfo(this)"></button></td>
 
-                </tr-->
-            </table>
-            <div class="user-handover">
-                顾客移交：
-                <select id="given_to">
-                    <option value="0">选择客服</option>
-                    {if in_array($role_id, array(9,27,28))}
-                    <option value="74">会员部临时账户</option>
-                    {else}
-                    {foreach from=$admin_list item=val}
-                    <option value="{$val.user_id}">{$val.user_name}</option>
-                    {/foreach}
-                    {/if}
-                </select>
-                <input type="submit" value="确定转移" class="b_submit" onclick="userGivenTo(1)">
-                <input type="button" value="拉进黑名单" class='b_submit blacklist' onclick="putInBlacklist({$user.user_id},'{$user.user_name}')">
-            </div>
-        </div>
-
-        <div id="contact" class="hide">
-            <form name="contactInfo" onsubmit="return saveContactInfo()">
-                <table border="0" style="float:left">
-                    <tbody>
-                        <th> </th>
-                        <td>
-                            <select name="contact_name" onchange="replaceToAddr(this)">
-                                <option value="mobile">手机</option>
-                                <option value="tel">电话</option>
-                                <option value="aliww">阿里旺旺</option>
-                                <option value="qq">QQ</option>
-                                <option value="email">E-mail</option>
-                                <option value="wechat">微信</option>
-                                <option value="addr">地址</option>
-                            </select>
-                        </td>
-                        <td colspan="4"><input type="text" name="contact_value" size="15" value=""></td>
-                        <td><input type="submit" class="b_submit" value="添 加"></td>
-                    </tbody>
-                    <tbody>
-                        <tr id="mobileRow">
-                            <th>手机：</th>
-                            {if $contact_list.mobile}
-                            {foreach from=$contact_list.mobile item=val}
-                            <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
-                            {/foreach}
-                            {else}
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            {/if}
-                        </tr>
-                        <tr id="telRow">
-                            <th>电话：</th>
-                            {if $contact_list.tel}
-                            {foreach from=$contact_list.tel item=val}
-                            <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
-                            {/foreach}
-                            {else}
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            {/if}
-                        </tr>
-                        <tr id="wechatRow">
-                            <th> 微信：</th>
-                            {if $contact_list.wechat}
-                            {foreach from=$contact_list.wechat item=val}
-                            <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
-                            {/foreach}
-                            {else}
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            {/if}
-                        </tr>
-                        <tr id="tencentRow">
-                            <th rowspan="2"> 腾讯QQ： </th>
-                            {if $contact_list.qq}
-                            {foreach from=$contact_list.qq item=val}
-                            <td>
-                                {if $val.contact_value}
-                                <a href="tencent://message/?uin={$val}" title="{$val}" name="msg">
-                                    <img alt="{$val.contact_value}" src="http://wpa.qq.com/pa?p=1:{$val.contact_value}:17">
-                                </a>
-                                {/if}
-                            </td>
-                            {/foreach}
-                            {else}
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            {/if}
-                        </tr>
-                        <tr id="qqRow">
-                            {if $contact_list.qq}
-                            {foreach from=$contact_list.qq item=val}
-                            <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
-                            {/foreach}
-                            {else}
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            {/if}
-                        </tr>
-                        <tr id="aliwwRow">
-                            <th>阿里旺旺：</th>
-                            {if $contact_list.aliww}
-                            {foreach from=$contact_list.aliww item=val}
-                            <td>{if $val.contact_value}<a target="_blank" href="http://www.taobao.com/webww/ww.php?ver=3&touid={$val.contact_value}&siteid=cntaobao&status=2&charset=utf-8" title="{$val.contact_value}"><img border="0" src="http://amos.alicdn.com/realonline.aw?v=2&uid={$val.contact_value}&site=cntaobao&s=2&charset=utf-8" alt="{$val.contact_value}" /></a>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span>{/if}</td>
-                            {/foreach}
-                            {else}
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            {/if}
-                        </tr>
-                        <tr id="emailRow">
-                            <th> E-mail：</th>
-                            {if $contact_list.email}
-                            {foreach from=$contact_list.email item=val}
-                            <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
-                            {/foreach}
-                            {else}
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            <td> </td>
-                            {/if}
-                        </tr>
-                        {if $addr_list}
-                        {foreach from=$addr_list item=val name=addr}
-                        <tr{if $smarty.foreach.addr.first} id="addrRow"{/if}>
-                            {if $smarty.foreach.addr.first}
-                            <th>地址：</th>
-                            {else}
-                            <th> </th>
-                            {/if}
-                            <td colspan="4">
-                                {$val.addr}
-                            </td>
-                        </tr>
-                        {/foreach}
-                        {else}
-                        <tr id="addrRow">
-                            <th>地址：</th>
-                            <td colspan="4"> </td>
-                        </tr>
-                        {/if}
-                    </tbody>
-                </table>
-            </form>
-        </div>
-
-        <!-- 个性分析 -->
-        <div id="remark" class="hide">
-            <table >
-                <tr>
-                    <th>健康状况</th>
-                    <td>
-                        {foreach from=$disease item=val name=i}
-                        <label><input type="checkbox" name="disease" value="{$val.disease_id}" {if in_array($val.disease_id,$user.disease)} checked{/if} style="vertical-align:middle" onclick="addOne(this)"/> {$val.disease}</label>
-                        {/foreach}
-                    </td>
-                </tr>
-                <tr>
-                    <th>性格</th>
-                    <td>
-                        {foreach from=$characters item=val name=i}
-                        <label><input type="checkbox" name="characters" value="{$val.character_id}" {if in_array($val.character_id,$user.characters)} checked{/if} style="vertical-align:middle" onclick="addOne(this)"/>{$val.characters}</label>
-                        {if $smarty.foreach.i.iteration%10 eq 0}<br/>{/if}
-                        {/foreach}
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 购买记录 -->
-        <div id="purchase" class="hide">
-            <div>
-                <table class="purchase" cellpadding="3" cellspacing="1" style="border:1px #ccc solid !important" width="100%">
-                    <thead>
-                        <tr height="25px">
-                            <th width="15%">购买日期</th>
-                            <th width="10%">金额</th>
-                            <th>订单</th>
-                            <th>订单状态</th>
-                            <th width="10%">下单客服</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {foreach from=$order_list item=order}
-                        <tr {$order.tr}>
-                            <td valign="top">{$order.add_time}</td>
-                            <td valign="top">{if $order.final_amount eq 9.9}36.00{else}{$order.final_amount}{/if}</td>
-                            <td align="left" style="text-align:left">
-                                <details {if $order.goods_kind lt 3}open{/if}>
-                                <summary><a href="http://www.kuaidi100.com/chaxun?com={$order.shipping_code}&nu={$order.express_number}" target="_blank" style="margin-right:20px">{$order.platform}：{if $order.order_sn}{$order.order_sn}{else}{$order.shipping_name}{/if}</a>{$order.shipping_name}</summary>
-                                {foreach from=$order[goods_list] item=g}
-                                {if isset($g['goods_list'])}
-                                <details>
-                                <summary>{$g.goods_name}  {$g.goods_number}×￥{$g.goods_price}</summary>
-                                {foreach from=$g.goods_list item=o}
-                                <p><strong>{$o.goods_name}</strong><wbr>（数量：{$o.goods_number}）</p>
-                                {/foreach}
-                                </details>
-                                {else}
-                                <p>
-                                <strong>{$g.goods_name}</strong>
-                                {$g.goods_number}×￥{$g.goods_price}
-                                <lbl name="introduction" onmouseover="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="服用说明" src="images/tips_help.gif">&nbsp;&nbsp;</lbl>
-                                <lbl name="goods_knowlage" onclick="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="产品知识" src="images/book_open.gif">&nbsp;&nbsp;</lbl>
-                                <lbl name="talk_skill" onclick="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="相关话术" src="images/binocular.png">&nbsp;&nbsp;</lbl>
-                                <a href="{$g.goods_id}" ><img class="png_btn" title="购买平台" src="images/shop.png">&nbsp;&nbsp;</a>
-                                </p>
-                                {/if}
-                                {/foreach}
-                                </details>
-                            </td>
-                            <td>{$order.finaly_order_status}</td>
-                            <td>{$order.operator}</td>
-                        </tr>
-                        {/foreach}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- 积分日志 -->
-            <div style="margin:3px 3px;background:#E0E0E0;color:#333;text-align:center;padding:2px;"><b>积分日志</b></div>
-            <div id="integral_log">
-                {if $integral_log eq 0}
-                <center color="#666"><h2 color="#888">无记录</h2></center>
-                {else}
-                <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <th width="20%">项目</th>
-                        <th width="10%">改变时间</th>
-                        <th width="20%">当前状态</th>
-                        <th width="10%">当前总积分</th>
-                    </tr>
-                    {foreach from=$integral_log item=val}
-                    <tr>
-                        <td>
-                            通过{if $val.exchange_points gt 0}{if $val.integral_way eq 1}{$val.integral_title}{$val.goods_amount}元{else}{$val.integral_title}{/if}
-                            {if $val.confirm eq 0}将获得{else}获得{/if}{$val.exchange_points}积分
-                            {else}{$val.integral_title}消费{$val.exchange_points}
-                            {/if}
-                        </td>
-                        <td>{$val.receive_time}</td>
-                        <td>
-                            {if $val.confirm eq 0}未确认{else}由{$val.admin_name}于{$val.confirm_time}确认{/if}
-                        </td>
-                        <td>{$val.cur_integral}</td>
-                    </tr>
-                    {/foreach}
-                </table>
-                {/if} 
-            </div>
-        </div>
-
-        <!-- 添加新订单 -->
-        <div id="new_order" class="hide">
-            <fieldset>
-                <legend align="left">收货人</legend>
-                <form action="javascript:void(0)" name="order_info">
-                    <table cellpadding="3" cellspacing="1" border="0" class="mt10">
-                        <!--table border="1"-->
-                        <tr>
-                            <th>收货人：</th>
-                            <td><input type="text" name="consignee" value="{$user.user_name}"/></td>
-                            <td>
-                                <select name="tel">
-                                    <option value="">电话号码</option> 
-                                    {if $user.home_phone}
-                                    <option value="{$user.home_phone}">{$user.home_phone}</option>
-                                    {/if}
-                                    {foreach from=$contact_list.tel item=val}
-                                    <option>{$val.contact_value}</option>
-                                    {/foreach}
-                                </select>
-                            </td>
-                            <td>
-                                <select name="pay_id" onchange="getShipping(this)">
-                                    <option value="0">支付方式</option>
-                                    {foreach from=$payment item=val}
-                                    <option value="{$val.pay_id}">{$val.pay_name}</option>
-                                    {/foreach}
-                                </select>
-                            </td>
-                            <td rowspan="2" style="padding-top:5px">
-                                <textarea name="remarks" style="width:174px;height:65px" placeholder="订单备注"></textarea>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>订单编号：</th>
-                            <td><input type="text" name="platform_order_sn" value="" onblur="checkOrderSn(this)"/></td>
-                            <td>
-                                <select name="mobile">
-                                    <option value="">手机号码</option>
-                                    {if $user.mobile_phone}
-                                    <option value="{$user.mobile_phone}">{$user.mobile_phone}</option>
-                                    {/if}
-                                    {foreach from=$contact_list.mobile item=val}
-                                    <option>{$val.contact_value}</option>
-                                    {/foreach}
-                                </select>
-                            </td>
-                            <td>
-                                <select name="shipping_id" id="shipping_id">
-                                    <option value="0">配送方式</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th> </th>
-                            <td>
-                                <select name="team">
-                                    <option value="0">购买平台</option>
-                                    {foreach from=$platform_list item=val}
-                                    <option value="{$val.role_id}">{$val.role_name}</option>
-                                    {/foreach}
-                                    {if $user.role_id eq 23}
-                                    <option value="23">公司员工</option>
-                                    {/if}
-                                </select>
-                            </td>
-                            <td>
-                                <select name="order_type">
-                                    <option value="">订单类型</option>
-                                    {foreach from=$order_type item=val}
-                                    <option value="{$val.type_id}">{$val.type_name}</option>
-                                    {/foreach}
-                                </select>
-                            </td>
-                            <td>
-                                <select name="admin_id">
-                                    <option value="0">订单归属</option>
-                                    {foreach from=$admin_list item=val}
-                                    <option value="{$val.user_id}">{$val.user_name}</option>
-                                    {/foreach}
-                                </select>
-                            </td>
-                            <!--td>
-                            <select name="platform">
-                                <option value="0">销售平台</option>
-                                {foreach from=$platform_list item=val}
-                                <option value="{$val.role_id}">{$val.role_name}</option>
-                                {/foreach}
-                            </select>
-                            </td-->
-                            <td>
-                                <select id="addrList" onchange="changeAddr(this)" style="width:100%">
-                                    <option>地址列表</option>
-                                    {foreach from=$addr_list item=val}
-                                    <option value="{$val.addr_id}">{$val.addr}</option>
-                                    {/foreach}
-                                </select>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>收货地址：</th>
-                            <td colspan="5">
-                                <select name="province" id="selProvinces" onchange="region.changed(this,2,'selCities')">
-                                    <option value="0">{$lang.select_please}</option>
-                                    {foreach from=$province_list item=province}
-                                    <option value="{$province.region_id}" {if $province.region_id eq $user.province_id}selected{/if}>{$province.region_name}</option>
-                                    {/foreach}
-                                </select>
-                                <select name="city" id="selCities" onchange="region.changed(this,3,'selDistricts')">
-                                    <option value="0">{$lang.select_please}</option>
-                                    {foreach from=$city_list item=city}
-                                    <option value="{$city.region_id}" {if $city.region_id eq $user.city_id}selected{/if}>{$city.region_name}</option>
-                                    {/foreach}
-                                </select>
-                                <select name="district" id="selDistricts">
-                                    <option value="0">{$lang.select_please}</option>
-                                    {foreach from=$district_list item=district}
-                                    <option value="{$district.region_id}"{if $district.region_id eq $user.district_id} selected{/if}>{$district.region_name}</option>
-                                    {/foreach}
-                                </select>
-                                <input type="text" name="address" value="{$user.address}" size="45" placeholder='详细地址'/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th> </th>
-                            <td colspan="5">
-                                {foreach from=$order_source item=val}
-                                <label style="display:inline"><input type="radio" value="{$val.source_id}" name="order_source"/>{$val.source_name}
-                                {/foreach}
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-            </fieldset>
-            <fieldset>
-                <legend align="top">商品</legend>
-                <div class="o_goods_search">
-                    <form action="javascript:void(0)" name="theForm" onsubmit="return addNewGoods();">
-                        <input type="text" name="search" value="" size="20" oninput="searchGoods(this)" onblur="searchGoods(this)"/>
-                        <select name="goods_id" id="goods_id">
-                            <option value="0">请先输入要搜索的商品</option>
-                        </select>
-                        &nbsp;<b>数量：</b><input type="text" name="number" value="" required pattern="^[1-9]\d{0,}" title="商品数量必须是大于0的整数" style="width:40px; height:17px"/>
-                        &nbsp;<b>单价：</b><input type="text" name="price" value="" required pattern="[0-9.]+" title="必须是有效的金额" style="width:40px;height:17px"/>
-                        <label style="display:inline"><input type="radio" name="is_gift" value="1" style="vertical-align:middle"/>赠品</label>
-                        <label style="display:inline"><input type="radio" name="is_gift" value="2" style="vertical-align:middle"/>活动</label>
-                        <label style="display:inline"><input type="radio" name="is_gift" value="3" style="vertical-align:middle"/>补发</label>
-                        <input type="submit" name="submit" value="添加" class="b_submit"/>
-                    </form>
-
-                    <form action="javascript:void(0)" name="goodsList" accept-charset="utf-8" style="border:0">
-                        <table id="goods_list" width="100%">
-                            <tr>
-                                <th>运费</th>
-                                <td><input type="text" name="shipping_fee" id="shipping_fee" value="0" onchange="calcOrderAmount()"/></td>
-                                <th>商品总额</th>
-                                <td><input type="text" name="goods_amount" value="0" id="goods_amount" onchange="calcOrderAmount()"/></td>
-                                <th>订单总价</th><td id="order_amount"></td>
-                            </tr>
-                            <tr>
-                                <th width="10%" align="center">操作</th>
-                                <th align="center">商品名称</th>
-                                <th width="10%" align="center">单价</th>
-                                <th width="10%" align="center">购买量</th>
-                                <th width="10%" align="center">说明</th>
-                                <th width="15%" align="center">总价</th>
-                            </tr>
-                        </table>
-                    </form>
-                    <div class="f_r"><input type="submit" name="submit" value="提交订单" class="input_submit" onclick="addNewOrder()"/></div>
-                </div>
-            </fieldset>
-
-        </div>
-
-    <!-- 添加新服务 -->
-    <div id="new_service" class="hide">
-      <div>
-        <form action="service.php?act=add_service" name="for_service" method="POST">
-          <table width="100%" height="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <th>服务类型：</th>
-              <td>
-                &nbsp;<select name="service_class" id="service_class" style="padding:2px">
-                  {foreach from=$service_class item=val}
-                  <option value="{$val.class_id}">{$val.class}</option>
-                  {/foreach}
-                </select>
-              </td>
-              <th>服务方式：</th>
-              <td>
-                &nbsp;<select name="service_manner" id="service_manner" style="padding:2px">
-                  {foreach from=$service_manner item=val}
-                  <option value="{$val.manner_id}">{$val.manner}</option>
-                  {/foreach}
-                </select>
-              </td>
-              <th>服务时间：</th>
-              <td>
-                &nbsp;<input id="service_time" name="service_time" type="text" value="{$service_time}" onClick="WdatePicker()"/>
-              </td>
-              <th></th><td></td>
-            </tr>
-            <tr >
-              <th>服务过程：</th>
-              <td valign="top" colspan="4">
-                &nbsp;<textarea name="logbook" type="textarea" onblur="cheLogbook(this.value)" rows="3" cols="60" style="resize:none;padding:5px;margin:3px"></textarea>
-                <span id="logbook" style="color:red;valign:top"></span>
-              </td>
-              <td style="text-align:right;">
-                <select name="show_sev" >
-                  <option value="1">显示</option>
-                  <option value="0">不显示</option>
-                </select>&nbsp;
-                <input name="sub" class="b_submit" type="button" onclick="submitService(this)" value="提交"/>
-              </td>
-              <td>&nbsp;<input type="button" value="预约服务" onclick="addAppointment(this)" class="b_submit"/></td>
-            </tr>
-          </table>
-        </form>
+        </tr-->
+      </table>
+      <div class="user-handover">
+        顾客移交：
+        <select id="given_to">
+          <option value="0">选择客服</option>
+          {if in_array($role_id, array(9,27,28))}
+          <option value="74">会员部临时账户</option>
+          {else}
+          {foreach from=$admin_list item=val}
+          <option value="{$val.user_id}">{$val.user_name}</option>
+          {/foreach}
+          {/if}
+        </select>
+        <input type="submit" value="确定转移" class="b_submit" onclick="userGivenTo(1)">
+        <input type="button" value="拉进黑名单" class='b_submit blacklist' onclick="putInBlacklist({$user.user_id},'{$user.user_name}')">
       </div>
-
-      <!-- 服务记录 -->
-      <div style="margin:5px 3px;background:#E0E0E0;color:#333;text-align:center;padding:2px;"><b>服务记录</b></div>
-      <form name="for_serverSeach" method="POST">
-        起始:&nbsp;<input id="startTime" type="text" onClick="WdatePicker()"/> 
-        终止:&nbsp;<input id="endTime" type="text" onClick="WdatePicker()"/> 
-        <input type="button" onclick="searchService(1)" class="b_submit" value="搜索">
-      </form>
-      <div id="service" sytle="display:block">{$service_records}</div>
     </div>
 
-    <!--资金管理-->
-    <div id="user_account_manager" class="hide">
-        <span style="float:left;margin-bottom:5px">
+    <div id="contact" class="hide">
+      <form name="contactInfo" onsubmit="return saveContactInfo()">
+        <table border="0" style="float:left">
+          <tbody>
+            <th> </th>
+            <td>
+              <select name="contact_name" onchange="replaceToAddr(this)">
+                <option value="mobile">手机</option>
+                <option value="tel">电话</option>
+                <option value="aliww">阿里旺旺</option>
+                <option value="qq">QQ</option>
+                <option value="email">E-mail</option>
+                <option value="wechat">微信</option>
+                <option value="addr">地址</option>
+              </select>
+            </td>
+            <td colspan="4"><input type="text" name="contact_value" size="15" value=""></td>
+            <td><input type="submit" class="b_submit" value="添 加"></td>
+          </tbody>
+          <tbody>
+            <tr id="mobileRow">
+              <th>手机：</th>
+              {if $contact_list.mobile}
+              {foreach from=$contact_list.mobile item=val}
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              {/foreach}
+              {else}
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              {/if}
+            </tr>
+            <tr id="telRow">
+              <th>电话：</th>
+              {if $contact_list.tel}
+              {foreach from=$contact_list.tel item=val}
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              {/foreach}
+              {else}
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              {/if}
+            </tr>
+            <tr id="wechatRow">
+              <th> 微信：</th>
+              {if $contact_list.wechat}
+              {foreach from=$contact_list.wechat item=val}
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              {/foreach}
+              {else}
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              {/if}
+            </tr>
+            <tr id="tencentRow">
+              <th rowspan="2"> 腾讯QQ： </th>
+              {if $contact_list.qq}
+              {foreach from=$contact_list.qq item=val}
+              <td>
+                {if $val.contact_value}
+                <a href="tencent://message/?uin={$val}" title="{$val}" name="msg">
+                  <img alt="{$val.contact_value}" src="http://wpa.qq.com/pa?p=1:{$val.contact_value}:17">
+                </a>
+                {/if}
+              </td>
+              {/foreach}
+              {else}
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              {/if}
+            </tr>
+            <tr id="qqRow">
+              {if $contact_list.qq}
+              {foreach from=$contact_list.qq item=val}
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              {/foreach}
+              {else}
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              {/if}
+            </tr>
+            <tr id="aliwwRow">
+              <th>阿里旺旺：</th>
+              {if $contact_list.aliww}
+              {foreach from=$contact_list.aliww item=val}
+              <td>{if $val.contact_value}<a target="_blank" href="http://www.taobao.com/webww/ww.php?ver=3&touid={$val.contact_value}&siteid=cntaobao&status=2&charset=utf-8" title="{$val.contact_value}"><img border="0" src="http://amos.alicdn.com/realonline.aw?v=2&uid={$val.contact_value}&site=cntaobao&s=2&charset=utf-8" alt="{$val.contact_value}" /></a>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span>{/if}</td>
+              {/foreach}
+              {else}
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              {/if}
+            </tr>
+            <tr id="emailRow">
+              <th> E-mail：</th>
+              {if $contact_list.email}
+              {foreach from=$contact_list.email item=val}
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              {/foreach}
+              {else}
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              <td> </td>
+              {/if}
+            </tr>
+            {if $addr_list}
+            {foreach from=$addr_list item=val name=addr}
+            <tr{if $smarty.foreach.addr.first} id="addrRow"{/if}>
+              {if $smarty.foreach.addr.first}
+              <th>地址：</th>
+              {else}
+              <th> </th>
+              {/if}
+              <td colspan="4">
+                {$val.addr}
+              </td>
+            </tr>
+            {/foreach}
+            {else}
+            <tr id="addrRow">
+              <th>地址：</th>
+              <td colspan="4"> </td>
+            </tr>
+            {/if}
+          </tbody>
+        </table>
+      </form>
+    </div>
+
+    <!-- 个性分析 -->
+    <div id="remark" class="hide">
+      <table >
+        <tr>
+          <th>健康状况</th>
+          <td>
+            {foreach from=$disease item=val name=i}
+            <label><input type="checkbox" name="disease" value="{$val.disease_id}" {if in_array($val.disease_id,$user.disease)} checked{/if} style="vertical-align:middle" onclick="addOne(this)"/> {$val.disease}</label>
+            {/foreach}
+          </td>
+        </tr>
+        <tr>
+          <th>性格</th>
+          <td>
+            {foreach from=$characters item=val name=i}
+            <label><input type="checkbox" name="characters" value="{$val.character_id}" {if in_array($val.character_id,$user.characters)} checked{/if} style="vertical-align:middle" onclick="addOne(this)"/>{$val.characters}</label>
+            {if $smarty.foreach.i.iteration%10 eq 0}<br/>{/if}
+            {/foreach}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 购买记录 -->
+    <div id="purchase" class="hide">
+      <div>
+        <table class="purchase" cellpadding="3" cellspacing="1" style="border:1px #ccc solid !important" width="100%">
+          <thead>
+            <tr height="25px">
+              <th width="15%">购买日期</th>
+              <th width="10%">金额</th>
+              <th>订单</th>
+              <th>订单状态</th>
+              <th width="10%">下单客服</th>
+            </tr>
+          </thead>
+          <tbody>
+            {foreach from=$order_list item=order}
+            <tr {$order.tr}>
+              <td valign="top">{$order.add_time}</td>
+              <td valign="top">{if $order.final_amount eq 9.9}36.00{else}{$order.final_amount}{/if}</td>
+              <td align="left" style="text-align:left">
+                <details {if $order.goods_kind lt 3}open{/if}>
+                <summary><a href="http://www.kuaidi100.com/chaxun?com={$order.shipping_code}&nu={$order.express_number}" target="_blank" style="margin-right:20px">{$order.platform}：{if $order.order_sn}{$order.order_sn}{else}{$order.shipping_name}{/if}</a>{$order.shipping_name}</summary>
+                {foreach from=$order[goods_list] item=g}
+                {if isset($g['goods_list'])}
+                <details>
+                <summary>{$g.goods_name}  {$g.goods_number}×￥{$g.goods_price}</summary>
+                {foreach from=$g.goods_list item=o}
+                <p><strong>{$o.goods_name}</strong><wbr>（数量：{$o.goods_number}）</p>
+                {/foreach}
+                </details>
+                {else}
+                <p>
+                <strong>{$g.goods_name}</strong>
+                {$g.goods_number}×￥{$g.goods_price}
+                <lbl name="introduction" onmouseover="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="服用说明" src="images/tips_help.gif">&nbsp;&nbsp;</lbl>
+                <lbl name="goods_knowlage" onclick="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="产品知识" src="images/book_open.gif">&nbsp;&nbsp;</lbl>
+                <lbl name="talk_skill" onclick="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="相关话术" src="images/binocular.png">&nbsp;&nbsp;</lbl>
+                <a href="{$g.goods_id}" ><img class="png_btn" title="购买平台" src="images/shop.png">&nbsp;&nbsp;</a>
+                </p>
+                {/if}
+                {/foreach}
+                </details>
+              </td>
+              <td>{$order.finaly_order_status}</td>
+              <td>{$order.operator}</td>
+            </tr>
+            {/foreach}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 积分日志 -->
+      <div style="margin:3px 3px;background:#E0E0E0;color:#333;text-align:center;padding:2px;"><b>积分日志</b></div>
+      <div id="integral_log">
+        {if $integral_log eq 0}
+        <center color="#666"><h2 color="#888">无记录</h2></center>
+        {else}
+        <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
+          <tr>
+            <th width="20%">项目</th>
+            <th width="10%">改变时间</th>
+            <th width="20%">当前状态</th>
+            <th width="10%">当前总积分</th>
+          </tr>
+          {foreach from=$integral_log item=val}
+          <tr>
+            <td>
+              通过{if $val.exchange_points gt 0}{if $val.integral_way eq 1}{$val.integral_title}{$val.goods_amount}元{else}{$val.integral_title}{/if}
+              {if $val.confirm eq 0}将获得{else}获得{/if}{$val.exchange_points}积分
+              {else}{$val.integral_title}消费{$val.exchange_points}
+              {/if}
+            </td>
+            <td>{$val.receive_time}</td>
+            <td>
+              {if $val.confirm eq 0}未确认{else}由{$val.admin_name}于{$val.confirm_time}确认{/if}
+            </td>
+            <td>{$val.cur_integral}</td>
+          </tr>
+          {/foreach}
+        </table>
+        {/if} 
+      </div>
+    </div>
+
+    <!-- 添加新订单 -->
+    <div id="new_order" class="hide">
+      <fieldset>
+        <legend align="left">收货人</legend>
+        <form action="javascript:void(0)" name="order_info">
+          <table cellpadding="3" cellspacing="1" border="0" class="mt10">
+            <!--table border="1"-->
+            <tr>
+              <th>收货人：</th>
+              <td><input type="text" name="consignee" value="{$user.user_name}"/></td>
+              <td>
+                <select name="tel">
+                  <option value="">电话号码</option> 
+                  {if $user.home_phone}
+                  <option value="{$user.home_phone}">{$user.home_phone}</option>
+                  {/if}
+                  {foreach from=$contact_list.tel item=val}
+                  <option>{$val.contact_value}</option>
+                  {/foreach}
+                </select>
+              </td>
+              <td>
+                <select name="pay_id" onchange="getShipping(this)">
+                  <option value="0">支付方式</option>
+                  {foreach from=$payment item=val}
+                  <option value="{$val.pay_id}">{$val.pay_name}</option>
+                  {/foreach}
+                </select>
+              </td>
+              <td rowspan="2" style="padding-top:5px">
+                <textarea name="remarks" style="width:174px;height:65px" placeholder="订单备注"></textarea>
+              </td>
+            </tr>
+            <tr>
+              <th>订单编号：</th>
+              <td><input type="text" name="platform_order_sn" value="" onblur="checkOrderSn(this)"/></td>
+              <td>
+                <select name="mobile">
+                  <option value="">手机号码</option>
+                  {if $user.mobile_phone}
+                  <option value="{$user.mobile_phone}">{$user.mobile_phone}</option>
+                  {/if}
+                  {foreach from=$contact_list.mobile item=val}
+                  <option>{$val.contact_value}</option>
+                  {/foreach}
+                </select>
+              </td>
+              <td>
+                <select name="shipping_id" id="shipping_id">
+                  <option value="0">配送方式</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th> </th>
+              <td>
+                <select name="team">
+                  <option value="0">购买平台</option>
+                  {foreach from=$platform_list item=val}
+                  <option value="{$val.role_id}">{$val.role_name}</option>
+                  {/foreach}
+                  {if $user.role_id eq 23}
+                  <option value="23">公司员工</option>
+                  {/if}
+                </select>
+              </td>
+              <td>
+                <select name="order_type">
+                  <option value="">订单类型</option>
+                  {foreach from=$order_type item=val}
+                  <option value="{$val.type_id}">{$val.type_name}</option>
+                  {/foreach}
+                </select>
+              </td>
+              <td>
+                <select name="admin_id">
+                  <option value="0">订单归属</option>
+                  {foreach from=$admin_list item=val}
+                  <option value="{$val.user_id}">{$val.user_name}</option>
+                  {/foreach}
+                </select>
+              </td>
+              <!--td>
+              <select name="platform">
+                <option value="0">销售平台</option>
+                {foreach from=$platform_list item=val}
+                <option value="{$val.role_id}">{$val.role_name}</option>
+                {/foreach}
+              </select>
+              </td-->
+              <td>
+                <select id="addrList" onchange="changeAddr(this)" style="width:100%">
+                  <option>地址列表</option>
+                  {foreach from=$addr_list item=val}
+                  <option value="{$val.addr_id}">{$val.addr}</option>
+                  {/foreach}
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <th>收货地址：</th>
+              <td colspan="5">
+                <select name="province" id="selProvinces" onchange="region.changed(this,2,'selCities')">
+                  <option value="0">{$lang.select_please}</option>
+                  {foreach from=$province_list item=province}
+                  <option value="{$province.region_id}" {if $province.region_id eq $user.province_id}selected{/if}>{$province.region_name}</option>
+                  {/foreach}
+                </select>
+                <select name="city" id="selCities" onchange="region.changed(this,3,'selDistricts')">
+                  <option value="0">{$lang.select_please}</option>
+                  {foreach from=$city_list item=city}
+                  <option value="{$city.region_id}" {if $city.region_id eq $user.city_id}selected{/if}>{$city.region_name}</option>
+                  {/foreach}
+                </select>
+                <select name="district" id="selDistricts">
+                  <option value="0">{$lang.select_please}</option>
+                  {foreach from=$district_list item=district}
+                  <option value="{$district.region_id}"{if $district.region_id eq $user.district_id} selected{/if}>{$district.region_name}</option>
+                  {/foreach}
+                </select>
+                <input type="text" name="address" value="{$user.address}" size="45" placeholder='详细地址'/>
+              </td>
+            </tr>
+            <tr>
+              <th> </th>
+              <td colspan="5">
+                {foreach from=$order_source item=val}
+                <label style="display:inline"><input type="radio" value="{$val.source_id}" name="order_source"/>{$val.source_name}
+                  {/foreach}
+                </td>
+              </tr>
+            </table>
+          </form>
+        </fieldset>
+        <fieldset>
+          <legend align="top">商品</legend>
+          <div class="o_goods_search">
+            <form action="javascript:void(0)" name="theForm" onsubmit="return addNewGoods();">
+              <input type="text" name="search" value="" size="20" oninput="searchGoods(this)" onblur="searchGoods(this)"/>
+              <select name="goods_id" id="goods_id">
+                <option value="0">请先输入要搜索的商品</option>
+              </select>
+              &nbsp;<b>数量：</b><input type="text" name="number" value="" required pattern="^[1-9]\d{0,}" title="商品数量必须是大于0的整数" style="width:40px; height:17px"/>
+              &nbsp;<b>单价：</b><input type="text" name="price" value="" required pattern="[0-9.]+" title="必须是有效的金额" style="width:40px;height:17px"/>
+              <label style="display:inline"><input type="radio" name="is_gift" value="1" style="vertical-align:middle"/>赠品</label>
+              <label style="display:inline"><input type="radio" name="is_gift" value="2" style="vertical-align:middle"/>活动</label>
+              <label style="display:inline"><input type="radio" name="is_gift" value="3" style="vertical-align:middle"/>补发</label>
+              <input type="submit" name="submit" value="添加" class="b_submit"/>
+            </form>
+
+            <form action="javascript:void(0)" name="goodsList" accept-charset="utf-8" style="border:0">
+              <table id="goods_list" width="100%">
+                <tr>
+                  <th>运费</th>
+                  <td><input type="text" name="shipping_fee" id="shipping_fee" value="0" onchange="calcOrderAmount()"/></td>
+                  <th>商品总额</th>
+                  <td><input type="text" name="goods_amount" value="0" id="goods_amount" onchange="calcOrderAmount()"/></td>
+                  <th>订单总价</th><td id="order_amount"></td>
+                </tr>
+                <tr>
+                  <th width="10%" align="center">操作</th>
+                  <th align="center">商品名称</th>
+                  <th width="10%" align="center">单价</th>
+                  <th width="10%" align="center">购买量</th>
+                  <th width="10%" align="center">说明</th>
+                  <th width="15%" align="center">总价</th>
+                </tr>
+              </table>
+            </form>
+            <div class="f_r"><input type="submit" name="submit" value="提交订单" class="input_submit" onclick="addNewOrder()"/></div>
+          </div>
+        </fieldset>
+
+      </div>
+
+      <!-- 添加新服务 -->
+      <div id="new_service" class="hide">
+        <div>
+          <form action="service.php?act=add_service" name="for_service" method="POST">
+            <table width="100%" height="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <th>服务类型：</th>
+                <td>
+                  &nbsp;<select name="service_class" id="service_class" style="padding:2px">
+                    {foreach from=$service_class item=val}
+                    <option value="{$val.class_id}">{$val.class}</option>
+                    {/foreach}
+                  </select>
+                </td>
+                <th>服务方式：</th>
+                <td>
+                  &nbsp;<select name="service_manner" id="service_manner" style="padding:2px">
+                    {foreach from=$service_manner item=val}
+                    <option value="{$val.manner_id}">{$val.manner}</option>
+                    {/foreach}
+                  </select>
+                </td>
+                <th>服务时间：</th>
+                <td>
+                  &nbsp;<input id="service_time" name="service_time" type="text" value="{$service_time}" onClick="WdatePicker()"/>
+                </td>
+                <th></th><td></td>
+              </tr>
+              <tr >
+                <th>服务过程：</th>
+                <td valign="top" colspan="4">
+                  &nbsp;<textarea name="logbook" type="textarea" onblur="cheLogbook(this.value)" rows="3" cols="60" style="resize:none;padding:5px;margin:3px"></textarea>
+                  <span id="logbook" style="color:red;valign:top"></span>
+                </td>
+                <td style="text-align:right;">
+                  <select name="show_sev" >
+                    <option value="1">显示</option>
+                    <option value="0">不显示</option>
+                  </select>&nbsp;
+                  <input name="sub" class="b_submit" type="button" onclick="submitService(this)" value="提交"/>
+                </td>
+                <td>&nbsp;<input type="button" value="预约服务" onclick="addAppointment(this)" class="b_submit"/></td>
+              </tr>
+            </table>
+          </form>
+        </div>
+
+        <!-- 服务记录 -->
+        <div style="margin:5px 3px;background:#E0E0E0;color:#333;text-align:center;padding:2px;"><b>服务记录</b></div>
+        <form name="for_serverSeach" method="POST">
+          起始:&nbsp;<input id="startTime" type="text" onClick="WdatePicker()"/> 
+          终止:&nbsp;<input id="endTime" type="text" onClick="WdatePicker()"/> 
+          <input type="button" onclick="searchService(1)" class="b_submit" value="搜索">
+        </form>
+        <div id="service" sytle="display:block">
+          {foreach from=$service item=val}
+          <p align="left"> 
+          【{$val.service_time}】
+          {if $val.record}
+          【
+          {foreach from=$val.record item=record_val name=i}
+          <rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$record_val}" style="width:20px; height:10px; background-color:skyblue"></audio>通话录音{$smarty.foreach.i.iteration}</rec>
+          {/foreach}
+          】
+          {/if}
+          <font style="color:rgb(141, 141, 93)">{$val.admin_name}</font>通过<font  style="color:rgb(141, 141, 93)">{$val.manner}</font>进行了<font style="color:rgb(141, 141, 93)">{$val.class}</font>：{$val.logbook}
+          </p>
+          {/foreach}
+        </div>
+
+        <!--资金管理-->
+        <div id="user_account_manager" class="hide">
+          <span style="float:left;margin-bottom:5px">
             <input type="button" value="充值" class="b_submit" onclick="changeAccountTap('account_deposit')"/>
             <input type="button" value="提现" class="b_submit" onclick="changeAccountTap('account_raply')"/>
             <input type="button" value="调节会员帐号" class="b_submit" onclick="changeAccountTap('alert_account_info')" />
             <input type="button" value="查看账号明细" class="b_submit" onclick="changeAccountTap('account_detail')"/>
             <input type="button" value="查看申请记录" class="b_submit" onclick="changeAccountTap('account_log')"/>
-        </span>
-        <div id="account_surplus">
+          </span>
+          <div id="account_surplus">
             {if $action eq "account_log"}
             <div id="account_log">
-                <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
-                    <tr align="center">
-                        <th width="20%">{$lang.process_time}</th>
-                        <th width="15%">{$lang.surplus_pro_type}</th>
-                        <th width="20%">{$lang.money}</th>
-                        <th width="15%">{$lang.process_notic}</th>
-                        <th width="15%">{$lang.admin_notic}</th>
-                        <th width="15%">{$lang.is_paid}</th>
-                    </tr>
-                    {foreach from=$account_log item=item}
-                    <tr>
-                        <td>{$item.add_time}</td>
-                        <td>{$item.type}</td>
-                        <td>{$item.amount}</td>
-                        <td>{$item.short_user_note}</td>
-                        <td>{$item.short_admin_note}</td>
-                        <td>{$item.pay_status}</td>
-                    </tr>
-                    {/foreach}
-                    <tr>
-                        <td colspan="7" style="text-align:right;background:#FFF">{$lang.current_surplus}{$surplus_amount}</td>
-                    </tr>
-                </table>
-                {/if}
-                <span style="float:right;text-align:right;color:#006bd0">
-                    <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
-                </span>
+              <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
+                <tr align="center">
+                  <th width="20%">{$lang.process_time}</th>
+                  <th width="15%">{$lang.surplus_pro_type}</th>
+                  <th width="20%">{$lang.money}</th>
+                  <th width="15%">{$lang.process_notic}</th>
+                  <th width="15%">{$lang.admin_notic}</th>
+                  <th width="15%">{$lang.is_paid}</th>
+                </tr>
+                {foreach from=$account_log item=item}
+                <tr>
+                  <td>{$item.add_time}</td>
+                  <td>{$item.type}</td>
+                  <td>{$item.amount}</td>
+                  <td>{$item.short_user_note}</td>
+                  <td>{$item.short_admin_note}</td>
+                  <td>{$item.pay_status}</td>
+                </tr>
+                {/foreach}
+                <tr>
+                  <td colspan="7" style="text-align:right;background:#FFF">{$lang.current_surplus}{$surplus_amount}</td>
+                </tr>
+              </table>
+              {/if}
+              <span style="float:right;text-align:right;color:#006bd0">
+                <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
+              </span>
             </div>
 
             <!--充值--> 
             <div id="account_deposit" style="display:none" class="backgroud_div">
-                <form name="formSurplus">
-                    <table width="750" cellpadding="0" cellspacing="0" id="new_apply_form">
-                        <tr height="46px"><td align="right">类型 ：</td>
-                            <td border="0" align="left">
-                                <label style="display:inline;margin-right:15px"><input type="radio" name="surplus_type" value="0" checked/>充值</label>
-                                <label style="display:inline"><input type="radio" name="surplus_type" value="1">提现</label>
-                            </td>
-                            <td border="0" align="right">金额 ：</td>
-                            <td border="0" align="left"><input type="text" maxlength="6" name="amount"></td>
-                            <td border="0" align="center">支付方式 ：</td>
-                            <td border="0" align="left">
-                                <select id="payment">
-                                    {foreach from=$surplus_payment item=val}
-                                    <option value="{$val.pay_id}">{$val.pay_name}</option>
-                                    {/foreach}
-                                </select>
-                            </td>
-                        </tr>
-                        <tr height="46px">
-                            <td border="0" align="right">会员描述 ：</td>
-                            <td border="0" align="left" colspan="5">
-                                <textarea name="user_note" style="resize:none;padding:5px;" cols="72" rows="3" ></textarea>
-                            </td>
-                        </tr>
-                        <tr height="46px">
-                            <td colspan="6" align="rgiht">
-                                <input type="button" class="input_submit" style="float:right" value="确定" id="btn_submitSurplus" onClick="submitSurplus()"/>
-                                <input type="hidden" name="user_id" value="{$user.user_id}" />
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+              <form name="formSurplus">
+                <table width="750" cellpadding="0" cellspacing="0" id="new_apply_form">
+                  <tr height="46px"><td align="right">类型 ：</td>
+                    <td border="0" align="left">
+                      <label style="display:inline;margin-right:15px"><input type="radio" name="surplus_type" value="0" checked/>充值</label>
+                      <label style="display:inline"><input type="radio" name="surplus_type" value="1">提现</label>
+                    </td>
+                    <td border="0" align="right">金额 ：</td>
+                    <td border="0" align="left"><input type="text" maxlength="6" name="amount"></td>
+                    <td border="0" align="center">支付方式 ：</td>
+                    <td border="0" align="left">
+                      <select id="payment">
+                        {foreach from=$surplus_payment item=val}
+                        <option value="{$val.pay_id}">{$val.pay_name}</option>
+                        {/foreach}
+                      </select>
+                    </td>
+                  </tr>
+                  <tr height="46px">
+                    <td border="0" align="right">会员描述 ：</td>
+                    <td border="0" align="left" colspan="5">
+                      <textarea name="user_note" style="resize:none;padding:5px;" cols="72" rows="3" ></textarea>
+                    </td>
+                  </tr>
+                  <tr height="46px">
+                    <td colspan="6" align="rgiht">
+                      <input type="button" class="input_submit" style="float:right" value="确定" id="btn_submitSurplus" onClick="submitSurplus()"/>
+                      <input type="hidden" name="user_id" value="{$user.user_id}" />
+                    </td>
+                  </tr>
+                </table>
+              </form>
             </div>
 
-    <!--提现-->
-    <div id="account_raply" style="display:none" class="backgroud_div">
-      功能尚未开放
-    </div>
-    <!--调节帐号-->
-    <div id="alert_account_info" style="display:none" class="backgroud_div">
-      <form name="modify_account_form">
-        <input type="hidden" value="{$user.user_id}" name="user_id" />
-        <table width="100%" cellpadding="0" cellspacing="0" class="table_form" width="100%">
-          <tr height="46px">
-            <td align="right">帐号变动原因 ：</td>
-            <td align="left" colspan="3">
-              <textarea name="change_desc" style="resize:none;padding:5px;margin-top:10px;" cols="72" rows="3" ></textarea>
-            </td>
-          </tr>
-          <tr>
-            <td align="right" style="display:none">可用资金 ：</td>
-            <td align="left" style="display:none">
-              <select name="add_sub_user_money" style="width:100px">
-                <option value="1" selected>增加</option>
-                <option value="-1" >减少</option>
-              </select>
-              <input name="user_money" type="text" style="display:none"/>
-              {$user_account_info.formated_user_money}
-            </td>
-          </tr>
-          <tr>
-            <td align="right">等级：</td>
-            <td align="left">
-              <select name="user_rank" style="width:100px">
-                {foreach from=$user_rank item=val}
-                <option value="{$val.rank_id}" {if $val.rank_id eq $user.user_rank}selected{/if}>{$val.rank_name}</option>
+            <!--提现-->
+            <div id="account_raply" style="display:none" class="backgroud_div">
+              功能尚未开放
+            </div>
+            <!--调节帐号-->
+            <div id="alert_account_info" style="display:none" class="backgroud_div">
+              <form name="modify_account_form">
+                <input type="hidden" value="{$user.user_id}" name="user_id" />
+                <table width="100%" cellpadding="0" cellspacing="0" class="table_form" width="100%">
+                  <tr height="46px">
+                    <td align="right">帐号变动原因 ：</td>
+                    <td align="left" colspan="3">
+                      <textarea name="change_desc" style="resize:none;padding:5px;margin-top:10px;" cols="72" rows="3" ></textarea>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" style="display:none">可用资金 ：</td>
+                    <td align="left" style="display:none">
+                      <select name="add_sub_user_money" style="width:100px">
+                        <option value="1" selected>增加</option>
+                        <option value="-1" >减少</option>
+                      </select>
+                      <input name="user_money" type="text" style="display:none"/>
+                      {$user_account_info.formated_user_money}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right">等级：</td>
+                    <td align="left">
+                      <select name="user_rank" style="width:100px">
+                        {foreach from=$user_rank item=val}
+                        <option value="{$val.rank_id}" {if $val.rank_id eq $user.user_rank}selected{/if}>{$val.rank_name}</option>
+                        {/foreach}
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" style="display:none">等级积分：</td>
+                    <td align="left" style="display:none">
+                      <select style="display:none" name="add_sub_rank_points" style="width:100px">
+                        <option value="1">增加</option>
+                        <option value="-1">减少</option>
+                      </select>
+                      <input style="display:none" name="rank_points" type="text" />
+                      {$user_account_info.rank_points}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="display:none" align="right">消费积分：</td>
+                    <td  style="display:none" align="left">
+                      <select name="add_sub_pay_points" style="width:100px">
+                        <option value="1">增加</option>
+                        <option value="-1">减少</option>
+                      </select>
+                      <input name="pay_points" type="text" />
+                      {$user_account_info.pay_points}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"><input type="button" value="确认" style="float:right;margin-right:5px" class="input_submit" onclick="modifyAccountInfo()" /></td> 
+                  </tr>
+                </table>
+              </form>
+            </div>
+
+            <!--查看帐号明细-->
+            <div id="account_detail" style="display:none">
+              <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
+                <tr align="center">
+                  <th>{$lang.process_time}</th>
+                  <th>{$lang.surplus_pro_type}</th>
+                  <th>{$lang.money}</th>
+                  <th>{$lang.change_desc}</th>
+                </tr>
+                {foreach from=$account_detail item=item}
+                <tr>
+                  <td align="center">{$item.change_time}</td>
+                  <td align="center">{$item.type}</td>
+                  <td align="center">{$item.user_money}</td>
+                  <td title="{$item.change_desc}">&nbsp;&nbsp;{$item.short_change_desc}</td>
+                </tr>
                 {/foreach}
-              </select>
-            </td>
+                <tr>
+                  <td style="text-align:right" colspan="4" align="right" bgcolor="#ffffff"><span>{$lang.current_surplus}{$surplus_amount}</span></td>
+                </tr>
+              </table>
+              <span style="float:right;text-align:right;color:#006bd0">
+                <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!--朋友圈-->
+        <div id="user_friends" class="hide">
+          <div style="margin-bottom:3px">
+            {if $user_friends.friends_total neq 0}
+            以下是他的<font color="#FF9224">{$user_friends.friends_total}</font>个朋友：
+            {/if}
+          </div>
+          <table class="wu_table_list rb_border tr_hover wu_rb_border" cellspacing="0" cellpadding="0" width="100%" id="table_family_user">
+            <tr>
+              <th width="10%">姓名</th>
+              <th width="10%">健康档案</th>
+              <th width="20%">联系方式</th>
+              <th width="10%">添加时间</th>
+              <th width="30%">操作</th>
+            </tr>
+            {if $user_friends.user_friends neq null}
+            {foreach from=$user_friends.user_friends item=val}
+            <tr>
+              <td>
+                <label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{if $val.first eq 1} <img src="images/yes.gif" />{/if}{$val.user_name}
+                </label>
+              </td>
+              <td>
+                {if $val.healthy_file eq 0}
+                &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})">健康档案</label>
+                {else}
+                &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="cheHealthy({$val.user_id})">健康档案</label>
+                {/if}
+              </td>
+              <td>{$val.mobile_phone}<font size="4" color="red">|</font></td>
+              <td>{$val.add_time}</td>
+              <td>
+                {if $val.first eq 1}
+                <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">删除介绍人</label></td>
+              {else}
+              <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">移出朋友圈</label></td>
+            {/if}
           </tr>
-          <tr>
-            <td align="right" style="display:none">等级积分：</td>
-            <td align="left" style="display:none">
-              <select style="display:none" name="add_sub_rank_points" style="width:100px">
-                <option value="1">增加</option>
-                <option value="-1">减少</option>
-              </select>
-              <input style="display:none" name="rank_points" type="text" />
-              {$user_account_info.rank_points}
-            </td>
-          </tr>
-          <tr>
-            <td style="display:none" align="right">消费积分：</td>
-            <td  style="display:none" align="left">
-              <select name="add_sub_pay_points" style="width:100px">
-                <option value="1">增加</option>
-                <option value="-1">减少</option>
-              </select>
-              <input name="pay_points" type="text" />
-              {$user_account_info.pay_points}
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2"><input type="button" value="确认" style="float:right;margin-right:5px" class="input_submit" onclick="modifyAccountInfo()" /></td> 
-          </tr>
+          {/foreach}
+          {else}
+          <td colspan="6" align="center">暂时没有添加朋友</td>
+          {/if}
         </table>
-      </form>
+        <div style="text-align:right;margin-top:5px">
+          <form name="form_sch_family" style="margin-bottom:5px">
+            继续添加朋友：
+            <input id="friend_phone" maxlength="11" placeholder="联系电话"/>
+            <input type="button" class="b_submit" onclick="schForFamily(1)" value="搜 索" />
+          </form>
+        </div>
+      </div>
+
+      <!--家庭成员管理-->
+      <div id="user_family" class="hide">
+        <div style="margin-bottom:3px">
+          {if $family.family_total eq 0}
+          <font color="red">
+            暂时没有家庭成员，请添加！
+          </font>
+          {else}
+          {$family.family_name},以下是他的<font color="#FF9224">{$family.family_total}</font>个成员：
+          {/if}
+        </div>
+        <table class="wu_table_list rb_border tr_hover wu_rb_border" cellspacing="0" cellpadding="0" width="100%" id="table_family_user">
+          <tr>
+            <th width="15%">辈份</th>
+            <th width="10%">姓名</th>
+            <th width="10%">健康档案</th>
+            <th width="20%">联系方式</th>
+            <th width="10%">添加时间</th>
+            <th width="30%">操作</th>
+          </tr>
+          {if $family_users neq null}
+          {foreach from=$family_users item=val}
+          <tr>
+            <td id="parent_{$val.user_id}">{if $val.grade_id eq 99}<font color="#007500">{$val.grade_name}</font>{else}
+              {$val.grade_name}{/if}{if $val.real_parent eq 1}<font color="#3367AC">【家长】</font>{/if}</td>
+            <td><label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{$val.user_name}</label>
+            </td>
+            <td>
+              {if $val.healthy_file eq 0}
+              &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})">健康档案</label>
+              {else}
+              &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="cheHealthy({$val.user_id})">健康档案</label>
+              {/if}
+            </td>
+            <td>{$val.mobile_phone}<font size="4" color="red">|</font></td>
+            <td>{$val.input_time}</td>
+            <td style="text-align:left">
+              {if $val.grade_id neq 99}
+              &nbsp;&nbsp;<label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFamilyUser({$val.user_id},'{$val.user_name}')">移出家庭</label>
+              {/if}
+              {if $val.real_parent eq 1}
+              &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#3367ac" onclick="setRealParent({$val.user_id},'{$val.grade_name}','del')">取消家长</label></span>
+              {else}
+              &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#777" onclick="setRealParent({$val.user_id},'{$val.grade_name}','upd')">设为家长</label></span>
+              {/if}
+            </td>
+          </tr>
+          {/foreach}
+          {else}
+          <td colspan="6" align="center">暂时没有添加家长成员</td>
+          {/if}
+        </table>
+        <div style="text-align:right;margin-top:5px">
+          <form name="form_sch_family" style="margin-bottom:5px">
+            继续添加家庭成员：
+            <input id="family_phone" maxlength="11" placeholder="联系电话"/>
+            <input type="button" class="b_submit" onclick="schForFamily(0)" value="搜 索" />
+          </form>
+        </div>
+      </div>
+
+      <!-- 健康档案 -->
+      <div id="healthy_archive" class="hide">
+        {if $isexistHF neq 1}
+        <center>
+          <input type="button" class="input_submit" value="新建健康档案" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})"/>
+        </center>
+        {else}
+        <!-- 顾客基本信息 -->
+        {$healthy_lifestyle}
+        <br />
+        {/if}
+      </div>
+
+      <input type="hidden" value="users.php" id="URI"/>
+      <input type="hidden" value="user_id" id="field"/>
+      <input type="hidden" value="{$user.user_id}" id="ID"/>
     </div>
-
-    <!--查看帐号明细-->
-    <div id="account_detail" style="display:none">
-      <table class="wu_table_list rb_border wu_rb_border tr_hover" width="100%" cellspacing="0" cellpadding="0">
-        <tr align="center">
-          <th>{$lang.process_time}</th>
-          <th>{$lang.surplus_pro_type}</th>
-          <th>{$lang.money}</th>
-          <th>{$lang.change_desc}</th>
-        </tr>
-        {foreach from=$account_detail item=item}
-        <tr>
-          <td align="center">{$item.change_time}</td>
-          <td align="center">{$item.type}</td>
-          <td align="center">{$item.user_money}</td>
-          <td title="{$item.change_desc}">&nbsp;&nbsp;{$item.short_change_desc}</td>
-        </tr>
-        {/foreach}
-        <tr>
-          <td style="text-align:right" colspan="4" align="right" bgcolor="#ffffff"><span>{$lang.current_surplus}{$surplus_amount}</span></td>
-        </tr>
-      </table>
-      <span style="float:right;text-align:right;color:#006bd0">
-        <font size:"12px">总共有&nbsp;<strong>{$count_log}</strong>&nbsp;记录</font>
-      </span>
-    </div>
   </div>
-</div>
-
-<!--朋友圈-->
-<div id="user_friends" class="hide">
-  <div style="margin-bottom:3px">
-    {if $user_friends.friends_total neq 0}
-    以下是他的<font color="#FF9224">{$user_friends.friends_total}</font>个朋友：
-    {/if}
-  </div>
-  <table class="wu_table_list rb_border tr_hover wu_rb_border" cellspacing="0" cellpadding="0" width="100%" id="table_family_user">
-    <tr>
-      <th width="10%">姓名</th>
-      <th width="10%">健康档案</th>
-      <th width="20%">联系方式</th>
-      <th width="10%">添加时间</th>
-      <th width="30%">操作</th>
-    </tr>
-    {if $user_friends.user_friends neq null}
-    {foreach from=$user_friends.user_friends item=val}
-    <tr>
-      <td>
-        <label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{if $val.first eq 1} <img src="images/yes.gif" />{/if}{$val.user_name}
-        </label>
-      </td>
-      <td>
-        {if $val.healthy_file eq 0}
-        &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})">健康档案</label>
-        {else}
-        &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="cheHealthy({$val.user_id})">健康档案</label>
-        {/if}
-      </td>
-      <td>{$val.mobile_phone}<font size="4" color="red">|</font></td>
-      <td>{$val.add_time}</td>
-      <td>
-        {if $val.first eq 1}
-        <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">删除介绍人</label></td>
-        {else}
-        <label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFriends({$val.user_id},'{$val.user_name}')">移出朋友圈</label></td>
-        {/if}
-    </tr>
-    {/foreach}
-    {else}
-    <td colspan="6" align="center">暂时没有添加朋友</td>
-    {/if}
-  </table>
-  <div style="text-align:right;margin-top:5px">
-    <form name="form_sch_family" style="margin-bottom:5px">
-      继续添加朋友：
-      <input id="friend_phone" maxlength="11" placeholder="联系电话"/>
-      <input type="button" class="b_submit" onclick="schForFamily(1)" value="搜 索" />
-    </form>
-  </div>
-</div>
-
-<!--家庭成员管理-->
-<div id="user_family" class="hide">
-  <div style="margin-bottom:3px">
-    {if $family.family_total eq 0}
-    <font color="red">
-      暂时没有家庭成员，请添加！
-    </font>
-    {else}
-    {$family.family_name},以下是他的<font color="#FF9224">{$family.family_total}</font>个成员：
-    {/if}
-  </div>
-  <table class="wu_table_list rb_border tr_hover wu_rb_border" cellspacing="0" cellpadding="0" width="100%" id="table_family_user">
-    <tr>
-      <th width="15%">辈份</th>
-      <th width="10%">姓名</th>
-      <th width="10%">健康档案</th>
-      <th width="20%">联系方式</th>
-      <th width="10%">添加时间</th>
-      <th width="30%">操作</th>
-    </tr>
-    {if $family_users neq null}
-    {foreach from=$family_users item=val}
-    <tr>
-      <td id="parent_{$val.user_id}">{if $val.grade_id eq 99}<font color="#007500">{$val.grade_name}</font>{else}
-        {$val.grade_name}{/if}{if $val.real_parent eq 1}<font color="#3367AC">【家长】</font>{/if}</td>
-      <td><label  style="cursor:pointer" onclick="getInfo({$val.user_id})">{$val.user_name}</label>
-      </td>
-      <td>
-        {if $val.healthy_file eq 0}
-        &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})">健康档案</label>
-        {else}
-        &nbsp;&nbsp;<label style="display:inline;cursor:pointer;" onclick="cheHealthy({$val.user_id})">健康档案</label>
-        {/if}
-      </td>
-      <td>{$val.mobile_phone}<font size="4" color="red">|</font></td>
-      <td>{$val.input_time}</td>
-      <td style="text-align:left">
-        {if $val.grade_id neq 99}
-        &nbsp;&nbsp;<label style="display:inline;cursor:pointer;color:#3367AC" onclick="delFamilyUser({$val.user_id},'{$val.user_name}')">移出家庭</label>
-        {/if}
-        {if $val.real_parent eq 1}
-        &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#3367ac" onclick="setRealParent({$val.user_id},'{$val.grade_name}','del')">取消家长</label></span>
-        {else}
-        &nbsp;&nbsp;<span id="label_parent_{$val.user_id}"><label style="display:inline;cursor:pointer;color:#777" onclick="setRealParent({$val.user_id},'{$val.grade_name}','upd')">设为家长</label></span>
-        {/if}
-      </td>
-    </tr>
-    {/foreach}
-    {else}
-    <td colspan="6" align="center">暂时没有添加家长成员</td>
-    {/if}
-  </table>
-  <div style="text-align:right;margin-top:5px">
-    <form name="form_sch_family" style="margin-bottom:5px">
-      继续添加家庭成员：
-      <input id="family_phone" maxlength="11" placeholder="联系电话"/>
-      <input type="button" class="b_submit" onclick="schForFamily(0)" value="搜 索" />
-    </form>
-  </div>
-</div>
-
-<!-- 健康档案 -->
-<div id="healthy_archive" class="hide">
-  {if $isexistHF neq 1}
-  <center>
-    <input type="button" class="input_submit" value="新建健康档案" onclick="sendHealthy({$user.user_id},'{$user.user_name}',{$user.sex})"/>
-  </center>
-  {else}
-  <!-- 顾客基本信息 -->
-  {$healthy_lifestyle}
-  <br />
-  {/if}
-</div>
-
-  <input type="hidden" value="users.php" id="URI"/>
-  <input type="hidden" value="user_id" id="field"/>
-  <input type="hidden" value="{$user.user_id}" id="ID"/>
-</div>
-</div>

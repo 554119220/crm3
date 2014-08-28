@@ -878,7 +878,6 @@ elseif ($_REQUEST['act'] == 'user_detail') {
      //$smarty->assign('marketing_checked_list', marketing_checked_list($user_id, 'marketing_name'));
 
      $healthy_lifestyle = $smarty->fetch('healthy_file_part.htm');
-     $smarty->assign('service_records',$smarty->fetch('service_records.htm'));
      $smarty->assign('healthy_lifestyle',$healthy_lifestyle);
      $smarty->assign('service_time', date('Y-m-d H:i'));
      $res['info'] = $smarty->fetch('users_detail.htm');
@@ -5184,8 +5183,7 @@ function get_return_list ($user_id)
         $GLOBALS['ecs']->table('back_order')." o WHERE user_id=$user_id";
     $res = $GLOBALS['db']->getAll($sql_select);
 
-    foreach ($res as &$val)
-    {
+    foreach ($res as &$val) {
         $val['return_time'] = local_date('Y-m-d H:i:s', $val['return_time']);
     }
 
