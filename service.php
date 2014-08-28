@@ -217,10 +217,8 @@ elseif ($_REQUEST['act'] == 'add_service')
     );
 
     //判断是否频繁或重复添加 第一次提交后1分才能提交第二次
-    // 一天只能对一位顾客服务一次
-    $refer_time = strtotime(date('Y-m-d 00:00:00')); 
     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('service').
-        " WHERE user_id=$user_id AND service_time>$refer_time";
+        " WHERE user_id=$user_id AND TIMESTAMPDIFF(MINUTE,FROM_UNIXTIME(service_time,'%Y-%m-%d %H:%i'),NOW())<1";
 
     $result = $GLOBALS['db']->getOne($sql_select);
 
@@ -505,8 +503,6 @@ elseif ($_REQUEST['act'] == 'service_search')
     $user_id     = intval($_POST['user_id']);
     $start_date  = strtotime($_POST['startTime']);
     $end_date    = strtotime($_POST['endTime']);
-    $page        = !empty($_REQUEST['page']) && $_REQUEST['page']>0 ? intval($_REQUEST['page']) : 1;
-    $record_size = 7;
     $where       = " WHERE s.user_id=$user_id ";
 
     $append      =  $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
@@ -3711,30 +3707,6 @@ elseif($_REQUEST['act'] == 'clear_tape'){
     die($json->encode($res));
 }
 
-/*多选员工*/
-elseif($_REQUEST['act'] == 'select_admin'){
-
-    $platform   = get_platform_list();
-
-    $sql_select = 'SELECT user_id,user_name,role_id FROM '.$GLOBALS['ecs']->table('admin_user').' WHERE status=1';
-    $admin_list = $GLOBALS['db']->getAll($sql_select);
-
-    foreach($platform as &$val){
-        foreach($admin_list as &$admin){
-            if($val['role_id'] == $admin['role_id']){
-                $val['admin_list'][] = $admin;
-            }
-        }
-    }
-
-    $smarty->assign('platform',$platform);
-    $res['message']    = $smarty->fetch('admin_list.htm');
-    $res['timeout']    = 0;
-    $res['btncontent'] = '确 定';
-    $res['title']      = '选择员工';
-
-    die($json->encode($res));
-}
 /* 函数区 */
 
 //服务类型
@@ -4027,17 +3999,17 @@ function sanitize_input_data($input_data)
 function sms_history()
 {
     // 通用参数
-    $filter['page_size']    = isset($_REQUEST['page_size']) ? intval($_REQUEST['page_size']) : 15;
-    $filter['current_page'] = isset($_REQUEST['page_no']) ? intval($_REQUEST['page_no']) : 1;
+    $filter['page_size']    = intval($_REQUEST['page_size']);
+    $filter['current_page'] = intval($_REQUEST['page_no']);
 
     $filter['page_size']    = $filter['page_size']    ? $filter['page_size'] : 15;
     $filter['current_page'] = $filter['current_page'] ? $filter['current_page'] : 1;
 
     // 查询参数
-    $filter['start']    = isset($_REQUEST['start']) ? strtotime($_REQUEST['start']) : 0;
-    $filter['end']      = isset($_REQUEST['end'])   ? strtotime($_REQUEST['end']) : 0;
-    $filter['admin_id'] = isset($_REQUEST['admin_id']) ? intval($_REQUEST['admin_id']) : '';
-    $filter['keywords'] = isset($_REQUEST['keywords']) ? mysql_real_escape_string($_REQUEST['keywords']) : '';
+    $filter['start']    = strtotime($_REQUEST['start']);
+    $filter['end']      = strtotime($_REQUEST['end']);
+    $filter['admin_id'] = intval($_REQUEST['admin_id']);
+    $filter['keywords'] = mysql_real_escape_string($_REQUEST['keywords']);
 
     $filter['start'] = $filter['start'] ? $filter['start'] : 0;
     $filter['end']   = $filter['end']   ? $filter['end']   : 0;
