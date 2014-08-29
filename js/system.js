@@ -952,3 +952,7 @@ function saveMaxCustomerResp(res) {
     document.getElementById('html_'+res.id).parentNode.innerText = res.maxCustomer;
     showMsg(res);
 }
+
+function listFeedback(obj){
+  Ajax.call('system.php?act=feedback_collect','readed='+obj.value,inMain,'GET','JSON');
+}

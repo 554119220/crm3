@@ -8,6 +8,7 @@
   </head>
   <body>
     <div style="width:70%;">
+      {if $behave eq 'upload'}
       <center style="background:#ccc">
         <h1>建议反馈</h1><hr width="80%">
         <p style="font-size:18px;padding:12px;">
@@ -17,7 +18,7 @@
       <div class="box_center" style="width:98%;height:430px;margin:0px;font-size:14px;">
         <form name="feedback_form" action="feedback.php?act=feedback_done" method="POST">
           <div>
-            简单的标题：<input type="text" name="title" value="" style=" height: 23px; margin-bottom: 3px; width: 240px;" autofocus/>
+            简单的标题：<input type="text" name="title" value="" style=" height: 23px; margin-bottom: 3px; width: 240px;" autofocus required/>
               <label>
                 <input type="radio" name="feedback_class" value="0" checked/> BUG问题
               </label>
@@ -34,6 +35,14 @@
           </span>
         </form>
       </div>
+      {elseif $behave eq 'see_more'}
+      <fieldset style=" border-radius: 0px; margin-left: 13px; " >
+        <legend style=" border: 1px solid #847CBF; background: #fff; padding: 6px;" >
+          {$feedback.title}
+        </legend> 
+        <div>{$feedback.message}</div>
+      </fieldset>
+      {/if}
     </div>
   </body>
 </html>

@@ -1,8 +1,8 @@
 <br ><h3>意见、bug反馈情况</h3>
 <br />
 <div>
-  <label><input type="radio" value="0" onclick=""> 未处理</label>
-  <label><input type="radio" value="1" onclick=""> 已解决</label>
+  <label><input type="radio" name="status" value="0" {if !$readed}checked{/if} onclick="listFeedback(this)"> 未处理</label>
+  <label><input type="radio" name="status" value="1" {if $readed}checked{/if} onclick="listFeedback(this)"> 已解决</label>
 </div>
 <div>
   <table class="wu_talbe_list wu_rb_border rb_border tr_hover" width="80%" cellpadding="0" cellspacing="0" name="feedback_table">
@@ -14,7 +14,7 @@
     {foreach from=$feedback_list item=val}
     <tr>
       <td style="text-align:left">
-        【{$val.sent_time}】{$val.user_name} 提交【{$val.message}】
+        【{$val.sent_time}】{$val.user_name} 提交<a target="_blank" href="feedback.php?act=feedback_more&message_id={$val.message_id}">【{$val.title}】</a>
       </td>
       <td>
         {if $val.readed}
@@ -28,7 +28,12 @@
     {/foreach}
     {else}
     <tr>
-      <td colspan="3">很好，暂时没有发现BUG</td>
+      <td colspan="3">
+        {if $readed}
+        不准偷懒，还有没解决的BUG呢！！
+        {else}很好，暂时没有发现BUG！！
+        {/if}
+      </td>
     </tr>
     {/if}
   </table>

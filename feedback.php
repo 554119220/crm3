@@ -18,8 +18,11 @@ $action = empty($_REQUEST['act']) ? 'feedback_form' : mysql_real_escape_string($
 
 if('feedback_form' == $action){
     create_html_editor('FCKeditor1');   
+    $smarty->assign('behave','upload');
     $smarty->display('feedback.htm');
 }
+
+//提交反馈
 elseif('feedback_done' == $action){
 
     $feedback_class = isset($_REQUEST['feedback_class']) ? intval($_REQUEST['feedback_class']) : 0;
@@ -44,7 +47,22 @@ elseif('feedback_done' == $action){
     }
 
     $smarty->assign('res',$res);
+    $smarty->assign('behave','upload');
     create_html_editor('FCKeditor1',$message);
+    $smarty->display('feedback.htm');
+}
+
+elseif('feedback_more' == $action){
+    $message_id = isset($_REQUEST['message_id']) ? intval($_REQUEST['message_id']) : 0;
+
+    if($message_id){
+        $sql_select = 'SELECT title,message FROM '.$GLOBALS['ecs']->table('admin_message').
+            " WHERE message_id=$message_id";
+       $feedback = $GLOBALS['db']->getRow($sql_select); 
+    }
+
+    $smarty->assign('feedback',$feedback);
+    $smarty->assign('behave','see_more');
     $smarty->display('feedback.htm');
 }
 

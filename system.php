@@ -1086,10 +1086,12 @@ elseif ($_REQUEST['act'] == 'save') {
 
 //收集反馈和意见
 elseif('feedback_collect' == $_REQUEST['act']){
-    $sql_select = 'SELECT m.message_id,LEFT(m.message,13) message,m.sent_time,read_time,m.readed,m.message_class,a.user_name FROM '.$GLOBALS['ecs']->table('admin_message').
+    $readed = isset($_REQUEST['readed']) ? intval($_REQUEST['readed']) : 0;
+
+    $sql_select = 'SELECT m.message_id,m.title,m.sent_time,read_time,m.readed,m.message_class,a.user_name FROM '.$GLOBALS['ecs']->table('admin_message').
         ' m LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' a ON a.user_id=m.sender_id'.
-        " WHERE readed=0 AND message_class IN(0,1)";
+        " WHERE readed=$readed AND message_class IN(0,1)";
 
     $feedback_list = $GLOBALS['db']->getAll($sql_select);
 
@@ -1102,6 +1104,7 @@ elseif('feedback_collect' == $_REQUEST['act']){
     }
 
     $smarty->assign('feedback_list',$feedback_list);
+    $smarty->assign('readed',$readed);
     $res['main'] = $smarty->fetch('feedback_list.htm');
     die($json->encode($res));
 }
