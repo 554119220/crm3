@@ -5,10 +5,10 @@
   <label><input type="radio" name="status" value="1" {if $readed}checked{/if} onclick="listFeedback(this)"> 已解决</label>
 </div>
 <div>
-  <table class="wu_talbe_list wu_rb_border rb_border tr_hover" width="80%" cellpadding="0" cellspacing="0" name="feedback_table">
+  <table class="wu_talbe_list wu_rb_border rb_border tr_hover" width="90%" cellpadding="0" cellspacing="0" id="feedback_table">
     <tr>
       <th width="60%">反馈内容</th>
-      <th width="20%">操作</th>
+      <th width="40%">操作</th>
     </tr>
     {if $feedback_list}
     {foreach from=$feedback_list item=val}
@@ -18,10 +18,10 @@
       </td>
       <td>
         {if $val.readed}
-        问题已经在【{$val.read_time}】解决 
-        <button class="btn_new" onclick="dealFeedback($val.message_id,0)">未处理</button>
+        BUG已在【{$val.read_time}】解决 
+        <button class="btn_new" value="0" onclick="dealFeedback({$val.message_id},this)">BUG仍存在</button>
         {else}
-        <button class="btn_new" onclick="dealFeedback($val.message_id,1)">解决</button>
+        <button class="btn_new" value="1" onclick="dealFeedback({$val.message_id},this)">解 决</button>
         {/if}
       </td>
     </tr>

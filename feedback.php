@@ -66,4 +66,34 @@ elseif('feedback_more' == $action){
     $smarty->display('feedback.htm');
 }
 
+//改变BUG反馈状态
+elseif('deal_feedback' == $action){
+
+    $message_id = isset($_REQUEST['msg_id']) ? intval($_REQUEST['msg_id']) : 0;
+    $item       = isset($_REQUEST['item']) ? intval($_REQUEST['item']) : 0;
+
+
+    $res = array(
+        'req_msg'    => true,
+        'timeout'    => 2000,
+        'message'    => '',
+        'code'       => false,
+        'tr_index'   => isset($_REQUEST['tr_index']) ? intval($_REQUEST['tr_index']) : 0,
+        'table_name' => isset($_REQUEST['table_name']) ? $_REQUEST['table_name'] : '',
+    );
+
+    if($message_id){
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('admin_message').
+            " SET readed=IF($item,1,0),read_time=IF($item,{$_SERVER['REQUEST_TIME']},0) WHERE message_id=$message_id ";
+
+        $res['code']    = $GLOBALS['db']->query($sql_update);
+        $res['message'] = $res['code'] ? '操作成功' : '操作失败';
+    }else{
+        $res['message'] = '操作失败';
+    }
+
+    die($json->encode($res));
+
+}
+
 ?>

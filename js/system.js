@@ -956,3 +956,10 @@ function saveMaxCustomerResp(res) {
 function listFeedback(obj){
   Ajax.call('system.php?act=feedback_collect','readed='+obj.value,inMain,'GET','JSON');
 }
+
+/*更改BUG反馈状态修改*/
+function dealFeedback(msg_id,obj){
+  var trIndex = obj.parentNode.parentNode.rowIndex;
+
+  Ajax.call('feedback.php?act=deal_feedback','msg_id='+msg_id+'&item='+obj.value+'&tr_index='+trIndex+'&table_name='+'feedback_table',delTr,'GET','JSON');
+}
