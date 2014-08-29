@@ -1,0 +1,35 @@
+<br ><h3>意见、bug反馈情况</h3>
+<br />
+<div>
+  <label><input type="radio" value="0" onclick=""> 未处理</label>
+  <label><input type="radio" value="1" onclick=""> 已解决</label>
+</div>
+<div>
+  <table class="wu_talbe_list wu_rb_border rb_border tr_hover" width="80%" cellpadding="0" cellspacing="0" name="feedback_table">
+    <tr>
+      <th width="60%">反馈内容</th>
+      <th width="20%">操作</th>
+    </tr>
+    {if $feedback_list}
+    {foreach from=$feedback_list item=val}
+    <tr>
+      <td style="text-align:left">
+        【{$val.sent_time}】{$val.user_name} 提交【{$val.message}】
+      </td>
+      <td>
+        {if $val.readed}
+        问题已经在【{$val.read_time}】解决 
+        <button class="btn_new" onclick="dealFeedback($val.message_id,0)">未处理</button>
+        {else}
+        <button class="btn_new" onclick="dealFeedback($val.message_id,1)">解决</button>
+        {/if}
+      </td>
+    </tr>
+    {/foreach}
+    {else}
+    <tr>
+      <td colspan="3">很好，暂时没有发现BUG</td>
+    </tr>
+    {/if}
+  </table>
+</div>

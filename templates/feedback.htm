@@ -17,7 +17,7 @@
       <div class="box_center" style="width:98%;height:430px;margin:0px;font-size:14px;">
         <form name="feedback_form" action="feedback.php?act=feedback_done" method="POST">
           <div>
-            <span>
+            简单的标题：<input type="text" name="title" value="" style=" height: 23px; margin-bottom: 3px; width: 240px;" autofocus/>
               <label>
                 <input type="radio" name="feedback_class" value="0" checked/> BUG问题
               </label>
@@ -27,7 +27,6 @@
             </span>
             <span>
               <font color="{if $res.code}green{else}red{/if}">{$res.message}</font>
-            </span>
           </div>
           <div>{$FCKeditor}</div>
           <span style="float:right;">

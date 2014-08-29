@@ -1086,14 +1086,19 @@ elseif ($_REQUEST['act'] == 'save') {
 
 //收集反馈和意见
 elseif('feedback_collect' == $_REQUEST['act']){
-    $sql_selelct = 'SELECT m.message_id,m.message,m.message_class,a.user_name FROM '.$GLOBALS['ecs']->table('admin_message').
+    $sql_select = 'SELECT m.message_id,LEFT(m.message,13) message,m.sent_time,read_time,m.readed,m.message_class,a.user_name FROM '.$GLOBALS['ecs']->table('admin_message').
         ' m LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' a ON a.user_id=m.sender_id'.
-        " WHERE readed=0 AND message_id IN(0,1)";
+        " WHERE readed=0 AND message_class IN(0,1)";
 
     $feedback_list = $GLOBALS['db']->getAll($sql_select);
 
     if($feedback_list){
+        foreach($feedback_list as &$val){
+            $val['sent_time'] = date('Y-m-d H时',$val['sent_time']);
+            $val['read_time'] = empty($val['read_time']) ? '-' : date('Y-m-d H时',$val['read_time']);
+            $val['message_class'] = $val['message_class'] ? '体验问题' : 'BUG问题';
+        }
     }
 
     $smarty->assign('feedback_list',$feedback_list);
