@@ -1110,6 +1110,49 @@ elseif('feedback_collect' == $_REQUEST['act']){
     die($json->encode($res));
 }
 
+//更新日志
+elseif('change_log' == $_REQUEST['act']){
+    $behave = isset($_REQUEST['behave']) ? $_REQUEST['behave'] : 'change_log';
+
+    if('change_log' == $behave){
+        $sql_select = 'SELECT year FROM '.$GLOBALS['ecs']->table('changelog').
+            ' GROUP BY year ORDER BY year DESC';
+        $years = $GLOBALS['db']->getCol($sql_select);
+
+        if($years){
+            $sql_select = 'SELECT c.title,c.log_text,c.upgrade_time,c.year,a.user_name FROM '.
+                $GLOBALS['ecs']->table('changelog').
+                ' c LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+                ' a ON c.developer=a.user_id';
+
+            $log_list = $GLOBALS['db']->getAll($sql_select);    
+
+            foreach($years as &$val){
+                foreach($log_list as &$log){
+                    if($val == $log['year']){
+                        $log['upgrade_time'] = date('Y-m-d H:i',$log['upgrade_time']);
+                        $change_log[$val][] = $log;
+                    }
+                }
+            }
+        }
+
+    }elseif('add_change_log' == $behave){
+
+    }
+
+    $developer_arr = array('吴远航','苏鑫');
+
+    if(in_array($_SESSION['admin_name'],$developer_arr)){
+        $smarty->assign('developer','developer');
+    }
+
+    $smarty->assign('change_log',$change_log);
+    $res['main'] = $smarty->fetch('changelog.htm');
+
+    die($json->encode($res));
+}
+
 /*
  *  函数部分 
  */

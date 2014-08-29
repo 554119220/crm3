@@ -71,3 +71,7 @@ textarea[class='content_text']{width:93%;height:380px;padding:6px;resize:none;ov
 .post_body{padding-left:52px;}
 .comment_div{width:60%;}
 .comment_post{border-radius:5px; border:1px solid #a2d246;padding:12px;}
+
+/*更新日志样式*/
+.history-date summary.green h3{ color: #1db702; }
+.history-date ul li h3 { float: left; width: 168px; text-align: right; padding-right: 19px; color: #c3c3c3; font: normal 18px/16px Arial; cursor: pointer; margin-top: 4px; }
