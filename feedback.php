@@ -72,7 +72,6 @@ elseif('deal_feedback' == $action){
     $message_id = isset($_REQUEST['msg_id']) ? intval($_REQUEST['msg_id']) : 0;
     $item       = isset($_REQUEST['item']) ? intval($_REQUEST['item']) : 0;
 
-
     $res = array(
         'req_msg'    => true,
         'timeout'    => 2000,

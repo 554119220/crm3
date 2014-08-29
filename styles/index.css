@@ -216,6 +216,7 @@ color: #444;
   z-index: 10; 
 }
 
+/*意见反馈*/
 .ibx_advice_ctx{
   float: left; line-height: 42px; height: 42px; width: 80px; border: 1px solid #D6D6D6; border-left: none;  color: #000; font-weight: bolder; font-size: 14px; text-align: center;} 
 
