@@ -28,12 +28,6 @@ Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       </table>
       </session>
     </div>
-    <div class="ibx_advice" onmouseover="showThis(this,130)" >
-      <span class="ibx_advice_logo" onclick="hideAdvice(this.parentNode)">BUG</span>
-      <div class="ibx_advice_ctx">
-        <a target="_blank" href="feedback.php?act=feedback_form">BUG反馈</a>
-      </div>
-    </div>
     <div class="white_content" id="div_pop_ups" style="display:none">
       <div id="pop_ups"></div>
     </div>
@@ -66,46 +60,46 @@ Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- 图表插件 -->
 {insert_scripts files="esl.js"}
 <script type="text/javascript" language="javascript" charset="utf-8">
-var admin_id = '{$admin_id}';
-var platform = 'jingdong';
-var timeout  = 600;
+  var admin_id = '{$admin_id}';
+  var platform = 'jingdong';
+  var timeout  = 600;
 
-function synchro () {
+  function synchro () {
     var url = 'synchro.php?act=synchro&admin_id='+admin_id+'&platform='+platform;
     Ajax.call(url, '', synchroResponse,'GET','JSON');
     setTimeout(synchro, timeout);
     if (timeout < 600000) {
-        timeout *= 10;
+      timeout *= 10;
     }
-}
+  }
 
 function synchroResponse (res) {
-    if (res.platform) {
-        if (res.uri) {
-            window.open(res.uri, '', 'width=500,height=500');
-        }
-
-        switch (res.platform) {
-            case 'jingdong'   : 
-                if (104 == admin_id || 109 == admin_id) {
-                    platform = 'taobao';
-                } else if (311 == admin_id || 101 == admin_id) {
-                    platform = 'taobao01';
-                } else if (318 == admin_id) {
-                    platform = 'taobao02';
-                } else if (357 == admin_id) {
-                    platform = 'taobao03';
-                } else {
-                    platform = 'yhd';
-                }
-                break;
-            case 'taobao'   : platform = 'yhd';      break;
-            case 'taobao01' : platform = 'yhd';      break;
-            case 'taobao02' : platform = 'yhd';      break;
-            case 'yhd'      : platform = 'jingdong'; break;
-            case 'yhd'      : platform = 'suning';   break;
-        }
+  if (res.platform) {
+    if (res.uri) {
+      window.open(res.uri, '', 'width=500,height=500');
     }
+
+    switch (res.platform) {
+      case 'jingdong'   : 
+        if (104 == admin_id || 109 == admin_id) {
+          platform = 'taobao';
+        } else if (311 == admin_id || 101 == admin_id) {
+          platform = 'taobao01';
+        } else if (318 == admin_id) {
+          platform = 'taobao02';
+        } else if (357 == admin_id) {
+          platform = 'taobao03';
+        } else {
+          platform = 'yhd';
+        }
+        break;
+      case 'taobao'   : platform = 'yhd';      break;
+      case 'taobao01' : platform = 'yhd';      break;
+      case 'taobao02' : platform = 'yhd';      break;
+      case 'yhd'      : platform = 'jingdong'; break;
+      case 'yhd'      : platform = 'suning';   break;
+    }
+  }
 }
 
 synchro();

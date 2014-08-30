@@ -306,18 +306,3 @@ function refreshTaskResp(res){
   var taskProgress = document.getElementById('task_progress_view');
   taskProgress.innerHTML = res.main;
 }
-
-/*意见反馈*/
-function hideAdvice(obj){
-  if(obj.offsetWidth == 40){
-    clearInterval(obj.action); 
-  }
-
-  obj.action = setInterval(function () {
-    if (obj.offsetWidth == 40) {
-      clearInterval(obj.action);
-    } else {
-      obj.style.width = (obj.offsetWidth - 10) + 'px';
-    }
-  }, 10);
-}
