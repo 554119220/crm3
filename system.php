@@ -1114,31 +1114,26 @@ elseif('feedback_collect' == $_REQUEST['act']){
 elseif('change_log' == $_REQUEST['act']){
     $behave = isset($_REQUEST['behave']) ? $_REQUEST['behave'] : 'change_log';
 
-    if('change_log' == $behave){
-        $sql_select = 'SELECT year FROM '.$GLOBALS['ecs']->table('changelog').
-            ' GROUP BY year ORDER BY year DESC';
-        $years = $GLOBALS['db']->getCol($sql_select);
+    if('add_change_log' == $behave){
+        $title    = isset($_REQUEST['title']) ? mysql_real_escape_string($_REQUEST['title']) : '';
+        $log_text = isset($_REQUEST['log_text']) ? mysql_real_escape_string($_REQUEST['log_text']) : '';
 
-        if($years){
-            $sql_select = 'SELECT c.title,c.log_text,c.upgrade_time,c.year,a.user_name FROM '.
-                $GLOBALS['ecs']->table('changelog').
-                ' c LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
-                ' a ON c.developer=a.user_id';
+        $res = array(
+            'req_msg' => true,
+            'message' => '',
+            'timeout' => 2000,
+            'code'    => false,
+        );
 
-            $log_list = $GLOBALS['db']->getAll($sql_select);    
+        if (!empty($title)) {
+            $year = date('Y');
+            $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('changelog').
+                '(log_text,title,upgrade_time,developer,year)'.
+                "VALUES('$log_text','$title',{$_SERVER['REQUEST_TIME']},{$_SESSION['admin_id']},$year)";
 
-            foreach($years as &$val){
-                foreach($log_list as &$log){
-                    if($val == $log['year']){
-                        $log['upgrade_time'] = date('Y-m-d H:i',$log['upgrade_time']);
-                        $change_log[$val][] = $log;
-                    }
-                }
-            }
+            $res['code'] = $GLOBALS['db']->query($sql_insert);
+            $res['message'] = $res['code'] ? '提交成功' : '提交失败';
         }
-
-    }elseif('add_change_log' == $behave){
-
     }
 
     $developer_arr = array('吴远航','苏鑫');
@@ -1147,6 +1142,29 @@ elseif('change_log' == $_REQUEST['act']){
         $smarty->assign('developer','developer');
     }
 
+    $sql_select = 'SELECT year FROM '.$GLOBALS['ecs']->table('changelog').
+        ' GROUP BY year ORDER BY year DESC';
+    $years = $GLOBALS['db']->getCol($sql_select);
+
+    if($years){
+        $sql_select = 'SELECT c.title,c.log_text,c.upgrade_time,c.year,a.user_name FROM '.
+            $GLOBALS['ecs']->table('changelog').
+            ' c LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+            ' a ON c.developer=a.user_id ORDER BY upgrade_time DESC';
+
+        $log_list = $GLOBALS['db']->getAll($sql_select);    
+
+        foreach($years as &$val){
+            foreach($log_list as &$log){
+                if($val == $log['year']){
+                    $log['upgrade_time'] = date('Y-m-d H:i',$log['upgrade_time']);
+                    $change_log[$val][] = $log;
+                }
+            }
+        }
+    }
+
+    $smarty->assign('developer','developer');
     $smarty->assign('change_log',$change_log);
     $res['main'] = $smarty->fetch('changelog.htm');
 

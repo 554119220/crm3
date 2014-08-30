@@ -1,40 +1,46 @@
 <br /><h2>更新日志</h2><br />
-<div style="width:70%">
+<div style="width:70%;margin-top:32px;">
   {if $developer}
-  <input type="button" name="name" value="value"/>
-  <div>
-    <form action="javascript:void(0)" onsubmit="addChangeLog(this)">
+  <details>
+  <summary style="font-size:32px; color: #EB6C71; border: 1px dashed; padding-left: 64px; cursor:pointer">添加更新日志</summary>
+  <br />
+  <div style="padding:6px;border:1px dashed #EB6C71">
+    <form action="javascript:void(0)" onsubmit="addChangeLog(this)" name="upgrade_form">
      <table cellspacing="0" cellpadding="0" width="90%" class="">
        <tr>
-         <th>标题：</th>
-         <td>
-           <input type="text" name="title" value="" autofocus require />
+         <th style="padding-bottom:15px;" >标题：</th>
+         <td style="padding-bottom:15px;">
+           <input type="text" name="title" autofocus required style="width:99%"/>
          </td>
        </tr>
        <tr>
          <th>更新内容：</th>
          <td>
-           <textarea name="log_text" style="resize:none;width:128px;height:360px;"></textarea>
+           <textarea name="log_text" style="padding:3px;resize:vertical;width:100%;height:180px;" placeholder="更新内容不能为空"></textarea>
          </td>
        </tr>
        <tr>
-         <td colspan="2">
+         <td colspan="2" style="text-align:right">
            <input type="submit" value="提 交" class="input_submit"/>
          </td>
        </tr>
      </table> 
     </form>
   </div>
-  <hr />
+  </details>
   {/if}
   {if $change_log}
     {foreach from=$change_log item=val key=k}
-    <details class="history-date">
-    <summary class="green"><h3>{$k}</h3></summary>
+    <details class="history-date" open>
+    <summary class="green"><span class="title">{$k}</span></summary>
     {foreach from=$val item=log}
-    <details>
-    <summary>{$log.upgrade_time}</summary>
-    {$log.log_text}
+    <details style="margin-left:24px;">
+    <summary class="in_summary">
+    <span style="margin-right:12px;">{$log.upgrade_time}</span>{$log.title}
+    </summary>
+    <div class="comment">
+      {$log.log_text}
+    </div>
     </details>
     {/foreach}
     </details>
