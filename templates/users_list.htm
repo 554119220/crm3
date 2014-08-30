@@ -181,13 +181,14 @@
         </tr> 
         <tr>
           <td>
-            <select onchange="sendUsersTo(this)" id="admin_id">
+            <select id="admin_id">
               <option value="0">请选择</option>
 			   <option value="74">临时账号</option>
               {foreach from=$by_send_to_admin item=val}
               <option value="{$val.user_id}">{$val.user_name}</option>
               {/foreach}
             </select>
+            <input type="button" onclick="sendUsersTo(this)" value="确定" class="b_submit"/>
           </td>
         </tr> 
       </table>
