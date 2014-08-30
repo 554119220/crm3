@@ -876,19 +876,19 @@ function addChangeLog(obj) {
 	var title = obj.elements['title'].value;
 	var logText = obj.elements['log_text'].value;
 
-  if(logText.length <= 0){
-    var msg = [];
-    msg['timeout'] = 2000;
-    msg['message'] = '更新内容不能为空';
-    showMsg(msg);
-  }else{
-    Ajax.call('system.php?act=change_log','behave='+'add_change_log'+'&title='+title+'&log_text='+logText,showAndInmain,'GET','JSON');
-  }
+	if (logText.length <= 0) {
+		var msg = [];
+		msg['timeout'] = 2000;
+		msg['message'] = '更新内容不能为空';
+		showMsg(msg);
+	} else {
+		Ajax.call('system.php?act=change_log', 'behave=' + 'add_change_log' + '&title=' + title + '&log_text=' + logText, showAndInmain, 'GET', 'JSON');
+	}
 }
 
 /*提示并加载内容*/
-function showAndInmain(res){
-  showMsg(res);
-  inMain(res);
+function showAndInmain(res) {
+	showMsg(res);
+	inMain(res);
 }
 

@@ -655,7 +655,7 @@ elseif ($_REQUEST['act'] == 'pc_manager')
     $res['main'] = $smarty->fetch('pc_manager.htm');
     die($json->encode($res));
 }
- */
+*/
 //安排座位员工列表
 elseif ($_REQUEST['act'] == 'get_temp_admin')
 {
@@ -1092,7 +1092,7 @@ elseif('feedback_collect' == $_REQUEST['act']){
     $sql_select = 'SELECT m.message_id,m.title,m.sent_time,read_time,m.readed,m.message_class,a.user_name FROM '.$GLOBALS['ecs']->table('admin_message').
         ' m LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' a ON a.user_id=m.sender_id'.
-        " WHERE readed=$readed AND message_class IN(0,1)";
+        " WHERE readed=$readed AND message_class IN(0,1) ORDER BY sent_time DESC";
 
     $feedback_list = $GLOBALS['db']->getAll($sql_select);
 
