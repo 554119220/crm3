@@ -2,8 +2,8 @@
 /*=============================================================================
 #     FileName: feedback.php
 #         Desc: feedback for crm
-#       Author: YuanZaifang
-#        Email: 81330053@qq.com
+#       Author: wuyuanhang
+#        Email: 1828343841@qq.com
 #     HomePage: http://www.kjrs365.com
 #      Version: 0.0.1
 #   LastChange: 2014-08-27 15:49:18
@@ -31,12 +31,12 @@ elseif('feedback_done' == $action){
     $res['code']    = false;
 
     if(!empty($message)){
-        $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('admin_message').
+        $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('admin_feedback').
            " WHERE sender_id={$_SESSION['admin_id']} AND receiver_id=1 AND message='$message'  "; 
         if($GLOBALS['db']->getOne($sql_select)){
             $res['message'] = '请勿重复添加';
         }else{
-            $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('admin_message').
+            $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('admin_feedback').
                 '(sender_id,receiver_id,sent_time,message_class,title,message)VALUES('.
                 "{$_SESSION['admin_id']},1,{$_SERVER['REQUEST_TIME']},$feedback_class,'$title','$message')";
             $res['code']    = $GLOBALS['db']->query($sql_insert);
@@ -56,7 +56,7 @@ elseif('feedback_more' == $action){
     $message_id = isset($_REQUEST['message_id']) ? intval($_REQUEST['message_id']) : 0;
 
     if($message_id){
-        $sql_select = 'SELECT title,message FROM '.$GLOBALS['ecs']->table('admin_message').
+        $sql_select = 'SELECT title,message FROM '.$GLOBALS['ecs']->table('admin_feedback').
             " WHERE message_id=$message_id";
        $feedback = $GLOBALS['db']->getRow($sql_select); 
     }
@@ -82,7 +82,7 @@ elseif('deal_feedback' == $action){
     );
 
     if($message_id){
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('admin_message').
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('admin_feedback').
             " SET readed=IF($item,1,0),read_time=IF($item,{$_SERVER['REQUEST_TIME']},0) WHERE message_id=$message_id ";
 
         $res['code']    = $GLOBALS['db']->query($sql_update);

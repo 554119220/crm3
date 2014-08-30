@@ -1089,7 +1089,7 @@ elseif ($_REQUEST['act'] == 'save') {
 elseif('feedback_collect' == $_REQUEST['act']){
     $readed = isset($_REQUEST['readed']) ? intval($_REQUEST['readed']) : 0;
 
-    $sql_select = 'SELECT m.message_id,m.title,m.sent_time,read_time,m.readed,m.message_class,a.user_name FROM '.$GLOBALS['ecs']->table('admin_message').
+    $sql_select = 'SELECT m.message_id,m.title,m.sent_time,read_time,m.readed,m.message_class,a.user_name FROM '.$GLOBALS['ecs']->table('admin_feedback').
         ' m LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' a ON a.user_id=m.sender_id'.
         " WHERE readed=$readed AND message_class IN(0,1) ORDER BY sent_time DESC";

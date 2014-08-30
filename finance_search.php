@@ -284,7 +284,7 @@ function get_user_id($table_name,$where,$keyword){
         $user_id = array();
 
         if(in_array($table_name,array('userssyn','users'))){
-            $where .= ' AND is_black=0';
+            $where .= ' AND is_black IN(0,4)';
 
             /*先在顾客表寻找*/
             $sql_select = 'SELECT user_id FROM '.$GLOBALS['ecs']->table($table_name)
