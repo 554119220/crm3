@@ -1157,7 +1157,7 @@ elseif('change_log' == $_REQUEST['act']){
         foreach($years as &$val){
             foreach($log_list as &$log){
                 if($val == $log['year']){
-                    $log['upgrade_time'] = date('Y-m-d H:i',$log['upgrade_time']);
+                    $log['upgrade_time'] = date('m-d H:i',$log['upgrade_time']);
                     $change_log[$val][] = $log;
                 }
             }
