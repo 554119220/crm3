@@ -3438,7 +3438,7 @@ elseif ($_REQUEST['act'] == 'collect_tape') {
 
 /*
  * 通话录音收藏
- * public 0 私人 1 公开 2 回收站 
+ * public 0 私人 1 公开 2 回收站 3 面向所有员工公开
  */
 elseif ($_REQUEST['act'] == 'tape_favorite') {
     $where                  = ' WHERE 1 ';
@@ -3465,6 +3465,9 @@ elseif ($_REQUEST['act'] == 'tape_favorite') {
         case 'collect_other_public' :
             $where .= " AND t.public=0 AND original_favor_id<>0";
             break;
+        case 'boutique' :
+            $where .= ' AND t.public=3';
+            break;
         }
     }else{
         switch($tape_collect_copyright){
@@ -3482,6 +3485,9 @@ elseif ($_REQUEST['act'] == 'tape_favorite') {
             break;
         case 'collect_other_public' :
             $where .= " AND t.public=0 AND t.admin_id={$_SESSION['admin_id']} AND original_favor_id<>0";
+            break;
+        case 'boutique' :
+            $where .= ' AND t.public=3';
             break;
         }
     }
