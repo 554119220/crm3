@@ -166,7 +166,7 @@
     </div>
     {if $full_page}
 </div>
-<div id="recycle" onmouseover="showThis(this, 170)" onmouseout="showThis(this, 0)" onclick="stopAction(this)">
+<div id="recycle" onmouseover="showThis(this, 190)" onmouseout="showThis(this, 0)" onclick="stopAction(this)">
     <h3>中转站</h3>
     <h3></h3>
     <ul id="user_list">
@@ -188,7 +188,7 @@
               <option value="{$val.user_id}">{$val.user_name}</option>
               {/foreach}
             </select>
-            <input type="button" onclick="sendUsersTo()" value="确 定" class="b_submit"/>
+            <input type="button" onclick="sendUsersTo()" value="确 定" class="b_submit" style="padding:3px;"/>
           </td>
         </tr> 
       </table>
