@@ -3759,7 +3759,6 @@ elseif ($_REQUEST['act'] == 'send_users') {
     // 该客服已在维护的顾客数量
     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users')." WHERE admin_id=$send_to";
     $users_count = $GLOBALS['db']->getOne($sql_select);
-    
     if ($admin_info['max_customer'] <= $users_count) {
         $res = array (
             'req_msg' => true,
@@ -4205,7 +4204,6 @@ elseif($_REQUEST['act'] == 'user_combine'){
         $group_by    = '';
 
         if($keyword != ''){
-            //$where .= ' AND u.user_id=ud.user_id AND u.user_id=uc.user_id ';
             if($contact_way == 'address'){
                 $where .= " AND ud.address LIKE '%$keyword%'";
                 $group_by = ' GROUP BY ud.address';
@@ -4230,7 +4228,7 @@ elseif($_REQUEST['act'] == 'user_combine'){
             $GLOBALS['ecs']->table('user_contact').' uc ON u.user_id=uc.user_id'.$where.$group_by;
 
         $total = $GLOBALS['db']->getCol($sql_select);
-        $total = array_sum($total);
+        $total = count($total);
 
         if($total <= 1){
             $smarty->assign('repeat_user_report','没有搜索到重复顾客');
@@ -5164,7 +5162,6 @@ function get_user_services ($user_id)
         $GLOBALS['ecs']->table('service').' s,'.$GLOBALS['ecs']->table('service_class').' c,'.
         $GLOBALS['ecs']->table('service_manner').' m WHERE s.service_manner=m.manner_id AND '.
         " s.service_class=c.class_id AND s.user_id=$user_id ORDER BY s.service_time DESC";
-
     $res = $GLOBALS['db']->getAll($sql_select);
 
     foreach ($res as &$val) {
@@ -5175,6 +5172,7 @@ function get_user_services ($user_id)
     return $res;
 }
 
+
 /**
  * 获取退货记录
  */
@@ -5184,7 +5182,8 @@ function get_return_list ($user_id)
         $GLOBALS['ecs']->table('back_order')." o WHERE user_id=$user_id";
     $res = $GLOBALS['db']->getAll($sql_select);
 
-    foreach ($res as &$val) {
+    foreach ($res as &$val)
+    {
         $val['return_time'] = local_date('Y-m-d H:i:s', $val['return_time']);
     }
 
