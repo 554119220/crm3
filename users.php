@@ -3759,6 +3759,7 @@ elseif ($_REQUEST['act'] == 'send_users') {
     // 该客服已在维护的顾客数量
     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users')." WHERE admin_id=$send_to";
     $users_count = $GLOBALS['db']->getOne($sql_select);
+    
     if ($admin_info['max_customer'] <= $users_count) {
         $res = array (
             'req_msg' => true,

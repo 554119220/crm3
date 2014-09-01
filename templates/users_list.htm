@@ -168,15 +168,15 @@
 </div>
 <div id="recycle" onmouseover="showThis(this, 170)" onmouseout="showThis(this, 0)" onclick="stopAction(this)">
     <h3>中转站</h3>
-    <h3><label><input type="checkbox" onclick="checkboxSelected('user_list')">全/反选</label></h3>
+    <h3></h3>
     <ul id="user_list">
     </ul>
     <div>
-      <form action="javascript:void(0)" onsubmit="getBySendAdmin(this)">
+      <form action="javascript:void(0)">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
-            <input type="text" name="admin_name" value="" placeholder="员工姓名(回车搜索)" />
+            <input type="text" name="admin_name" value="" placeholder="员工姓名" oninput="getBySendAdmin(this.form)"/>
           </td>
         </tr> 
         <tr>
@@ -188,7 +188,7 @@
               <option value="{$val.user_id}">{$val.user_name}</option>
               {/foreach}
             </select>
-            <input type="button" onclick="sendUsersTo(this)" value="确定" class="b_submit"/>
+            <input type="button" onclick="sendUsersTo()" value="确 定" class="b_submit"/>
           </td>
         </tr> 
       </table>

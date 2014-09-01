@@ -455,13 +455,12 @@ function putAccountInBlackRes(res) {
   showPop(res);
 }
 
-
-
 /**
- * 添加顾客到回收站
+ * 添加顾客到中转站
  */
 function addToRecycle (obj) {
     var userListObj = document.getElementById('user_list');
+
     if (!obj.checked) {
         checkboxList = userListObj.getElementsByTagName('input');
         for (var i = checkboxList.length - 1; i >= 0; i--){
@@ -481,9 +480,10 @@ function addToRecycle (obj) {
         inputObj.name  = 'user_id[]';
         inputObj.type  = 'checkbox';
 
+        inputObj.setAttribute('checked',true);
         spanObj.innerText = '×';
         spanObj.onclick = function () {
-            this.parentNode.parentNode.removeChild(this.parentNode);
+          this.parentNode.parentNode.removeChild(this.parentNode);
         };
 
         labelObj.appendChild(inputObj);
@@ -494,394 +494,408 @@ function addToRecycle (obj) {
 
         userListObj.appendChild(liObj);
     }
+
+    var userList = userListObj.getElementsByTagName('input');
+
+    if(userList.length <= 0){
+      document.getElementById('recycle').style.width = '0px';
+    }else{
+      document.getElementById('recycle').style.width = '170px';
+    }
+
+    var recycle = document.getElementById('recycle');
+    stopAction(recycle);
+
 }
 
 /**
  * 转顾客给
  */
 function sendUsersTo (obj) {
-    if (obj.value <= 0) {
-        var msg = {req_msg:true, timeout:2000, message:'请选择要转给的客服！'};
-        showMsg(msg);
+  var obj = document.getElementById('admin_id');
+
+  if (obj.value <= 0) {
+    var msg = {req_msg:true, timeout:2000, message:'请选择要转给的客服！'};
+    showMsg(msg);
+  }
+
+  var boxObj = document.getElementById('user_list');
+  var userListObj = boxObj.getElementsByTagName('input');
+
+  var userList = [];
+  for (var i = userListObj.length - 1; i >= 0; i--){
+    if (userListObj[i].checked) {
+      userList.push(userListObj[i].value);
     }
+  }
 
-    var boxObj = document.getElementById('user_list');
-    var userListObj = boxObj.getElementsByTagName('input');
+  if (userList.length <= 0) {
+    var msg = {req_msg:true, timeout:2000, message:'请选择要转走的顾客！'};
+    showMsg(msg);
+  }
 
-    var userList = [];
-    for (var i = userListObj.length - 1; i >= 0; i--){
-        if (userListObj[i].checked) {
-            userList.push(userListObj[i].value);
-        }
-    }
+  userList = JSON.stringify(userList);
 
-    if (userList.length <= 0) {
-        var msg = {req_msg:true, timeout:2000, message:'请选择要转走的顾客！'};
-        showMsg(msg);
-    }
-
-    userList = JSON.stringify(userList);
-
-    Ajax.call('users.php', 'act=send_users&user_list='+userList+'&send_to='+obj.value, sendUsersToResp, 'POST', 'JSON');
+  Ajax.call('users.php', 'act=send_users&user_list='+userList+'&send_to='+obj.value, sendUsersToResp, 'POST', 'JSON');
 }
 
 function sendUsersToResp (res) {
-    var userList = res.user_list.replace(/[^\d,]/g, '').split(',');
-    var checkboxList = document.getElementById('user_list').getElementsByTagName('input');
-    for (var j = userList.length - 1; j >= 0; j--){
-        for (var i = checkboxList.length - 1; i >= 0; i--) {
-            if (userList[j] == checkboxList[i].value) {
-                checkboxList[i].onclick = function () {
-                    checkboxList[i].parentNode.parentNode.parentNode.removeChild(checkboxList[i].parentNode.parentNode);
-                }();
+  var userList = res.user_list.replace(/[^\d,]/g, '').split(',');
+  var checkboxList = document.getElementById('user_list').getElementsByTagName('input');
+  for (var j = userList.length - 1; j >= 0; j--){
+    for (var i = checkboxList.length - 1; i >= 0; i--) {
+      if (userList[j] == checkboxList[i].value) {
+        checkboxList[i].onclick = function () {
+          checkboxList[i].parentNode.parentNode.parentNode.removeChild(checkboxList[i].parentNode.parentNode);
+        }();
 
-                userList.pop();
-                break;
-            }
-        }
+        userList.pop();
+        break;
+      }
     }
+  }
 
-    showMsg(res);
+  showMsg(res);
 }
 
 function showThis (obj, dstWidth) {
-    clearInterval(obj.action);
-    var speed = dstWidth > 0 ? 10 : -10;
-    obj.action = setInterval(function () {
-      if (obj.offsetWidth == dstWidth) {
-        clearInterval(obj.action);
-      } else {
-        obj.style.width = obj.offsetWidth + speed + 'px';
-      }
-    }, 10);
+  clearInterval(obj.action);
+  var speed = dstWidth > 0 ? 10 : -10;
+  obj.action = setInterval(function () {
+    if (obj.offsetWidth == dstWidth) {
+      clearInterval(obj.action);
+    } else {
+      obj.style.width = obj.offsetWidth + speed + 'px';
+    }
+  }, 10);
 }
 
 function stopAction (obj) {
   if (obj.onmouseout == null || obj.onmouseover == null) {
-        obj.onmouseover = function () {
-            showThis(this, 170);
-        };
+    obj.onmouseover = function () {
+      showThis(this, 170);
+    };
 
-        obj.onmouseout = function () {
-            showThis(this, 0);
-        };
-    } else {
-        obj.onmouseout  = null;
-        obj.onmouseover = null;
-    }
+    obj.onmouseout = function () {
+      showThis(this, 0);
+    };
+  } else {
+    obj.onmouseout  = null;
+    obj.onmouseover = null;
+  }
 }
 
 /**
  * 保存联系方式
  */
 function saveContactInfo () {
-    var theForm = document.forms['contactInfo'];
-    var rowObj  = document.getElementById(theForm.elements['contact_name'].value+'Row');
+  var theForm = document.forms['contactInfo'];
+  var rowObj  = document.getElementById(theForm.elements['contact_name'].value+'Row');
 
-    var selectedIndex = theForm.elements['contact_name'].selectedIndex;
-    var region = '';
+  var selectedIndex = theForm.elements['contact_name'].selectedIndex;
+  var region = '';
 
-    if (! theForm.elements['contact_value'].value) {
-        showMsg({req_msg:true,timeout:2000,message:'所添加的内容不能为空！'});
-        return false;
-    }
-
-    if (theForm.elements['contact_name'].value != 'addr') {
-        var saveOk = null;
-        for (var i=0; i < rowObj.cells.length; i++) {
-            if (rowObj.cells[i].innerHTML.length < 2) {
-                saveOk = null;
-                break;
-            } else if (rowObj.cells.length >= 5) {
-                saveOk = true;
-            }
-        }
-
-        if (saveOk) {
-            showMsg({req_msg:true,timeout:2000,message:'该顾客的'+theForm.elements['contact_name'].options[selectedIndex].text+'数量达到上限!'});
-            return false;
-        }
-
-        switch (theForm.elements['contact_name'].value) {
-            case 'email' :
-                if (!/^\w{5,}@\w+(\.\w{2,})+$/g.test(theForm.elements['contact_value'].value)) {
-                    showMsg({req_msg:true,timeout:2000,message:'请填写正确的邮件地址！'});
-                    return false;
-                }
-                break;
-            case 'tel' :
-                if (!/^(\d{3,4}-)?\d{6,8}$/g.test(theForm.elements['contact_value'].value)) {
-                    showMsg({req_msg:true,timeout:2000,message:'请填写正确的电话号码！'});
-                    return false;
-                }
-                break;
-            case 'mobile' :
-                if (!/^1\d{10}$/g.test(theForm.elements['contact_value'].value)) {
-                    showMsg({req_msg:true,timeout:2000,message:'请填写正确的手机号码！'});
-                    return false;
-                }
-                break;
-            //case 'aliww' : break;
-            //case 'wechat' : break;
-            case 'qq' :
-                if (!/^\d{6,11}$/g.test(theForm.elements['contact_value'].value)) {
-                    showMsg({req_msg:true,timeout:2000,message:'请填写正确的QQ号码！'});
-                    return false;
-                }
-        }
-    } else {
-        var prov = document.getElementById('selProvinces').value;
-        var city = document.getElementById('selCities').value;
-        var dist = document.getElementById('selDistricts').value;
-
-        region = '&prov='+prov+'&city='+city+'&dist='+dist;
-    }
-    
-    var userid  = document.getElementById('ID').value;
-    var data    = theForm.elements['contact_name'].value + ':' + theForm.elements['contact_value'].value;
-
-    Ajax.call('users.php', 'act=add_contact&user_id='+userid+'&data='+data+region, saveContactInfoResp, 'POST', 'JSON');
+  if (! theForm.elements['contact_value'].value) {
+    showMsg({req_msg:true,timeout:2000,message:'所添加的内容不能为空！'});
     return false;
+  }
+
+  if (theForm.elements['contact_name'].value != 'addr') {
+    var saveOk = null;
+    for (var i=0; i < rowObj.cells.length; i++) {
+      if (rowObj.cells[i].innerHTML.length < 2) {
+        saveOk = null;
+        break;
+      } else if (rowObj.cells.length >= 5) {
+        saveOk = true;
+      }
+    }
+
+    if (saveOk) {
+      showMsg({req_msg:true,timeout:2000,message:'该顾客的'+theForm.elements['contact_name'].options[selectedIndex].text+'数量达到上限!'});
+      return false;
+    }
+
+    switch (theForm.elements['contact_name'].value) {
+      case 'email' :
+        if (!/^\w{5,}@\w+(\.\w{2,})+$/g.test(theForm.elements['contact_value'].value)) {
+          showMsg({req_msg:true,timeout:2000,message:'请填写正确的邮件地址！'});
+          return false;
+        }
+        break;
+      case 'tel' :
+        if (!/^(\d{3,4}-)?\d{6,8}$/g.test(theForm.elements['contact_value'].value)) {
+          showMsg({req_msg:true,timeout:2000,message:'请填写正确的电话号码！'});
+          return false;
+        }
+        break;
+      case 'mobile' :
+        if (!/^1\d{10}$/g.test(theForm.elements['contact_value'].value)) {
+          showMsg({req_msg:true,timeout:2000,message:'请填写正确的手机号码！'});
+          return false;
+        }
+        break;
+        //case 'aliww' : break;
+        //case 'wechat' : break;
+      case 'qq' :
+        if (!/^\d{6,11}$/g.test(theForm.elements['contact_value'].value)) {
+          showMsg({req_msg:true,timeout:2000,message:'请填写正确的QQ号码！'});
+          return false;
+        }
+    }
+  } else {
+    var prov = document.getElementById('selProvinces').value;
+    var city = document.getElementById('selCities').value;
+    var dist = document.getElementById('selDistricts').value;
+
+    region = '&prov='+prov+'&city='+city+'&dist='+dist;
+  }
+
+  var userid  = document.getElementById('ID').value;
+  var data    = theForm.elements['contact_name'].value + ':' + theForm.elements['contact_value'].value;
+
+  Ajax.call('users.php', 'act=add_contact&user_id='+userid+'&data='+data+region, saveContactInfoResp, 'POST', 'JSON');
+  return false;
 }
 
 function saveContactInfoResp (res) {
-    if (res.code) {
-        var rowObj = document.getElementById(res.field+'Row');
-        if (res.field != 'addr') {
-            for (var i=0; i < rowObj.cells.length; i++) {
-                if (rowObj.cells[i].innerHTML.length < 2) {
-                    rowObj.cells[i].innerHTML = res.value;
-                    break;
-                }
-            }
-
-            if (res.field == 'qq') {
-                var rowObj = document.getElementById('tencentRow');
-                for (var i=0; i < rowObj.cells.length; i++) {
-                    if (rowObj.cells[i].innerHTML.length < 2) {
-                        rowObj.cells[i].innerHTML = '<a href="tencent://message/?uin='+res.value+'" name="msg"><img src="http://wpa.qq.com/pa?p=1:'+res.value+':17"></a>';
-                        break;
-                    }
-                }
-            }
-        } else {
-            // 新增地址
-            var addrRowObj = document.getElementById('addrRow');
-            var theForm = document.forms['contactInfo'];
-            var prov = theForm.elements['province'].options[theForm.elements['province'].selectedIndex].text;
-            var city = theForm.elements['city'].options[theForm.elements['city'].selectedIndex].text;
-            var dist = theForm.elements['district'].options[theForm.elements['district'].selectedIndex].text;
-            var addr = theForm.elements['contact_value'].value;
-
-            if (addrRowObj.cells[1].innerHTML.length > 2) {
-                var tbodyObj   = rowObj.parentNode;
-                var newRowObj  = document.createElement('tr');
-                var newCellObj = document.createElement('td');
-
-                newCellObj.colSpan      = rowObj.cells[1].colSpan;
-                rowObj.cells[0].rowSpan = rowObj.cells[0].rowSpan ? rowObj.cells[0].rowSpan + 1 : 2;
-
-                newCellObj.innerHTML = prov+city+dist+addr;
-
-                newRowObj.appendChild(newCellObj);
-                tbodyObj.appendChild(newRowObj);
-            } else {
-                addrRowObj.cells[1].innerHTML = prov+city+dist+addr;
-            }
-            
-            // 在地址列表中添加新增的地址项
-            var selectObj = document.getElementById('addrList');
-            var newOpt    = document.createElement('option');
-            newOpt.value  = res.insert_id;
-            newOpt.text   = prov+city+dist+addr;
-
-            selectObj.appendChild(newOpt);
+  if (res.code) {
+    var rowObj = document.getElementById(res.field+'Row');
+    if (res.field != 'addr') {
+      for (var i=0; i < rowObj.cells.length; i++) {
+        if (rowObj.cells[i].innerHTML.length < 2) {
+          rowObj.cells[i].innerHTML = res.value;
+          break;
         }
-    }
+      }
 
-    showMsg(res);
+      if (res.field == 'qq') {
+        var rowObj = document.getElementById('tencentRow');
+        for (var i=0; i < rowObj.cells.length; i++) {
+          if (rowObj.cells[i].innerHTML.length < 2) {
+            rowObj.cells[i].innerHTML = '<a href="tencent://message/?uin='+res.value+'" name="msg"><img src="http://wpa.qq.com/pa?p=1:'+res.value+':17"></a>';
+            break;
+          }
+        }
+      }
+    } else {
+      // 新增地址
+      var addrRowObj = document.getElementById('addrRow');
+      var theForm = document.forms['contactInfo'];
+      var prov = theForm.elements['province'].options[theForm.elements['province'].selectedIndex].text;
+      var city = theForm.elements['city'].options[theForm.elements['city'].selectedIndex].text;
+      var dist = theForm.elements['district'].options[theForm.elements['district'].selectedIndex].text;
+      var addr = theForm.elements['contact_value'].value;
+
+      if (addrRowObj.cells[1].innerHTML.length > 2) {
+        var tbodyObj   = rowObj.parentNode;
+        var newRowObj  = document.createElement('tr');
+        var newCellObj = document.createElement('td');
+
+        newCellObj.colSpan      = rowObj.cells[1].colSpan;
+        rowObj.cells[0].rowSpan = rowObj.cells[0].rowSpan ? rowObj.cells[0].rowSpan + 1 : 2;
+
+        newCellObj.innerHTML = prov+city+dist+addr;
+
+        newRowObj.appendChild(newCellObj);
+        tbodyObj.appendChild(newRowObj);
+      } else {
+        addrRowObj.cells[1].innerHTML = prov+city+dist+addr;
+      }
+
+      // 在地址列表中添加新增的地址项
+      var selectObj = document.getElementById('addrList');
+      var newOpt    = document.createElement('option');
+      newOpt.value  = res.insert_id;
+      newOpt.text   = prov+city+dist+addr;
+
+      selectObj.appendChild(newOpt);
+    }
+  }
+
+  showMsg(res);
 }
 
 /**
  * 更换收货地址
  */
 function changeAddr (obj) {
-    if (obj.value > 0) {
-        Ajax.call('users.php?act=get_addr&addr_id='+obj.value, '', changeAddrResp, 'GET', 'JSON');
-    }
+  if (obj.value > 0) {
+    Ajax.call('users.php?act=get_addr&addr_id='+obj.value, '', changeAddrResp, 'GET', 'JSON');
+  }
 }
 
 function changeAddrResp (res) {
-    var theForm = document.forms['order_info'];
+  var theForm = document.forms['order_info'];
 
-    // 省
-    for (var i = theForm.elements['province'].options.length - 1; i >= 0; i--){
-        theForm.elements['province'].options[i].selected = false;
-        if (res.prov == theForm.elements['province'].options[i].value) {
-            theForm.elements['province'].options[i].selected = true;
-            theForm.elements['province'].onchange = function () {
-                region.loadRegions(res.prov, 2, 'selCities');
-            }();
-        }
+  // 省
+  for (var i = theForm.elements['province'].options.length - 1; i >= 0; i--){
+    theForm.elements['province'].options[i].selected = false;
+    if (res.prov == theForm.elements['province'].options[i].value) {
+      theForm.elements['province'].options[i].selected = true;
+      theForm.elements['province'].onchange = function () {
+        region.loadRegions(res.prov, 2, 'selCities');
+      }();
     }
+  }
 
-    // 市
-    setTimeout(
-        function () {
+  // 市
+  setTimeout(
+      function () {
         for (var i = theForm.elements['city'].options.length - 1; i >= 0; i--){
-            theForm.elements['city'].options[i].selected = false;
-            if (res.city == theForm.elements['city'].options[i].value) {
-                theForm.elements['city'].options[i].selected = true;
-                theForm.elements['city'].onchange = function () {
-                    region.loadRegions(res.city, 3, 'selDistricts');
-                }();
-            }
+          theForm.elements['city'].options[i].selected = false;
+          if (res.city == theForm.elements['city'].options[i].value) {
+            theForm.elements['city'].options[i].selected = true;
+            theForm.elements['city'].onchange = function () {
+              region.loadRegions(res.city, 3, 'selDistricts');
+            }();
+          }
         }
-    }, 150);
+      }, 150);
 
-    // 区
-    setTimeout(
-        function () {
+  // 区
+  setTimeout(
+      function () {
         for (var i = theForm.elements['district'].options.length - 1; i >= 0; i--){
-            theForm.elements['district'].options[i].selected = false;
-            if (res.dist == theForm.elements['district'].options[i].value) {
-                theForm.elements['district'].options[i].selected = true;
-                theForm.elements['district'].onchange = function () {
-                    theForm.elements['address'].value = res.addr;
-                }();
-            }
+          theForm.elements['district'].options[i].selected = false;
+          if (res.dist == theForm.elements['district'].options[i].value) {
+            theForm.elements['district'].options[i].selected = true;
+            theForm.elements['district'].onchange = function () {
+              theForm.elements['address'].value = res.addr;
+            }();
+          }
         }
-    },350);
+      },350);
 }
 
 function loadRegionsResp (res) {
-    var selectObj = document.getElementById(res.target);
-    for (var i = 0; i <= res.regions.length; i++) {
-        var newOpt = document.createElement('option');
-        try {
-            if (res.regions[i].region_id) {
-                newOpt.value = res.regions[i].region_id;
-                newOpt.text  = res.regions[i].region_name;
-            }
-        } catch (ex) {
-        }
-
-        selectObj.appendChild(newOpt);
+  var selectObj = document.getElementById(res.target);
+  for (var i = 0; i <= res.regions.length; i++) {
+    var newOpt = document.createElement('option');
+    try {
+      if (res.regions[i].region_id) {
+        newOpt.value = res.regions[i].region_id;
+        newOpt.text  = res.regions[i].region_name;
+      }
+    } catch (ex) {
     }
+
+    selectObj.appendChild(newOpt);
+  }
 }
 
 function setDefault(obj) {
-    Ajax.call('users.php', 'act=set_default&cid='+obj.getAttribute('cid'), setDefaultResp, 'POST', 'JSON');
+  Ajax.call('users.php', 'act=set_default&cid='+obj.getAttribute('cid'), setDefaultResp, 'POST', 'JSON');
 }
 
 function setDefaultResp(res) {
-    showMsg(res);
-    var rowObj = document.getElementById(res.vid+'Row');
-    for (var i = rowObj.cells.length -1; i > 0; i--) {
-        rowObj.cells[i].getElementsByTagName('span')[0].className = 'pointer';
+  showMsg(res);
+  var rowObj = document.getElementById(res.vid+'Row');
+  for (var i = rowObj.cells.length -1; i > 0; i--) {
+    rowObj.cells[i].getElementsByTagName('span')[0].className = 'pointer';
 
-        if (rowObj.cells[i].getElementsByTagName('span')[0].getAttribute('cid') == res.cid) {
-            rowObj.cells[i].getElementsByTagName('span')[0].className = 'hide';
-        }
+    if (rowObj.cells[i].getElementsByTagName('span')[0].getAttribute('cid') == res.cid) {
+      rowObj.cells[i].getElementsByTagName('span')[0].className = 'hide';
     }
+  }
 }
 
 /**
  * 顾客资料处理
  */
 function addUserIntoUserList() {
-    var theForm = document.forms['data-users'];
-    var data = [];
-    var feed = null;
-    for (var i = theForm.elements['feed'].length -1; i >= 0; i--) {
-        if (theForm.elements['feed'][i].checked) {
-            data.push('feed='+theForm.elements['feed'][i].value);
-            feed = theForm.elements['feed'][i].value;
-        }
+  var theForm = document.forms['data-users'];
+  var data = [];
+  var feed = null;
+  for (var i = theForm.elements['feed'].length -1; i >= 0; i--) {
+    if (theForm.elements['feed'][i].checked) {
+      data.push('feed='+theForm.elements['feed'][i].value);
+      feed = theForm.elements['feed'][i].value;
     }
+  }
 
-    if (feed == null) {
-        showMsg({req_msg:true,timeout:2000,message:'请选择顾客的当前状态！'});
-        return false;
-    } else {
-        data.push('rec_id='+theForm.elements['rec_id'].value);
-    }
-
-    if (feed == 4) {
-        var sex  = null;
-        for (var i = 0; i < theForm.elements.length -2; i++) {
-            if (theForm.elements[i].name == 'feed' || theForm.elements[i].name == 'rec_id') {
-                continue;
-            }
-
-            if (theForm.elements[i].type == 'radio' && theForm.elements[i].checked) {
-                if (theForm.elements[i].name == 'sex') {
-                    data.push(theForm.elements[i].name+'='+theForm.elements[i].value);
-                    sex = 1;
-                }
-            } else if (theForm.elements[i].type != 'radio' && theForm.elements[i].name && theForm.elements[i].value) {
-                data.push(theForm.elements[i].name+'='+theForm.elements[i].value);
-            } else {
-                switch (theForm.elements[i].name) {
-                    case 'user_name'  :
-                        showMsg({req_msg:true,timeout:2000,message:'请填写顾客姓名！'});
-                        return false;
-                    case 'home_phone'   :
-                    case 'mobile_phone' :
-                        if ((!theForm.elements['mobile_phone'].value) && (!theForm.elements['home_phone'].value)) {
-                            showMsg({req_msg:true,timeout:2000,message:'请填写手机或固话（二选一）！'});
-                            return false;
-                        }
-                        break;
-                    case 'province' :
-                    case 'city'     :
-                    case 'address'  :
-                        showMsg({req_msg:true,timeout:2000,message:'请选择并填写顾客的地址信息！'});
-                        return false;
-                    case 'sex'  : break;
-                    default :
-                                  if (theForm.elements[i].name && theForm.elements[i].name != 'district') {
-                                      showMsg({req_msg:true,timeout:2000,message:'请检查/仔细所填（选）内容！'});
-                                      return false;
-                                  }
-                }
-            }
-        }
-
-        if (sex == null) {
-            showMsg({req_msg:true,timeout:2000,message:'请选择顾客的性别！'});
-            return false;
-        }
-
-    }
-
-    Ajax.call(theForm.action, data.join('&'), addUserIntoUserListResp, 'POST', 'JSON');
-    Ajax.call('users.php?act=data_users&is_ajax=1', '', showNewUserDataResp, 'GET', 'JSON');
+  if (feed == null) {
+    showMsg({req_msg:true,timeout:2000,message:'请选择顾客的当前状态！'});
     return false;
+  } else {
+    data.push('rec_id='+theForm.elements['rec_id'].value);
+  }
+
+  if (feed == 4) {
+    var sex  = null;
+    for (var i = 0; i < theForm.elements.length -2; i++) {
+      if (theForm.elements[i].name == 'feed' || theForm.elements[i].name == 'rec_id') {
+        continue;
+      }
+
+      if (theForm.elements[i].type == 'radio' && theForm.elements[i].checked) {
+        if (theForm.elements[i].name == 'sex') {
+          data.push(theForm.elements[i].name+'='+theForm.elements[i].value);
+          sex = 1;
+        }
+      } else if (theForm.elements[i].type != 'radio' && theForm.elements[i].name && theForm.elements[i].value) {
+        data.push(theForm.elements[i].name+'='+theForm.elements[i].value);
+      } else {
+        switch (theForm.elements[i].name) {
+          case 'user_name'  :
+            showMsg({req_msg:true,timeout:2000,message:'请填写顾客姓名！'});
+            return false;
+          case 'home_phone'   :
+          case 'mobile_phone' :
+            if ((!theForm.elements['mobile_phone'].value) && (!theForm.elements['home_phone'].value)) {
+              showMsg({req_msg:true,timeout:2000,message:'请填写手机或固话（二选一）！'});
+              return false;
+            }
+            break;
+          case 'province' :
+          case 'city'     :
+          case 'address'  :
+            showMsg({req_msg:true,timeout:2000,message:'请选择并填写顾客的地址信息！'});
+            return false;
+          case 'sex'  : break;
+          default :
+                        if (theForm.elements[i].name && theForm.elements[i].name != 'district') {
+                          showMsg({req_msg:true,timeout:2000,message:'请检查/仔细所填（选）内容！'});
+                          return false;
+                        }
+        }
+      }
+    }
+
+    if (sex == null) {
+      showMsg({req_msg:true,timeout:2000,message:'请选择顾客的性别！'});
+      return false;
+    }
+
+  }
+
+  Ajax.call(theForm.action, data.join('&'), addUserIntoUserListResp, 'POST', 'JSON');
+  Ajax.call('users.php?act=data_users&is_ajax=1', '', showNewUserDataResp, 'GET', 'JSON');
+  return false;
 }
 
 function addUserIntoUserListResp(res) {
-    showMsg(res);
+  showMsg(res);
 }
 
 function showNewUserDataResp (res) {
-    document.getElementById('data-users').innerHTML = res.main;
+  document.getElementById('data-users').innerHTML = res.main;
 }
 
 function details (obj) {
-    var open = false;
-    if (obj.value == 4) {
-        var open = true;
-    }
+  var open = false;
+  if (obj.value == 4) {
+    var open = true;
+  }
 
-    document.getElementById('save-details').open = open;
+  document.getElementById('save-details').open = open;
 }
 
 /**
  * 顾客回访
  */
 function userTrace(obj) {
-    Ajax.call('users.php', 'act=first_trace&trace_time='+obj.value, userTraceResp, 'POST', 'JSON');
+  Ajax.call('users.php', 'act=first_trace&trace_time='+obj.value, userTraceResp, 'POST', 'JSON');
 }
 
 function userTraceResp(res) {
@@ -891,21 +905,21 @@ function userTraceResp(res) {
  * 列出客服自定义的分组
  */
 function getAdminList(obj) {
-    var role_id  = obj.elements['roles'].value;
-    var group_id = obj.elements['group_id'].value;
+  var role_id  = obj.elements['roles'].value;
+  var group_id = obj.elements['group_id'].value;
 }
 
 /**
  * 显示顾客列表
  */
 function showUserList (url) {
-    Ajax.call(url, '',  showUserListResp, 'GET', 'JSON');
-    return false;
+  Ajax.call(url, '',  showUserListResp, 'GET', 'JSON');
+  return false;
 }
 
 function showUserListResp(res) {
-    document.getElementById('rightShowArea').innerHTML = res.main;
-    init();
+  document.getElementById('rightShowArea').innerHTML = res.main;
+  init();
 }
 
 
@@ -1061,11 +1075,6 @@ function getBySendAdmin(obj){
     optObj.text  = '请选择';
     sltObj.appendChild(optObj);
 
-    var optObj   = document.createElement('option');
-    optObj.value = 74;
-    optObj.text  = '临时账号';
-    sltObj.appendChild(optObj);
-
     Ajax.call('users.php?act=get_by_send_admin','admin_name='+obj.elements['admin_name'].value,getAdminListResp,'GET','JSON');
   }else{
     return ;
@@ -1106,15 +1115,15 @@ function getNetworkBlacklist(){
 
 /*切换黑名单*/
 function showBlacklist(obj) {
-	var ul = obj.parentNode;
-	for (var i in ul.children) {
-		if (i != 'length') {
-			ul.children[i].className = '';
-			if (ul.children[i].type != undefined) {
-				if (document.getElementById(ul.children[i].type)) document.getElementById(ul.children[i].type).className = 'hide';
-			}
-		}
-	}
+  var ul = obj.parentNode;
+  for (var i in ul.children) {
+    if (i != 'length') {
+      ul.children[i].className = '';
+      if (ul.children[i].type != undefined) {
+        if (document.getElementById(ul.children[i].type)) document.getElementById(ul.children[i].type).className = 'hide';
+      }
+    }
+  }
 
   obj.className = 'o_select';
   if(obj.type == 'network_blacklist'){
