@@ -1366,18 +1366,16 @@ elseif ($_REQUEST['act'] == 'service_fuse')
     if(admin_priv('all','',false) || admin_priv('adv_service','',false))
     {
         $user_active = intval($_REQUEST['user_active']);
-        $admin_id = $customer; 
-        if($admin_id)
-        {
+        $admin_id    = $customer;
+
+        if($admin_id) {
             $condition .= "&customer=$admin_id";
-        }
-        if($user_active != 0)
-        {
+        } 
+
+        if($user_active != 0) {
             $condition .= "&user_active=$user_active";
         }
-    }
-    else
-    {
+    } else {
         $admin_id = $_SESSION['admin_id'];
         $condition .= "&customer=-1&admin_id=$admin_id";
     }
