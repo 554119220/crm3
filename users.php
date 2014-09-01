@@ -4205,7 +4205,7 @@ elseif($_REQUEST['act'] == 'user_combine'){
         $group_by    = '';
 
         if($keyword != ''){
-            $where .= ' AND u.user_id=ud.user_id AND u.user_id=uc.user_id ';
+            //$where .= ' AND u.user_id=ud.user_id AND u.user_id=uc.user_id ';
             if($contact_way == 'address'){
                 $where .= " AND ud.address LIKE '%$keyword%'";
                 $group_by = ' GROUP BY ud.address';
@@ -4225,9 +4225,10 @@ elseif($_REQUEST['act'] == 'user_combine'){
             die($json->encode($res));
         }
 
-        $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users').' u, '.
-            $GLOBALS['ecs']->table('user_address').' ud, '.
-            $GLOBALS['ecs']->table('user_contact').' uc '.$where.$group_by;
+        $sql_select = 'SELECT u.user_id FROM '.$GLOBALS['ecs']->table('users').' u LEFT JOIN '.
+            $GLOBALS['ecs']->table('user_address').' ud ON u.user_id=ud.user_id LEFT JOIN '.
+            $GLOBALS['ecs']->table('user_contact').' uc ON u.user_id=uc.user_id'.$where.$group_by;
+
         $total = $GLOBALS['db']->getCol($sql_select);
         $total = array_sum($total);
 
@@ -4235,15 +4236,14 @@ elseif($_REQUEST['act'] == 'user_combine'){
             $smarty->assign('repeat_user_report','没有搜索到重复顾客');
         }else{
             if(!$power){
-                $sql_select = "SELECT u.user_id,u.user_name,CONCAT(u.mobile_phone,'  |  ',u.home_phone) AS tel,ud.address FROM ".$GLOBALS['ecs']->table('users').' u, '.
-                    $GLOBALS['ecs']->table('user_address').' ud, '.
-                    $GLOBALS['ecs']->table('user_contact').' uc '.$where.$group_by;    
+                $sql_select = "SELECT u.user_id,u.user_name,CONCAT(u.mobile_phone,'  |  ',u.home_phone) AS tel,ud.address FROM ".$GLOBALS['ecs']->table('users').' u LEFT JOIN '.
+                    $GLOBALS['ecs']->table('user_address').' ud ON u.user_id=ud.user_id LEFT JOIN '.
+                    $GLOBALS['ecs']->table('user_contact').' uc ON u.user_id=uc.user_id'.$where.$group_by;    
             }else{
-                $sql_select = "SELECT u.user_id,u.user_name,CONCAT(u.mobile_phone,'  |  ',u.home_phone) AS tel,ud.address,u.admin_name,r.role_name FROM ".$GLOBALS['ecs']->table('users').' u, '.
-                    $GLOBALS['ecs']->table('user_address').' ud, '.
-                    $GLOBALS['ecs']->table('user_contact').' uc, '.
-                    $GLOBALS['ecs']->table('role').' r '.
-                    $where.' AND r.role_id=u.role_id '.$group_by;
+                $sql_select = "SELECT u.user_id,u.user_name,CONCAT(u.mobile_phone,'  |  ',u.home_phone) AS tel,ud.address,u.admin_name,r.role_name FROM ".$GLOBALS['ecs']->table('users').' u LEFT JOIN '.
+                    $GLOBALS['ecs']->table('user_address').' ud ON u.user_id=ud.user_id LEFT JOIN '.
+                    $GLOBALS['ecs']->table('user_contact').' uc ON u.user_id=uc.user_id LEFT JOIN '.
+                    $GLOBALS['ecs']->table('role').' r ON u.role_id=r.role_id '.$where.$group_by;
             }
 
             $repeat_user_list       = $GLOBALS['db']->getAll($sql_select);
