@@ -1116,7 +1116,7 @@ elseif('change_log' == $_REQUEST['act']){
 
     if('add_change_log' == $behave){
         $title    = isset($_REQUEST['title']) ? mysql_real_escape_string($_REQUEST['title']) : '';
-        $log_text = isset($_REQUEST['log_text']) ? mysql_real_escape_string($_REQUEST['log_text']) : '';
+        $log_text = isset($_REQUEST['log_text']) ? mysql_real_escape_string(nl2br($_REQUEST['log_text'])) : '';
 
         $res = array(
             'req_msg' => true,

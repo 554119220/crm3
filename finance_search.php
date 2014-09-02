@@ -89,7 +89,7 @@ elseif ($act == 'search')
                 .$ecs->table('role')
                 .' r ON o.platform=r.role_id LEFT JOIN '
                 .$ecs->table('memship_number')
-                ." AS c ON u.user_id=c.user_id WHERE u.user_id IN($user_old_id)";
+                ." AS c ON u.user_id=c.user_id WHERE u.user_id IN($user_old_id) ORDER BY o.add_time DESC";
 
             $old_user_info = $db->getAll($sql); //老顾客
         }

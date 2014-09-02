@@ -90,8 +90,6 @@ elseif ($_REQUEST['act'] == 'traversal_appointments'){
         }
     }
 
-    $sql_select = '';
-
     die($json->encode($res));
 }
 
