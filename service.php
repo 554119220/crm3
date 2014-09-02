@@ -90,7 +90,8 @@ elseif ($_REQUEST['act'] == 'traversal_appointments'){
         }
     }
 
-    //站内信
+    $sql_select = '';
+
     die($json->encode($res));
 }
 

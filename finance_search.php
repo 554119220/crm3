@@ -79,7 +79,7 @@ elseif ($act == 'search')
             }
 
             $user_old_id = implode(',',$user_old_id);
-            $sql  = "SELECT DISTINCT u.user_id,u.user_name,u.rank_points, u.admin_name, $tel "
+            $sql = "SELECT DISTINCT u.user_id,u.user_name,u.rank_points, u.admin_name, $tel "
                 ." c.card_number, o.order_id,o.admin_name as add_name, CONCAT(o.final_amount, '元') final_amount, FROM_UNIXTIME(o.add_time,'%Y-%m-%d-') order_time, "
                 .' s.logbook,FROM_UNIXTIME(s.service_time,"%Y-%m-%d") service_time, o.tracking_sn, o.pay_name, o.shipping_code,o.order_lock, '
                 .' r.role_name,o.order_sn,o.platform_order_sn,o.order_status,o.shipping_status,o.shipping_name,o.pay_status '
@@ -90,9 +90,9 @@ elseif ($act == 'search')
                 .' r ON o.platform=r.role_id LEFT JOIN '
                 .$ecs->table('memship_number')
                 ." AS c ON u.user_id=c.user_id WHERE u.user_id IN($user_old_id)";
-        }
 
-        $old_user_info = $db->getAll($sql); //老顾客
+            $old_user_info = $db->getAll($sql); //老顾客
+        }
 
         if($user_new) {
             foreach($user_new as &$val){
@@ -312,13 +312,11 @@ function get_user_id($table_name,$where,$keyword){
                     " WHERE contact_name='$condition' AND contact_value='$keyword'";
                 $user_id = $GLOBALS['db']->getAll($sql_select);
             }
-
         }else{
             $sql_select = 'SELECT user_id FROM '.$GLOBALS['ecs']->table($table_name)
                 ."$where GROUP BY user_id";
             $user_id    = $GLOBALS['db']->getAll($sql_select);    
         }
-
         return $user_id;
     }else{
         return false;
