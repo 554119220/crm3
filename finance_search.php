@@ -101,7 +101,7 @@ elseif ($act == 'search')
 
             $user_new_id = implode(',',$user_new_id);
             $sql = "SELECT DISTINCT u.user_id,u.user_name,u.rank_points, u.admin_name, '-' as tel, "
-                ." c.card_number,o.order_id,o.admin_name as add_name, CONCAT(o.final_amount, '元') final_amount, FROM_UNIXTIME(o.add_time,'%Y-%m-%d-') order_time, "
+                ." c.card_number,o.order_id,o.admin_name as add_name, CONCAT(o.final_amount, '元') final_amount, FROM_UNIXTIME(o.add_time,'%Y-%m-%d') order_time, "
                 .' o.tracking_sn, o.pay_name, o.shipping_code,o.order_lock,'
                 .' r.role_name,o.order_sn,o.order_status,o.shipping_status,o.shipping_name,o.pay_status '
                 .' FROM '.$ecs->table('userssyn')
@@ -110,7 +110,7 @@ elseif ($act == 'search')
                 .$ecs->table('role').' r ON o.platform=r.role_id LEFT JOIN '
                 .$ecs->table('memship_number')
                 ." AS c ON u.user_id=c.user_id WHERE u.user_id IN($user_new_id)"
-                .' AND u.mobile_phone=o.mobile ORDER BY o.add_time DESC';
+                .' ORDER BY o.add_time DESC';
 
             $new_user_info  = $db->getAll($sql); //新顾客
         }

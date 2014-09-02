@@ -511,7 +511,7 @@ function addToRecycle (obj) {
 /**
  * 转顾客给
  */
-function sendUsersTo (obj) {
+function sendUsersTo () {
   var obj = document.getElementById('admin_id');
 
   if (obj.value <= 0) {
