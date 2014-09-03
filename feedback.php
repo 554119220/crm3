@@ -17,7 +17,6 @@ date_default_timezone_set('Asia/Shanghai');
 $action = empty($_REQUEST['act']) ? 'feedback_form' : mysql_real_escape_string($_REQUEST['act']);
 
 if('feedback_form' == $action){
-    create_html_editor('FCKeditor1');   
     $smarty->assign('behave','upload');
     $smarty->display('feedback.htm');
 }
@@ -26,9 +25,21 @@ if('feedback_form' == $action){
 elseif('feedback_done' == $action){
 
     $feedback_class = isset($_REQUEST['feedback_class']) ? intval($_REQUEST['feedback_class']) : 0;
-    $message        = isset($_REQUEST['FCKeditor1']) ? $_REQUEST['FCKeditor1'] : '';
+    $message        = isset($_REQUEST['feedback']) ? $_REQUEST['feedback'] : '';
     $title          = isset($_REQUEST['title']) ? mysql_real_escape_string($_REQUEST['title']) : '';
     $res['code']    = false;
+
+    if($_FILES['img1']['name']){
+        $img1 = $_FILES['img1']['tmp_name'];
+        $img1_name = rand(0,20).$_FILES['img1']['name'];
+        move_uploaded_file($_FILES['img1']['tmp_name'],ROOT_PATH.'images/feedback/'.$img1_name);
+    }
+
+    if($_FILES['img2']['name']){
+        $img2 = $_FILES['img2']['tmp_name'];
+        $img2_name = rand(0,20).$_FILES['img2']['name'];
+        move_uploaded_file($_FILES['img2']['tmp_name'],ROOT_PATH.'images/feedback/'.$img2_name);
+    }
 
     if(!empty($message)){
         $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('admin_feedback').
@@ -37,8 +48,8 @@ elseif('feedback_done' == $action){
             $res['message'] = '请勿重复添加';
         }else{
             $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('admin_feedback').
-                '(sender_id,receiver_id,sent_time,message_class,title,message)VALUES('.
-                "{$_SESSION['admin_id']},1,{$_SERVER['REQUEST_TIME']},$feedback_class,'$title','$message')";
+                '(sender_id,receiver_id,sent_time,message_class,title,message,image1,image2)VALUES('.
+                "{$_SESSION['admin_id']},1,{$_SERVER['REQUEST_TIME']},$feedback_class,'$title','$message','$img1_name','$img2_name')";
             $res['code']    = $GLOBALS['db']->query($sql_insert);
             $res['message'] = $res['code'] ? '感谢你的反馈和支持，我们会在最快的时间内解决你的问题' : '不好意思，反馈提交失败';
         }
@@ -48,7 +59,6 @@ elseif('feedback_done' == $action){
 
     $smarty->assign('res',$res);
     $smarty->assign('behave','upload');
-    create_html_editor('FCKeditor1',$message);
     $smarty->display('feedback.htm');
 }
 
@@ -56,9 +66,18 @@ elseif('feedback_more' == $action){
     $message_id = isset($_REQUEST['message_id']) ? intval($_REQUEST['message_id']) : 0;
 
     if($message_id){
-        $sql_select = 'SELECT title,message FROM '.$GLOBALS['ecs']->table('admin_feedback').
+        $sql_select = 'SELECT title,message,image1,image2 FROM '.$GLOBALS['ecs']->table('admin_feedback').
             " WHERE message_id=$message_id";
-       $feedback = $GLOBALS['db']->getRow($sql_select); 
+        $feedback = $GLOBALS['db']->getRow($sql_select); 
+        if($feedback){
+            if($feedback['image1']){
+                $feedback['image1'] = "../images/feedback/{$feedback['image1']}";
+            }
+
+            if($feedback['image2']){
+                $feedback['image2'] = "../images/feedback/{$feedback['image2']}";
+            }
+        }
     }
 
     $smarty->assign('feedback',$feedback);
