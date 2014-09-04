@@ -1232,6 +1232,8 @@ else if ($_REQUEST['act'] == 'del_blacklist')
         $sql_select = 'SELECT from_table FROM '.$GLOBALS['ecs']->table('user_blacklist').
             " WHERE user_id=$user_id";
         $table_name = $GLOBALS['db']->getOne($sql_select);
+        $table_name = $table_name ? $table_name : 'users';
+
         $sql_update = 'UPDATE '.$GLOBALS['ecs']->table($table_name)
             .' SET is_black=0'." WHERE user_id=$user_id";
 

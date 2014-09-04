@@ -24,14 +24,11 @@ if ($act == 'search_view')
     $smarty->assign('hidden', 1);
     $smarty->assign('ur_here', $_LANG['00_users_search']);
 
-    if((admin_priv('old_search','',false) || admin_priv('finance','',false)) && !admin_priv('all','',false)){
+    if((admin_priv('finance','',false)) && !admin_priv('all','',false)){
         $smarty->assign('finance','finance');
     }
 
-    $smarty->assign('finance','finance');
-    $res['main'] = $smarty->fetch('search.htm');
-
-    die($json->encode($res));
+    $smarty->display('search.htm');
 }
 
 /* 查询数据 */
@@ -175,55 +172,59 @@ elseif ($_REQUEST['act'] == 'get_more_info'){
             .$GLOBALS['ecs']->table($table_name)
             .' o LEFT JOIN '.$GLOBALS['ecs']->table('role')
             .' r ON o.platform=r.role_id'
-            ." WHERE o.user_id=$user_id ORDER BY o.add_time DESC LIMIT 1";
+            ." WHERE o.user_id=$user_id ORDER BY o.add_time DESC LIMIT 5";
 
             try{
-                $order_info = $GLOBALS['db']->getRow($sql_select);
+                $order_info = $GLOBALS['db']->getAll($sql_select);
             }catch(Exception $e){
                 $order_info = null;
             }
 
             if($order_info){
-                $order_info['order_sn'] = $order_info['platform_order_sn'] ? $order_info['platform_order_sn'] : $order_info['order_sn'];
-                
-                $shipping_code = $order_info['shipping_code'];
-                $order_info['link'] = "<a href='http://www.kuaidi100.com/chaxun?com=$shipping_code&nu={$order_info['tracking_sn']}' target='_blank'}>{$order_info['tracking_sn']}</a>";
-                $order_info['order_status'] = $order_info['order_status'].$order_info['shipping_status'];
+                $res = '<div style="text-align:right"><span onclick="document.getElementById('.
+                                    "'goods_search_res').style.display='none'".'" style="cursor:pointer">关闭<span></div>';
+                foreach($order_info as &$val){
+                    $val['order_sn'] = $val['platform_order_sn'] ? $val['platform_order_sn'] : $val['order_sn'];
 
-                $order_status = array(
-                    '52' => '已签收',
-                    '00' => '待确认',   
-                    '13' => '已取消',
-                    '53' => '已取消',
-                    '10' => '待发货',
-                    '51' => '已发货',
-                    '54' => '已退货'
+                    $shipping_code = $val['shipping_code'];
+                    $val['link'] = "<a href='http://www.kuaidi100.com/chaxun?com=$shipping_code&nu={$val['tracking_sn']}' target='_blank'}>{$val['tracking_sn']}</a>";
+                    $val['order_status'] = $val['order_status'].$order_info['shipping_status'];
+
+                    $order_status = array(
+                        '52' => '已签收',
+                        '00' => '待确认',   
+                        '13' => '已取消',
+                        '53' => '已取消',
+                        '10' => '待发货',
+                        '51' => '已发货',
+                        '54' => '已退货'
                     );
 
-                if($order_info['order_status'] == '-20'){
-                    $sql_select = 'SELECT user_name FROM '.$GLOBALS['ecs']->table('admin_user')
-                    ." WHERE user_id={$order_info['order_lock']}";
-                    $order_info['order_status'] = '已被'.$GLOBALS['db']->getOne($sql_select).'删除';                           
-                }else{
-                    $order_info['order_status'] = $order_status[$order_info['order_status']];
+                    if($val['order_status'] == '-20'){
+                        $sql_select = 'SELECT user_name FROM '.$GLOBALS['ecs']->table('admin_user')
+                            ." WHERE user_id={$val['order_lock']}";
+                        $val['order_status'] = '已被'.$GLOBALS['db']->getOne($sql_select).'删除';                           
+                    }else{
+                        $val['order_status'] = $order_status[$val['order_status']];
+                    }
+
+                    if (!$val['link']) {
+                        $val['link'] = '上门自提';
+                    }
+
+                    $order_text         = "【{$val['role_name']}】{$val['order_time']}消费{$val['final_amount']}【订单号{$val['order_sn']}】【订单{$val['order_status']}】【{$val['shipping_name']}{$val['link']}】";
+                    $goods_text         = get_search_goods($goods_table,$val['order_id']);
+
+                    $res .= '<details><summary>'.$order_text.'</summary>'.$goods_text.'</details><hr/><br/>';
                 }
-
-                if (!$order_info['link']) {
-                    $order_info['link'] = '上门自提';
-                }
-
-                $order_text         = "【{$order_info['role_name']}】{$order_info['order_time']}消费{$order_info['final_amount']}【订单号{$order_info['order_sn']}】【订单{$order_info['order_status']}】【{$order_info['shipping_name']}{$order_info['link']}】";
-                $goods_text         = get_search_goods($goods_table,$order_info['order_id']);
-
-                $res = $order_text.'<br/>'.$goods_text;
             }else{
                 $res = 'CRM没有这个顾客的订单';
             }
 
         }elseif($condition == 'vip_card'){
             $sql_select = 'SELECT u.rank_points,m.card_number FROM '.$GLOBALS['ecs']->table('users')
-            .' u LEFT JOIN '.$GLOBALS['ecs']->table('memship_number')
-            ." m ON m.user_id=u.user_id AND m.user_id<>0 WHERE u.user_id=$user_id";
+                .' u LEFT JOIN '.$GLOBALS['ecs']->table('memship_number')
+                ." m ON m.user_id=u.user_id AND m.user_id<>0 WHERE u.user_id=$user_id";
 
             $vip_info = $GLOBALS['db']->getRow($sql_select);
             if($vip_info){
@@ -247,7 +248,7 @@ function get_user_id($table_name,$where,$keyword){
 
             /*先在顾客表寻找*/
             $sql_select = 'SELECT user_id FROM '.$GLOBALS['ecs']->table($table_name)
-            ."$where GROUP BY user_id";
+                ."$where GROUP BY user_id";
             $user_id = $GLOBALS['db']->getAll($sql_select);
 
             /*到顾客联系表找*/
@@ -290,7 +291,7 @@ function get_user_info($table_name,$user_id){
     $tel = $_SESSION['action_list'] == 'all' ? 'CONCAT(home_phone, " ", mobile_phone) tel ' : "IF(admin_id=$_SESSION[admin_id], CONCAT(home_phone,' ', mobile_phone), '-') tel ";
 
     $sql = "SELECT DISTINCT user_id,user_name,admin_name,$tel,admin_id FROM "
-    .$GLOBALS['ecs']->table($table_name)." WHERE user_id IN ($user_id)";
+        .$GLOBALS['ecs']->table($table_name)." WHERE user_id IN ($user_id) AND is_black IN(0,4)";
 
     $user_info = $GLOBALS['db']->getAll($sql);
 
@@ -331,9 +332,9 @@ function get_admin_qq($user_info){
 
     foreach($user_info as &$user){
         foreach($qq_list as $qq){
-           if($user['admin_id'] == $qq['user_id']){
-               $user['qq'] = $qq['account_name'];
-           } 
+            if($user['admin_id'] == $qq['user_id']){
+                $user['qq'] = $qq['account_name'];
+            } 
         }
     }
 

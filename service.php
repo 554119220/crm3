@@ -3710,6 +3710,46 @@ elseif($_REQUEST['act'] == 'clear_tape'){
     die($json->encode($res));
 }
 
+/*选择员工*/
+elseif($_REQUEST['act'] == 'select_admin'){
+    $sql_select = 'SELECT role_name,role_id FROM '.$GLOBALS['ecs']->table('role').
+        ' WHERE role_id IN ('.SALE.')';
+
+    $role_list  = $GLOBALS['db']->getAll($sql_select);
+    $sql_select = 'SELECT user_id,user_name,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
+        ' WHERE status>0 && stats>0';
+
+    $admin_list = $GLOBALS['db']->getAll($sql_select);
+
+    foreach($role_list as &$val){
+        foreach($admin_list as $key=>&$admin){
+            if($val['role_id'] == $admin['role_id']){
+                $val['admin_list'][] = $admin;
+                unset($admin_list[$key]);
+            }
+        }
+    }
+
+    $smarty->assign('platform',$role_list);
+
+    $res['req_msg']    = true;
+    $res['btncontent'] = false;
+    $res['message']    = $smarty->fetch('admin_list.htm');
+
+    die($json->encode($res));
+}
+
+/*添加录音推送*/
+elseif($_REQUEST['act'] == 'push_tape'){
+    $tape_list  = isset($tape_list) ? mysql_real_escape_string($tape_list) : '';
+    $admin_list = isset($admin_list) ? mysql_real_escape_string($admin_list) : '';
+
+    if (empty($tape_list) && empty($admin_list)) {
+        $res['message'] == '推送失败,请联系技术部';
+    }else{
+    }
+}
+
 /* 函数区 */
 
 //服务类型

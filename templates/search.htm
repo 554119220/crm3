@@ -1,31 +1,57 @@
-<div class="blank"></div>
-<div class="finder-title">公共查询</div><br/>
-  <ul>
-    <li style="margin-bottom:10px">
-    <form action="javascript:search()" name="searchForm" >
-      <select name="condition" class="sch_select">
-        <option value="0">姓名</option>
-        <option value="1">固话</option>
-        <option value="2">手机</option>
-        <option value="3">QQ</option>
-        <option value="4">email</option>
-        <option value="5">旺旺</option>
-        <option value="6">快递单号</option>
-        <option value="7">订单编号</option>
-        <option value="8">会员卡号</option>
-        <option value="9">顾客ID</option>
-        <option value="9">商品名</option>
-      </select>
-      <input type="search" name="search" value="" min="3" size="42px" style="height:32px;margin-right:5px" autofocus onfocus="showKeyword(this)"/>
-      {if $finance eq 'finance'}
-      <input type="hidden" value="{$finance}" id="finance" />
-      {/if}
-      <input type="submit" class="input_submit" value="查  询"/>
-    </form>
-    </li>
-    <li>
-    <span style="color:red" id="alarm" width="48px"></span>
-    </li>
-  </ul>
-  <div id="goods_search_res" class="goods_search_res" style="display:none"></div>
-  <div id="search_info" style="margin:5px;text-align:center"></div>
+<!doctype htm>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>公共查询</title>
+    <link rel="stylesheet" href="styles/general.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="styles/new.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="styles/table-list.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="styles/FormStyle.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="styles/user.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="styles/storage.css" type="text/css" charset="utf8"/>
+    <link rel="stylesheet" href="styles/index.css" type="text/css" charset="utf8"/>
+    <link rel="stylesheet" href="styles/performance.css" type="text/css" charset="utf8"/>
+    <link rel="stylesheet" href="styles/service.css" type="text/css" charset="utf8"/>
+  </head>
+  <body>
+    <div style="text-align:center;width:80%">
+      <br />
+      <div class="finder-title"><h1>公共查询</h1></div><br/>
+      <ul>
+        <li style="margin-bottom:10px">
+        <form action="javascript:search()" name="searchForm" >
+          <select name="condition" class="sch_select">
+            <option value="0">姓名</option>
+            <option value="1">固话</option>
+            <option value="2">手机</option>
+            <option value="3">QQ</option>
+            <option value="4">email</option>
+            <option value="5">旺旺</option>
+            <option value="6">快递单号</option>
+            <option value="7">订单编号</option>
+            <option value="8">会员卡号</option>
+            <option value="9">顾客ID</option>
+            <option value="9">商品名</option>
+          </select>
+          <input type="search" name="search" value="" min="3" size="42px" style="height:32px;margin-right:5px" autofocus onfocus="showKeyword(this)"/>
+          {if $finance eq 'finance'}
+          <input type="hidden" value="{$finance}" id="finance" />
+          {/if}
+          <input type="submit" class="input_submit" value="查  询"/>
+        </form>
+        </li>
+        <li>
+        <span style="color:red" id="alarm" width="48px"></span>
+        </li>
+      </ul>
+      <div>
+        <div id="goods_search_res" class="goods_search_res" style="display:none;margin-left:32px;"></div>
+      </div>
+      <div id="search_info" style="margin:5px;text-align:center;margin-left:32px;"></div>
+    </div>
+  </body>
+</html>
+
+{insert_scripts files="json2.js,reportSorting.js,main.js,users.js,service.js"}
+{insert_scripts files="common.js,transport.js,validator.js,utils.js,region.js,ask_customer.js,stats.js,order.js,reportSorting.js"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}

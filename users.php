@@ -3818,6 +3818,9 @@ elseif ($_REQUEST['act'] == 'check_blacklist')
         }
         $res_msg = '审核';
     }elseif($do_what == 1){
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET is_black=0 WHERE user_id=$user_id";
+        $GLOBALS['db']->query($sql_update);
+
         $sql = 'DELETE FROM '.$GLOBALS['ecs']->table('user_blacklist')." WHERE user_id=$user_id"; 
         $res_msg = '撤销';
     }
