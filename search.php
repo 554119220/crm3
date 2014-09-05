@@ -188,7 +188,7 @@ elseif ($_REQUEST['act'] == 'get_more_info'){
 
                     $shipping_code = $val['shipping_code'];
                     $val['link'] = "<a href='http://www.kuaidi100.com/chaxun?com=$shipping_code&nu={$val['tracking_sn']}' target='_blank'}>{$val['tracking_sn']}</a>";
-                    $val['order_status'] = $val['order_status'].$order_info['shipping_status'];
+                    $val['order_status'] = $val['order_status'].$val['shipping_status'];
 
                     $order_status = array(
                         '52' => '已签收',
