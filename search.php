@@ -161,9 +161,9 @@ elseif ($_REQUEST['act'] == 'get_more_info'){
             $goods_table =  $type == 0 ? 'ordersyn_goods' : 'order_goods';
 
             if($table_name == 'ordersyn_info'){
-                $order_sql = ' r.role_name,o.order_sn,o.order_status,o.shipping_status,o.shipping_name,o.pay_status FROM ';
+                $order_sql = ' r.role_describe,o.order_sn,o.order_status,o.shipping_status,o.shipping_name,o.pay_status FROM ';
             }else{
-                $order_sql = ' r.role_name,o.order_sn,o.platform_order_sn,o.order_status,o.shipping_status,o.shipping_name,o.pay_status FROM ';
+                $order_sql = ' r.role_describe,o.order_sn,o.platform_order_sn,o.order_status,o.shipping_status,o.shipping_name,o.pay_status FROM ';
             }
 
             $sql_select  = 'SELECT o.order_id,o.admin_name as add_name,'
@@ -212,7 +212,7 @@ elseif ($_REQUEST['act'] == 'get_more_info'){
                         $val['link'] = '上门自提';
                     }
 
-                    $order_text         = "【{$val['role_name']}】{$val['order_time']}消费{$val['final_amount']}【订单号{$val['order_sn']}】【订单{$val['order_status']}】【{$val['shipping_name']}{$val['link']}】";
+                    $order_text         = "{$val['order_time']}消费{$val['final_amount']}【{$val['role_describe']}-{$val['order_sn']}-{$val['order_status']}】【{$val['link']}】";
                     $goods_text         = get_search_goods($goods_table,$val['order_id']);
 
                     $res .= '<details><summary>'.$order_text.'</summary>'.$goods_text.'</details><hr/><br/>';

@@ -96,44 +96,10 @@ elseif ($_REQUEST['act'] == 'traversal_appointments'){
 //所有服务记录
 elseif ($_REQUEST['act'] == 'records')
 {
-    $admin_id = $_SESSION['admin_id'];
-    $role_id  = $_SESSION['role_id'];
-    $group_id = $_SESSION['group_id'];
-
-    if(admin_priv('all','',false)) {
-        $where = " WHERE FROM_UNIXTIME(s.service_time,'%y-%m')=DATE_FORMAT(NOW() ,'%y-%m')";
-        $smarty->assign('role_list',get_role());
-        $power = 0;
-    } elseif(admin_priv('adv_service','',false)) {
-        $desc_depart = admin_priv('service_group_view','',false)?"group_id=$group_id":"role_id=$role_id";
-        $where = ' WHERE s.admin_id IN(SELECT user_id FROM '.$GLOBALS['ecs']->table('admin_user').
-            ' WHERE '.$desc_depart." AND FROM_UNIXTIME(s.service_time,'%y-%m')=DATE_FORMAT(NOW(),'%y-%m'))"; 
-        $power = 1;
-    } else {
-        $where = " WHERE s.admin_id=$admin_id AND s.show_sev=1 AND FROM_UNIXTIME(s.service_time,'%y-%m')=DATE_FORMAT(NOW(),'%y-%m')"; 
-        $power = 2;
-    }
-
-    //分页参数
-    $filter = array(
-        'group_id'  => $group_id,
-        'role_id'   => $role_id,
-        'admin_id'  => $admin_id,
-        'page'      => isset($_GET['page']) ? intval($_GET['page']) : 1,
-        'page_size' => isset($_GET['page_size']) ? intval($_GET['page_size']) : 30
-    );    //分页参数数组
-
-    $filter['page'] = $filter['page'] ?: 1; //当前页
-    $filter['page_size'] = $filter['page_size'] ?: 30; //每页条数
-
-    $filter['admin_id']    = $admin_id;
-    $filter['action']      = 'records';
-    $filter['requirement'] = $where;
-
-    $records        = service_records($filter);         //服务记录
-    $service_class  = service_class();                  //服务类型
-    $service_manner = service_manner();                 //服务方式
-    $user_active    = get_user_active();                //顾客类型
+    $records        = service_records(); // 服务记录
+    $service_class  = service_class();   // 服务类型
+    $service_manner = service_manner();  // 服务方式
+    $user_active    = get_user_active(); // 顾客类型
 
     if($power == 0) {
         $customer_service = get_admin_tmp_list();
@@ -145,13 +111,9 @@ elseif ($_REQUEST['act'] == 'records')
 
     $smarty->assign('role_id',$role_id);
     $smarty->assign('power',$power);
-    $smarty->assign('service_class',$service_class);
     $smarty->assign('admin_list',$customer_service);
-    $smarty->assign('page',$filter['page']);
-    $smarty->assign('user_active',$user_active);
-    $smarty->assign('service_manner',$service_manner);
-
     $smarty->assign('records',$records);
+    $smarty->assign('records_div',$smarty->assign('rescords_div.htm'));
 
     $res['main'] = $smarty->fetch('records.htm');
 
@@ -509,7 +471,7 @@ elseif ($_REQUEST['act'] == 'service_search')
         ' AS m ON s.service_manner=m.manner_id';
 
     $sql_select = 'SELECT s.admin_name,c.class,m.manner,s.logbook,s.service_time FROM '.$append;
-        
+
     if($start_date != "" && $end_date != "") {
         $where .= " AND s.service_time BETWEEN $start_date AND $end_date ";
     }
@@ -1358,185 +1320,10 @@ elseif ($_REQUEST['act'] == 'subother')
 //服务高级查询
 elseif ($_REQUEST['act'] == 'service_fuse')
 {
-    $condition = "";
-    $customer  = intval($_REQUEST['customer']);
-    $role_id   = $_SESSION['role_id'];
+    $result = service_records();
 
-    if(admin_priv('all','',false) || admin_priv('adv_service','',false))
-    {
-        $user_active = intval($_REQUEST['user_active']);
-        $admin_id    = $customer;
-
-        if($admin_id) {
-            $condition .= "&customer=$admin_id";
-        } 
-
-        if($user_active != 0) {
-            $condition .= "&user_active=$user_active";
-        }
-    } else {
-        $admin_id = $_SESSION['admin_id'];
-        $condition .= "&customer=-1&admin_id=$admin_id";
-    }
-
-    //分页参数
-    $page      = intval($_GET['page']);
-    $page_size = intval($_GET['page_size']);
-    $page_pre  = intval($_GET['filter_pre']);
-    $page_next = intval($_GET['filter_next']);
-
-    $filter              = array('role_id'=>$role_id,'admin_id'=>$admin_id,'page'=>$page,'page_size'=>$page_size);
-    $filter['page']      = $filter['page'] == 0 ? 1 : $filter['page'];     //当前页
-    $filter['page_size'] = $filter['page_size'] == 0 ? 30 : $filter['page_size'];    //每页条数
-    $filter['admin_id']  = $admin_id;
-
-    if($start_date == '' && $end_date == '') {
-        $start_date = strtotime($_REQUEST['startTime']);                //起始时间
-        $end_date   = strtotime($_REQUEST['endTime']);                  //终止时间
-    }
-
-    $user_name      = trim(mysql_real_escape_string($_REQUEST['user_name']));
-    $service_class  = intval($_REQUEST['service_class']);
-    $service_manner = intval($_REQUEST['service_manner']);
-
-    $where = '';
-
-    if (admin_priv('all', '', false)) {
-        if($admin_id > 0) {
-            $where .= " AND s.admin_id=$admin_id";
-        }
-
-        if($user_active) {
-            $where .= " AND s.user_active=$user_active";
-        }
-    } elseif (admin_priv('adv_service', '', false)) {
-        $where .= " AND ad.role_id=$role_id";
-
-        if($admin_id > 0) {
-            $where .= " AND s.admin_id=$admin_id";
-        }
-
-        if($user_active) {
-            $where .= " AND s.user_active=$user_active";
-        }
-    } else {
-        $where .= " AND s.admin_id=$admin_id AND s.show_sev=1";
-    }
-
-    if($start_date != "" && $end_date != "") {
-        $where     .= " AND s.service_time BETWEEN $start_date AND $end_date";
-        $condition .= "&startTime=$start_date&endTime=$end_date";
-    } elseif($start_date != "" || $end_date != "") {
-        if($start_date != "") {
-            $where .= " AND s.service_time BETWEEN $start_date AND UNIX_TIMESTAMP(NOW())"; 
-            $codition .= "&startTime=$start_date";
-        } else {
-            $where     .= " AND s.service_time BETWEEN 0 AND $end_date"; 
-            $condition .= "&endTime=$end_date"; 
-        }
-    }
-
-    if($user_name != "") {
-        $where     .= " AND s.user_name LIKE '%$user_name%'";
-        $condition .= "&user_name=$user_name";
-    }
-
-    if ($service_class) {
-        $where     .= " AND s.service_class=$service_class ";
-        $condition .= "&service_class=$service_class";
-    }
-
-    if ($service_manner)
-    {
-        $where     .= " AND s.service_manner=$service_manner ";
-        $condition .= "&service_manner=$service_manner";
-    }
-
-    //查询
-    $sql_select = 'SELECT DISTINCT s.user_name,s.admin_name,c.class,m.manner,s.service_id,s.service_status,s.logbook,s.admin_id,'.
-        's.special_feedback,s.handler,s.service_time,s.show_sev,u.role_id FROM '.$GLOBALS['ecs']->table('users').' u, '.
-        $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
-        ' AS c ON s.service_class=c.class_id LEFT JOIN '.$GLOBALS['ecs']->table('service_manner').
-        ' AS m ON s.service_manner=m.manner_id LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
-        ' AS ad ON ad.user_id=s.admin_id '.
-        " WHERE u.user_id=s.user_id $where ORDER BY s.service_time DESC LIMIT ".
-        ($filter['page']-1)*$filter['page_size'].",{$filter['page_size']}";
-
-    $result = $GLOBALS['db']->getAll($sql_select);
-
-    foreach ($result as &$val) {
-        $val['service_time'] = date('Y-m-d H:i', $val['service_time']);
-        $val['handler']      = date('Y-m-d H:i', $val['handler']);
-    }
-
-    //总数
-    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users').' u, '.
-        $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
-        ' AS c ON s.service_class=c.class_id LEFT JOIN '.$GLOBALS['ecs']->table('service_manner').
-        ' AS m ON s.service_manner=m.manner_id LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
-        ' AS ad ON ad.user_id=s.admin_id '.
-        " WHERE u.user_id=s.user_id $where";
-
-    $total                = $GLOBALS['db']->getOne($sql_select);
-    $page_set             = array();
-
-    $page_total           = ceil($total/$filter['page_size']);          //总页数
-    $filter['page_total'] = $page_total;
-
-    if($page_total <= 10 && $filter['page'] <= 10)
-    {
-        for($i=0;$i<$page_total;$i++)
-        {
-            $page_set[$i] = $i + 1;
-        }
-    }
-    else
-    {
-        $cure_page = intval(($filter['page'] - 1)/10) * 10;       //当前页所属的整数值
-        if(($page_total - $cure_page) >= 10)
-        {
-            for($i=0; $i<11; $i++)
-            {
-                $page_set[$i] = $cure_page + $i + 1;;
-            }
-        }
-        else
-        {
-            for($i=0;$i<($page_total%10);$i++)
-            {
-                $page_set[$i] = $cure_page + $i + 1 ;
-            }
-        }
-    }
-
-    $filter_set= array(
-        'page'       => $filter['page'],
-        'total'      => $total,
-        'page_set'   => $page_set,
-        'page_size'  => $filter['page_size'],
-        'admin_id'   => $_SESSION['admin_id'],
-        'action'     => 'service_fuse',
-        'page_total' => $page_total
-    );
-
-    if($filter['page']  == $page_total) {
-        $filter_set['page_pre'] = $filter['page'] - 1;
-        $filter_set['page_next'] = 1;
-    } elseif($filter['page'] == 1) {
-        $filter_set['page_pre'] = $page_total;
-        $filter_set['page_next'] = $filter['page'] + 1;
-    } else {
-        $filter_set['page_pre'] = $filter['page'] - 1;
-        $filter_set['page_next'] = $filter['page'] + 1;
-    }
-
-    $records = array('filter'=>$filter_set,'service'=>$result,'total'=>$total,'page_set'=>$page_set,'admin_id'=>$admin_id);
-
-    $smarty->assign('records',$records);
-    $smarty->assign('role_id',$role_id);
-    $smarty->assign('condition',$condition);
-    $smarty->assign('service_class',service_class());
-    $smarty->assign('service_manner',service_manner());
+    $smarty->assign('records',$result['records']);
+    $smarty->assign('filter',$result['filter']);
     $smarty->assign('admin_list',get_admin_tmp_list());
     $smarty->assign('user_active',get_user_active);
 
@@ -3781,68 +3568,113 @@ function service_update($user_name)
 /*
  * 服务记录
  */
-function service_records($filter)
+function service_records($where = '')
 {
-    //服务记录总数
-    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('service').
-        ' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
-        ' AS c ON s.service_class = c.class_id LEFT JOIN '.$GLOBALS['ecs']->table('service_manner').
-        ' AS m ON s.service_manner = m.manner_id '.$filter['requirement'];
+    $role_id    = $_SESSION['role_id'];
+    $user_name  = trim(mysql_real_escape_string($_REQUEST['user_name']));
+    $admin_id   = isset($_REQUEST['admin_id']) ? intval($_REQUEST['admin_id']) : 0;
+    $condition  = '';
+    $start_date = strtotime($_REQUEST['start_time']);                //起始时间
+    $end_date   = strtotime($_REQUEST['end_time']);                  //终止时间
+    
+    if($admin_id > 0) {
+        $where .= " AND s.admin_id=$admin_id";
+        $condition .= "&admin_id=$admin_id";
+    }
 
-    $total = $GLOBALS['db']->getOne($sql_select);
+    if (admin_priv('all', '', false) || admin_priv('adv_service','',false)) {
 
-    $page_total = ceil($total/$filter['page_size']);          //总页数
-    $filter['page_total'] = $page_total;
-    if($page_total <= 10 && $filter['page'] <= 10) {
-        for($i=0;$i<$page_total;$i++) {
-            $page_set[$i] = $i + 1;
-        }
+    } elseif (admin_priv('adv_service', '', false)) {
+        $where .= " AND ad.role_id=$role_id";
+
     } else {
-        $cure_page = intval(($filter['page'] - 1)/10) * 10;       //当前页所属的整数值
+        $where .= " AND s.admin_id={$_SESSION['admin_id']} AND s.show_sev=1";
+        $condition .= "&admin_id={$_SESSION['admin_id']}";
+    }
 
-        if(($page_total - $cure_page) >= 10) {
-            for($i=0; $i<11; $i++) {
-                $page_set[$i] = $cure_page + $i + 1;;
-            }
+    if($start_date != "" && $end_date != "") {
+        $where     .= " AND s.service_time BETWEEN $start_date AND $end_date";
+        $condition .= "&startTime=$start_date&endTime=$end_date";
+    } elseif($start_date != "" || $end_date != "") {
+        if($start_date != "") {
+            $where .= " AND s.service_time BETWEEN $start_date AND {$_SERVER['REQUEST_TIME']}"; 
+            $codition .= "&startTime=$start_date";
         } else {
-            for($i=0;$i<($page_total%10);$i++) {
-                $page_set[$i] = $cure_page + $i + 1 ;
-            }
+            $where     .= " AND s.service_time BETWEEN 0 AND $end_date"; 
+            $condition .= "&endTime=$end_date"; 
         }
     }
 
-    //分页大小
-    if($filter['page'] <= $page_total) {
-
-        if($filter['page']  == $page_total) {
-            $filter['page_next'] = 1;
-            $filter['page_pre']  = $filter['page'] - 1;
-        } elseif($filter['page'] == 1) {
-            $filter['page_pre']  = $page_total;
-            $filter['page_next'] = $filter['page'] + 1;
-        } else {
-            $filter['page_pre']  = $filter['page'] - 1;
-            $filter['page_next'] = $filter['page'] + 1;
-        }
+    if($user_name != "") {
+        $where     .= " AND s.user_name LIKE '%$user_name%'";
+        $condition .= "&user_name=$user_name";
     }
 
-    $sql_select = 'SELECT s.service_id,s.user_name,c.class,m.manner,s.admin_id,s.admin_name,s.logbook,s.show_sev,'.
-        'FROM_UNIXTIME(s.service_time,"%Y-%m-%d %H:%i") service_time,FROM_UNIXTiME(s.handler,"%Y-%m-%d %H:%i") handler'.
-        ' FROM '.$GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
+    $filter['page'] = empty($_REQUEST['page']) || (intval($_REQUEST['page'])<=0) ? 1 : intval($_REQUEST['page']);
+    if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0) {
+        $filter['page_size'] = intval($_REQUEST['page_size']);
+    } else {
+        $filter['page_size'] = 20; 
+    }
+
+    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users').' u, '.
+        $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
         ' AS c ON s.service_class=c.class_id LEFT JOIN '.$GLOBALS['ecs']->table('service_manner').
-        ' AS m ON s.service_manner=m.manner_id'.$filter['requirement'].' ORDER BY s.service_time DESC LIMIT '.
-        ($filter['page']-1)*$filter['page_size'].",{$filter['page_size']}";
-    $service = $GLOBALS['db']->getAll($sql_select);
+        ' AS m ON s.service_manner=m.manner_id LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+        ' AS ad ON ad.user_id=s.admin_id '.
+        " WHERE u.user_id=s.user_id $where";
 
-    $service_list = array(
-        'service'    => $service,
-        'total'      => $total,
-        'page_set'   => $page_set,
-        'filter'     => $filter,
-        'page_total' => $page_total
+    $filter['record_count'] = $GLOBALS['db']->getOne($sql_select);
+    $filter['page_count']   = $filter['record_count']>0 ? ceil($filter['record_count']/$filter['page_size']) : 1;
+
+    // 设置分页
+    $page_set = array (1,2,3,4,5,6,7);
+    if ($filter['page'] > 4) {
+        foreach ($page_set as &$val) {
+            $val += $filter['page'] -4;
+        }
+    }
+
+    if (end($page_set) > $filter['page_count']) {
+        $page_set = array ();
+        for ($i = 7; $i >= 0; $i--) {
+            if ($filter['page_count'] - $i > 0) {
+                $page_set[] = $filter['page_count'] - $i;
+            }
+        }
+    }
+
+    $filter = array (
+        'page_count'    => $filter['page_count'],
+        'record_count'  => $filter['record_count'],
+        'page_size'     => $filter['page_size'],
+        'page'          => $filter['page'],
+        'page_set'      => $page_set,
+        'condition'     => $condition,
+        'start'         => ($filter['page'] - 1)*$filter['page_size'] +1,
+        'end'           => $filter['page']*$filter['page_size'],
+        'act'           => $_REQUEST['act'],
     );
 
-    return $service_list;
+    $sql_select = 'SELECT DISTINCT s.user_name,s.admin_name,c.class,m.manner,s.service_id,s.service_status,s.logbook,s.admin_id,'.
+        's.special_feedback,s.handler,s.service_time,s.show_sev,u.role_id FROM '.$GLOBALS['ecs']->table('users').' u, '.
+        $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
+        ' AS c ON s.service_class=c.class_id LEFT JOIN '.$GLOBALS['ecs']->table('service_manner').
+        ' AS m ON s.service_manner=m.manner_id LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+        ' AS ad ON ad.user_id=s.admin_id '.
+        " WHERE u.user_id=s.user_id $where ORDER BY s.service_time DESC LIMIT ".
+        ($filter['page']-1)*$filter['page_size'].",{$filter['page_size']}";
+
+    $records = $GLOBALS['db']->getAll($sql_select);
+
+    if($records){
+        foreach ($records as &$val) {
+            $val['service_time'] = date('Y-m-d H:i', $val['service_time']);
+            $val['handler']      = date('Y-m-d H:i', $val['handler']);
+        }
+    }
+
+    return array('filter'=>$filter,'records'=>$records);
 }
 
 // 获取销售平台

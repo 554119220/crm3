@@ -1,4 +1,5 @@
 var windowObj = null;
+
 //添加服务
 function submitService() {
 	var id = document.getElementById('ID').value; //顾客id
@@ -95,23 +96,13 @@ function getServiceAdmin() {
 }
 
 //服务高级搜索
-function fullSearch() {
-	var obj = document.forms['for_serverSearch'];
+function fullSearch(obj) {
 	var startTime = obj.elements['startTime'].value;
 	var endTime = obj.elements['endTime'].value;
-	var service_class = obj.elements['service_class'].value;
-	var service_manner = obj.elements['service_manner'].value;
-	var user_name = obj.elements['user_name'].value;
+	var userName = obj.elements['user_name'].value;
+	var adminId = obj.elements['admin_id'].value;
 
-	if (document.getElementById('admin') && document.getElementById('admin').style.display != 'none') {
-		var customer = obj.elements['customer'].value;
-		var user_active = obj.elements['user_active'].value;
-	}
-	else {
-		var customer = - 1;
-	}
-
-	Ajax.call('service.php?act=service_fuse', 'startTime=' + startTime + '&endTime=' + endTime + '&user_name=' + user_name + '&service_class=' + service_class + '&service_manner=' + service_manner + '&customer=' + customer + '&user_active=' + user_active, fullSearchResponse, 'POST', 'JSON');
+	Ajax.call('service.php?act=service_fuse', 'start_time=' + startTime + '&end_time=' + endTime + '&user_name=' + userName + '&admin_id=' + adminId, fullSearchResponse, 'POST', 'JSON');
 }
 
 //服务高级搜索回调
@@ -177,7 +168,7 @@ function del_service(service_id) {}
 function cheUser(username) {
 	if (username == "") {
 		document.getElementById('user_name').innerHTML = "顾客姓名不能为空";
-			return false;
+		return false;
 	}
 	else {
 		document.getElementById('user_name').innerHTML = "";
@@ -660,8 +651,8 @@ function modRes(res) {
 		var tb_obj = document.getElementById('cur_rank');
 		//20130819 start
 		if (document.getElementById((res.row_id - 1) + 'rank_temp') == null)
-			//var rank_detail = document.getElementById('rank_detail');
-			//if(!rank_detail)
+		//var rank_detail = document.getElementById('rank_detail');
+		//if(!rank_detail)
 		{
 			var tr_obj = tb_obj.insertRow(res.row_id);
 			tr_obj.id = 'rank_detail';
@@ -1397,7 +1388,7 @@ function getMoreKnowlage(behave) {
  */
 function showRecList(sid) {
 	if (sid) {
-		Ajax.call('service.php?act=rec_list&service_id='+sid, '', showRecListResp, 'GET', 'JSON');
+		Ajax.call('service.php?act=rec_list&service_id=' + sid, '', showRecListResp, 'GET', 'JSON');
 	}
 }
 
@@ -1409,7 +1400,7 @@ function showRecListResp(res) {
 /**
  * 添加录音到播放器
  */
-function addToPlayer (obj) {
+function addToPlayer(obj) {
 	document.getElementById('player').src = obj.getAttribute('src');
 }
 
@@ -1424,105 +1415,105 @@ function collectTape() {
 		return false;
 	}
 	var service_id = document.getElementById('service_id').value;
-	Ajax.call('service.php?act=collect_tape', 'file='+tape+'&service_id'+service_id, collectTapeResp, 'POST', 'JSON');
+	Ajax.call('service.php?act=collect_tape', 'file=' + tape + '&service_id' + service_id, collectTapeResp, 'POST', 'JSON');
 }
 
 function collectTapeResp(res) {
-  showMsg(res);
-  return false;
+	showMsg(res);
+	return false;
 }
 
 /*获取某产品知识库*/
-function getKnowlage(obj,goods_id){
-  var itemName = obj.getAttribute('name');
-  if(itemName == 'introduction' && localStorage.getItem(goods_id+'_introduction')){
-    obj.firstChild.title = localStorage.getItem(goods_id+'_introduction');
-    obj.id = goods_id+'_intro';
-  }else{
-    Ajax.call('service.php?act=get_knowlage','item_name='+itemName+'&goods_id='+goods_id,newWiwdowsResp,'POST','JSON');
-  }
+function getKnowlage(obj, goods_id) {
+	var itemName = obj.getAttribute('name');
+	if (itemName == 'introduction' && localStorage.getItem(goods_id + '_introduction')) {
+		obj.firstChild.title = localStorage.getItem(goods_id + '_introduction');
+		obj.id = goods_id + '_intro';
+	} else {
+		Ajax.call('service.php?act=get_knowlage', 'item_name=' + itemName + '&goods_id=' + goods_id, newWiwdowsResp, 'POST', 'JSON');
+	}
 }
 
-function newWiwdowsResp(res){
-  if(res.item_name == 'introduction'){
-    if(!localStorage.getItem(res.goods_sn+'_introduction') && res.content != null){
-      localStorage.setItem(res.goods_sn+'_introduction',res.content);
-      if(document.getElementById(res.goods_sn+'_intro')){
-        document.getElementById(res.goods_sn+'_intro').firstChild.title = localStorage[res.goods_sn+'_introduction'];
-      }
-    }
-  }else{
-    if(windowObj != null){
-      windowObj.close();
-    }
+function newWiwdowsResp(res) {
+	if (res.item_name == 'introduction') {
+		if (!localStorage.getItem(res.goods_sn + '_introduction') && res.content != null) {
+			localStorage.setItem(res.goods_sn + '_introduction', res.content);
+			if (document.getElementById(res.goods_sn + '_intro')) {
+				document.getElementById(res.goods_sn + '_intro').firstChild.title = localStorage[res.goods_sn + '_introduction'];
+			}
+		}
+	} else {
+		if (windowObj != null) {
+			windowObj.close();
+		}
 
-    if(res.is_exist){
-      windowObj = window.open(res.html_path,res.item_name, 'height=400, width=500, top=100, left=300, toolbar=no, menubar=no, scrollbars=yes,resizable=no,location=no, status=no');
+		if (res.is_exist) {
+			windowObj = window.open(res.html_path, res.item_name, 'height=400, width=500, top=100, left=300, toolbar=no, menubar=no, scrollbars=yes,resizable=no,location=no, status=no');
 
-      windowObj.document.clear();
-      windowObj.document.write(res.content);
-      windowObj.document.title = res.knowlage_name; 
-    }else{
-      var msg = new Array();
-      msg['timeout'] = 2000;
-      msg['message'] = '暂时没有加添加'+res.class_name;
-      showMsg(msg);
-    }  
-  }
+			windowObj.document.clear();
+			windowObj.document.write(res.content);
+			windowObj.document.title = res.knowlage_name;
+		} else {
+			var msg = new Array();
+			msg['timeout'] = 2000;
+			msg['message'] = '暂时没有加添加' + res.class_name;
+			showMsg(msg);
+		}
+	}
 }
 
 function schGoodsForKnowLage(obj) {
 	Ajax.call('service.php?act=knowlage_list', 'keyword=' + obj.elements['keyword'].value, inMain, 'GET', 'JSON');
 }
 
-function inMain(res){
-  document.getElementById('main').innerHTML = res.main;
+function inMain(res) {
+	document.getElementById('main').innerHTML = res.main;
 }
 
 /*删除收藏的通话录音*/
-function deleteFavoriteTape(obj,favor_id){
-  if(favor_id != 0){
-    var trIndex = obj.parentNode.parentNode.rowIndex;
+function deleteFavoriteTape(obj, favor_id) {
+	if (favor_id != 0) {
+		var trIndex = obj.parentNode.parentNode.rowIndex;
 
-   Ajax.call('service.php?act=favor_del','table_name='+'favor_table'+'&tr_index='+trIndex+'&favor_id='+favor_id,delTr,'GET','JSON');
-  }else{
-    return ;
-  }
+		Ajax.call('service.php?act=favor_del', 'table_name=' + 'favor_table' + '&tr_index=' + trIndex + '&favor_id=' + favor_id, delTr, 'GET', 'JSON');
+	} else {
+		return;
+	}
 }
 
 /*删除表行*/
-function delTr(res){
-  if(res.req_msg == true){
-    showMsg(res);
-  }
+function delTr(res) {
+	if (res.req_msg == true) {
+		showMsg(res);
+	}
 
-  if(res.code && res.table_name != ''){
-    var obj = document.getElementById(res.table_name);
-    obj.deleteRow(res.tr_index);
-  }
+	if (res.code && res.table_name != '') {
+		var obj = document.getElementById(res.table_name);
+		obj.deleteRow(res.tr_index);
+	}
 }
 
-function showTapeCollect(obj){
-  var ul = obj.parentNode;
-  for (var i in ul.children) {
-    if (i != 'length') {
-      ul.children[i].className = '';
-      if (ul.children[i].type != undefined) {
-        if (document.getElementById(ul.children[i].type)) document.getElementById(ul.children[i].type).className = 'hide';
-      }
-    }
-  }
+function showTapeCollect(obj) {
+	var ul = obj.parentNode;
+	for (var i in ul.children) {
+		if (i != 'length') {
+			ul.children[i].className = '';
+			if (ul.children[i].type != undefined) {
+				if (document.getElementById(ul.children[i].type)) document.getElementById(ul.children[i].type).className = 'hide';
+			}
+		}
+	}
 
-  obj.className = 'o_select';
-  document.getElementById('tape_collect_copyright').value = obj.type;
-  var formObj = document.forms['tape_collect_form'];
-  schTapeCollect(formObj);
+	obj.className = 'o_select';
+	document.getElementById('tape_collect_copyright').value = obj.type;
+	var formObj = document.forms['tape_collect_form'];
+	schTapeCollect(formObj);
 }
 
 /*搜索通话录音收藏*/
-function schTapeCollect(obj){
-  var tapeCollectCopyright = document.getElementById('tape_collect_copyright').value;
-  Ajax.call('service.php?act=tape_favorite','user_name='+obj.elements['user_name'].value+'&tape_collect_copyright='+tapeCollectCopyright+'&from_sch='+'from_sch',fullSearchResponse,'GET','JSON');
+function schTapeCollect(obj) {
+	var tapeCollectCopyright = document.getElementById('tape_collect_copyright').value;
+	Ajax.call('service.php?act=tape_favorite', 'user_name=' + obj.elements['user_name'].value + '&tape_collect_copyright=' + tapeCollectCopyright + '&from_sch=' + 'from_sch', fullSearchResponse, 'GET', 'JSON');
 }
 
 /*修改录音收藏的权限*/
@@ -1562,3 +1553,4 @@ function selectAdmin() {
 function selectAdminResp(res) {
 	showMsg(res);
 }
+
