@@ -471,14 +471,8 @@ elseif ($_REQUEST['act'] == 'service_search')
         $where .= " AND s.service_time BETWEEN $start_date AND $end_date ";
     }
 
-    $sql_count = 'SELECT COUNT(*) FROM '.$append.$where;
-    $total     = $GLOBALS['db']->getOne($sql_count);
-    $page_size = ceil($total/$record_size);
-    $page      = $page > $page_size ? 1 : $page;
-
-    $sql_select .= $where.' ORDER BY s.service_time DESC LIMIT '.($page-1)*$record_size.",$record_size";
-
-    $result = $GLOBALS['db']->getAll($sql_select);
+    $sql_select  .= $where.' ORDER BY s.service_time DESC ';
+    $result       = $GLOBALS['db']->getAll($sql_select);
 
     foreach($result AS &$val) {
         $val['service_time'] = date('Y-m-d H:i',$val['service_time']);

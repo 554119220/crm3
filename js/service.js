@@ -1553,4 +1553,3 @@ function selectAdmin() {
 function selectAdminResp(res) {
 	showMsg(res);
 }
-
