@@ -96,10 +96,7 @@ elseif ($_REQUEST['act'] == 'traversal_appointments'){
 //所有服务记录
 elseif ($_REQUEST['act'] == 'records')
 {
-    $records        = service_records(); // 服务记录
-    $service_class  = service_class();   // 服务类型
-    $service_manner = service_manner();  // 服务方式
-    $user_active    = get_user_active(); // 顾客类型
+    $result = service_records(); // 服务记录
 
     if($power == 0) {
         $customer_service = get_admin_tmp_list();
@@ -109,14 +106,12 @@ elseif ($_REQUEST['act'] == 'records')
         $customer_service = $GLOBALS['db']->getAll($sql_select);
     }
 
-    $smarty->assign('role_id',$role_id);
-    $smarty->assign('power',$power);
+    $smarty->assign('records',$result['records']);
+    $smarty->assign('filter',$result['filter']);
     $smarty->assign('admin_list',$customer_service);
-    $smarty->assign('records',$records);
-    $smarty->assign('records_div',$smarty->assign('rescords_div.htm'));
+    $smarty->assign('records_div',$smarty->fetch('records_div.htm'));
 
     $res['main'] = $smarty->fetch('records.htm');
-
     die($json->encode($res));
 }
 
@@ -1322,10 +1317,10 @@ elseif ($_REQUEST['act'] == 'service_fuse')
 {
     $result = service_records();
 
+    $smarty->assign('condition',$result['filter']['condition']);
     $smarty->assign('records',$result['records']);
     $smarty->assign('filter',$result['filter']);
     $smarty->assign('admin_list',get_admin_tmp_list());
-    $smarty->assign('user_active',get_user_active);
 
     $res['response_action'] = 'search_service';
     $res['main'] = $smarty->fetch('records_div.htm');
@@ -3571,7 +3566,7 @@ function service_update($user_name)
 function service_records($where = '')
 {
     $role_id    = $_SESSION['role_id'];
-    $user_name  = trim(mysql_real_escape_string($_REQUEST['user_name']));
+    $user_name  = isset($_REQUEST['user_name']) ? trim(mysql_real_escape_string($_REQUEST['user_name'])) : '';
     $admin_id   = isset($_REQUEST['admin_id']) ? intval($_REQUEST['admin_id']) : 0;
     $condition  = '';
     $start_date = strtotime($_REQUEST['start_time']);                //起始时间
@@ -3605,7 +3600,15 @@ function service_records($where = '')
         }
     }
 
-    if($user_name != "") {
+    if($user_name != '') {
+        //中文乱码
+        if(!preg_match("/^[\x{4e00}-\x{9fa5}]+$/u",$user_name)){
+
+            $user_name = urlencode($user_name);
+            echo "1".$user_name;
+        }
+        exit;
+
         $where     .= " AND s.user_name LIKE '%$user_name%'";
         $condition .= "&user_name=$user_name";
     }
