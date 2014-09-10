@@ -23,14 +23,10 @@
       <table cellpadding=0 cellspacing=0 width=100%>
         <tr>
           <th width="60%">商品名</th>
-          <th width="20%">安全库存</th>
-          <th width="20%">实时库存</th>
         </tr>
         {foreach from=$alarm_stock_goods item=val}
         <tr>
           <td>{$val.goods_name}</td>
-          <td>{$val.warn_number}</td>
-          <td>{$val.quantity}</td>
         </tr>
         {/foreach}
       </table>

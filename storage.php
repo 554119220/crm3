@@ -141,6 +141,7 @@ elseif($_REQUEST['act'] == 'add_new_receipt')
 
     if($result)
     {
+        record_operate($sql_insert, 'stock');
         $stock_id = mysql_insert_id();
 
         //根据进货单插入进货单商品表
@@ -182,6 +183,7 @@ elseif($_REQUEST['act'] == 'add_new_receipt')
 
                 if($result)
                 {
+                    record_operate($sql_insert, 'stock_goods');
                     $res['req_msg'] = true;
                     $res['timeout'] = 2000;
                     $res['message'] = '添加成功';
@@ -223,10 +225,10 @@ elseif( $_REQUEST['act'] == 'manage_receipt')
     }
 
     $smarty->assign('curr_title', '商品列表');
-    $smarty->assign('num', sprintf('（共%d条）', $stock_list['record_count']));
 
     // 获取进货单列表
     @$stock_list = stock_list($stock_id, $type);
+    $smarty->assign('num', sprintf('（共%d条）', $stock_list['record_count']));
     $smarty->assign('stock_list', $stock_list['stock_list']);
     $smarty->assign('filter',       $stock_list['filter']);
     $smarty->assign('record_count', $stock_list['record_count']);
@@ -317,6 +319,8 @@ elseif($_REQUEST['act'] == 'update')
         $res['timeout'] = 2000;
         die($json->encode($res)); 
     }
+
+    record_operate($sql_update, 'stock');
 
     $list = array();
     //重组传过来的参数
@@ -430,6 +434,8 @@ elseif($_REQUEST['act'] == 'update')
 
                 die($json->encode($res));
             }
+
+            record_operate($sql_insert, 'stock_goods');
         }
     }
 
@@ -468,13 +474,13 @@ elseif($_REQUEST['act'] == 'goods_list')
 
     $goods_list = goods_list(0);
     $smarty->assign('curr_title', '商品列表');
-    $smarty->assign('num', sprintf('（共%d条）', $goods_list['record_count']));
+    $smarty->assign('num', sprintf('（共%d条）', $goods_list['filter']['record_count']));
 
     $smarty->assign('brand', brand_list(1));
 
     $smarty->assign('goods_list'   , $goods_list['goods']);
     $smarty->assign('sort_info'    , $goods_list['filter']);
-    $smarty->assign('record_count' , $goods_list['record_count']);
+    //$smarty->assign('record_count' , $goods_list['record_count']);
     //$smarty->assign('page_count' , $goods_list['page_count']);
     //$smarty->assign('page_start' , $goods_list['start']);
     //$smarty->assign('page_end'   , $goods_list['end']);
@@ -496,6 +502,15 @@ elseif($_REQUEST['act'] == 'goods_list')
         $smarty->assign('main_switch',$GLOBALS['db']->getOne($sql_select));
     }
 
+    // 是否显示商品最低售价
+    if (admin_priv('update_min_price', '', false)) {
+        $smarty->assign('update_min_price', 1);
+    }
+
+    if (admin_priv('safe_storage_number', '', false)) {
+        $smarty->assign('show_safe_storage_number', true);
+    }
+
     $res['main'] = $smarty->fetch('goods_list.htm');
     die($json->encode($res));
 }
@@ -506,10 +521,11 @@ elseif($_REQUEST['act'] == 'check_stock_batch')
     $res = array ('req_msg' => true, 'hide_btn' => 1);
     $goods_id = intval($_REQUEST['goods_id']);
 
-    $sql_select = 'SELECT g.goods_name,s.rec_id,s.quantity,s.production_day,s.update_time,st.arrival_day,g.brand_id,b.mod_stock_status_time FROM '.$GLOBALS['ecs']->table('goods').' g, '.
+    $sql_select = 'SELECT g.goods_name,s.rec_id,s.quantity,s.production_day,s.update_time,'.
+        'st.arrival_day,g.brand_id,b.mod_stock_status_time,st.confirmer FROM '.$GLOBALS['ecs']->table('goods').' g, '.
         $GLOBALS['ecs']->table('stock_goods').' s, '.$GLOBALS['ecs']->table('brand').
-        ' b, '.$GLOBALS['ecs']->table('stock').
-        " st WHERE s.quantity>0 AND g.goods_sn=s.goods_sn AND g.brand_id=b.brand_id AND g.goods_id=$goods_id AND s.stock_id=st.stock_id ";	
+        ' b, '.$GLOBALS['ecs']->table('stock').' st WHERE s.quantity>0 AND g.goods_sn=s.goods_sn'.
+        " AND g.brand_id=b.brand_id AND g.goods_id=$goods_id AND s.stock_id=st.stock_id ";	
     $check_list = $GLOBALS['db']->getAll($sql_select);
 
     foreach ($check_list as &$val) {
@@ -525,6 +541,10 @@ elseif($_REQUEST['act'] == 'check_stock_batch')
             $val['editable'] = 1;
         }else{
             $val['editable'] = 0;
+        }
+
+        if (!admin_priv('storage_number', '', false)) {
+            $val['quantity'] = $val['quantity'] > 100 ? '库存充足' : '库存紧张';
         }
     }
 
@@ -663,6 +683,7 @@ elseif($_REQUEST['act'] == 'add_goods_submit')
     $result = $GLOBALS['db']->query($sql_insert);
     if($result)
     {
+        record_operate($sql_insert, 'goods');
         $res['req_msg'] = true;
         $res['message'] = '新商品添加成功。商品编号为'.$_REQUEST['goods_sn'];
         $res['timeout'] = 2000;
@@ -786,6 +807,7 @@ elseif ($_REQUEST['act'] == 'insert_package')
     $packing_id = $GLOBALS['db']->insert_id();
     if ($packing_id)
     {
+        record_operate($sql_insert, 'packing');
         $goods_list = array ();
         foreach ($list_id as $key=>$val)
         {
@@ -800,13 +822,18 @@ elseif ($_REQUEST['act'] == 'insert_package')
         $GLOBALS['db']->query($sql_insert);
         if ($GLOBALS['db']->affected_rows())
         {
+            record_operate($sql_insert, 'packing_goods');
+            $goods_list = array ();
+
             // 完善商品相关信息
             $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('goods').' g,'.$GLOBALS['ecs']->table('packing_goods').
                 ' p SET p.brand_id=g.brand_id,p.goods_name=g.goods_name,p.goods_price=g.goods_price '.
                 " WHERE packing_id=$packing_id";
+            $GLOBALS['db']->query($sql_update);
+            record_operate($sql_update, 'goods');
+
             $res['message'] = '套餐保存成功！';
-        }
-        else{
+        } else {
             $res['message'] = '套餐商品保存失败！';
         }
     }
@@ -864,12 +891,15 @@ elseif ($_REQUEST['act'] == 'update_package')
 
     if (!empty($request['list_id']))
     {
+        record_operate($sql_update, 'packing');
         // 删除套餐中相应的商品
         if (empty($request['rec_id']))
         {
             $sql_delete = 'DELETE FROM '.$GLOBALS['ecs']->table('packing_goods').
                 " WHERE packing_id={$request['id']} AND rec_id NOT IN ('".implode("','", $request['rec_id']);
-            $GLOBALS['db']->query($sql_delete);
+            if ($GLOBALS['db']->query($sql_delete)) {
+                record_operate($sql_delete, 'packing_goods');
+            }
         }
 
         $goods_list = array ();
@@ -902,6 +932,7 @@ elseif ($_REQUEST['act'] == 'update_package')
         $insert_rows = $GLOBALS['db']->affected_rows();
         if ($insert_rows == count($values))
         {
+            record_operate($sql_insert, 'packing_goods');
             $res['message'] = '套餐修改成功！';
         }
     }
@@ -1028,6 +1059,7 @@ elseif($_REQUEST['act'] == 'ajax_update')
 
         if($result)
         {
+            record_operate($sql_update, 'goods');
             $res['info'] = $info1;
             $res['info1'] = $info1;
             $res['info2'] = $info2;
@@ -1057,6 +1089,7 @@ elseif($_REQUEST['act'] == 'ajax_update')
         $result = $GLOBALS['db']->query($sql_update);
         if($result)
         {
+            record_operate($sql_update, 'goods');
             $res['gid'] = $_REQUEST['gid'];
             $res['info'] = $_REQUEST['info'];
             $res['main'] = $_REQUEST['val'];
@@ -1091,6 +1124,7 @@ elseif ($_REQUEST['act'] == 'add_brand')
     $res['brand_id'] = $GLOBALS['db']->insert_id();
     if ($res['brand_id'])
     {
+        record_operate($sql_insert, 'brand');
         $res['code'] = 1;
         $res['message'] = '添加品牌成功！';
         $res['brand_name'] = $_REQUEST['brand_name'];
@@ -1178,6 +1212,7 @@ elseif($_REQUEST['act'] == 'add_category')
         $sql_insert = 'INSERT INTO ' . $ecs->table('category') .
             '(cat_name, parent_id, is_show)' ." VALUES ( '$category', '$parent_id', 1)";
         $GLOBALS['db']->query($sql_insert);
+        record_operate($sql_insert, 'category');
         $category_id = $GLOBALS['db']->insert_id();
 
         $res['id'] = $category_id;
@@ -1206,6 +1241,43 @@ elseif($_REQUEST['act'] == 'brand_manage')
 
     die($json->encode($res));
 }
+
+/* 显示/隐藏品牌 */
+elseif ($_REQUEST['act'] == 'show_or_hide') {
+    $msg = array('req_msg'=>true,'timeout'=>2000);
+    if (!admin_priv('show_or_hide', '', false)) {
+        $msg['message'] = '对不起，您没有修改品牌的权限！';
+
+        echo $json->encode($msg);
+        return;
+    }
+
+    $brand_id = intval($_REQUEST['brand_id']);
+    if (empty($brand_id)) {
+        $msg['message'] = '修改失败，请刷新后再次尝试！';
+
+        echo $json->encode($msg);
+        return;
+    }
+
+    $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('brand').
+        " SET is_show=IF(is_show, 0, 1) WHERE brand_id=$brand_id";
+    if ($GLOBALS['db']->query($sql_update)) {
+        record_operate($sql_update, 'brand');
+        $sql_select = 'SELECT is_show FROM '.$GLOBALS['ecs']->table('brand')." WHERE brand_id=$brand_id";
+        $msg['is_show'] = $GLOBALS['db']->getOne($sql_select);
+
+        $msg['brand_id'] = $brand_id;
+        $msg['success']  = true;
+        $msg['message']  = '品牌状态修改成功！';
+    } else {
+        $msg['message'] = '品牌状态修改失败，请稍后再试！';
+    }
+
+    echo $json->encode($msg);
+    return;
+}
+
 
 
 /* 产品发货日志 */
@@ -1378,6 +1450,7 @@ elseif ($_REQUEST['act'] == 'mod_quantity_switch'){
 
     $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').$do_what." WHERE rec_id=$rec_id";
     $res['code'] = $GLOBALS['db']->query($sql_update);
+    record_operate($sql_update, 'stock_goods');
 
     die($json->encode($res));
 }
@@ -1406,6 +1479,7 @@ elseif ($_REQUEST['act'] == 'stock_switch')
                 $sql_upd .= $where;
             }
             $res['result'] = $GLOBALS['db']->query($sql_upd);
+            record_operate($sql_update, 'brand');
         }
 
         $res['mod_stock_status'] = $GLOBALS['db']->getOne($sql_select);
@@ -1438,6 +1512,7 @@ elseif($_REQUEST['act'] == 'modify_stock')
 
         if($result)
         {
+            record_operate($sql_upd, 'stock_goods');
             $res['code'] = true;
             $res['quantity'] = $quantity;
         }
@@ -1473,7 +1548,7 @@ elseif ($_REQUEST['act'] == 'index_stock_alarm')
 //实时库存警报
 elseif ($_REQUEST['act'] == 'timely_stock_alarm'){
     //当月第一天初始提醒设置
-    if(date('Y-m-1',time()) == date('Y-m-d',time())){
+    if(date('Y-m-1') == date('Y-m-d')){
         $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods')
             ." SET confirm_sto_admin=0,confirm_sto_times=0,predict_arrival_time=0,add_sto_order_time,edit_status=0";
         $GLOBALS['db']->query($sql_update[$i]);
@@ -1530,9 +1605,8 @@ elseif ($_REQUEST['act'] == 'confirm_stock_alarm'){
 
     if($goods_sn){
         $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods')
-            ." SET predict_arrival_time=$arrival_time,edit_status=0,add_sto_order_time=$add_sto_order_time,confirm_sto_times=confirm_sto_times+1"
-            .",confirm_sto_admin={$_SESSION['admin_id']}"." WHERE goods_sn='$goods_sn'";
-
+            ." SET predict_arrival_time=$arrival_time,confirm_sto_admin={$_SESSION['admin_id']},add_sto_order_time=$add_sto_order_time,"
+            .'confirm_sto_times=confirm_sto_times+1,edit_status=0'." WHERE goods_sn='$goods_sn'";
         $result = $GLOBALS['db']->query($sql_update);
     }
 
@@ -1567,6 +1641,7 @@ elseif ($_REQUEST['act'] == 'edit_warn_number'){
 
     $res['code'] = $GLOBALS['db']->query($sql_update);
     if($res['code']){
+        record_operate($sql_update, 'goods');
         $res['message']     = '修改成功';
         $res['warn_number'] = '<label onclick="editInpValue(this,'.$warn_number
             .",$goods_id)\">$warn_number";
@@ -1594,6 +1669,7 @@ elseif ($_REQUEST['act'] == 'edit_on_sale'){
         $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('goods')." SET is_on_sale=$val"
             ." WHERE goods_id=$goods_id"; 
         $res['code'] = $GLOBALS['db']->query($sql_update);
+        record_operate($sql_update, 'goods');
 
         $sql_select     =   'SELECT goods_id FROM '.$GLOBALS['ecs']->table('soldout_goods')
             ." WHERE goods_id=$goods_id";
@@ -1614,6 +1690,7 @@ elseif ($_REQUEST['act'] == 'edit_on_sale'){
         }
 
         $GLOBALS['db']->query($sql);
+        record_operate($sql, 'soldout_goods');
     }
 
     if($res['code']){
@@ -1650,6 +1727,7 @@ elseif($_REQUEST['act'] == 'sold_out_zero'){
             $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('goods').' SET is_on_sale=0'
                 ." WHERE goods_sn IN('$goods_sn')";
             if($GLOBALS['db']->query($sql_update)){
+                record_operate($sql_update, 'goods');
                 $res['code']    =   true;
                 $res['message'] =   '修改成功';
             }
@@ -1766,6 +1844,7 @@ elseif ($_REQUEST['act'] == 'stocktake_add') {
                 $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('inventory_storage').'(start_time,goods_sn,goods_name,quantity)VALUES'
                     ."($start_time,'{$val['goods_sn']}','{$val['goods_name']}','{$val['quantity']}')";
                 $GLOBALS['db']->query($sql_insert);
+                record_operate($sql_insert, 'inventory_storage');
             }
 
             $res['message']     = '已经开始盘点，切记要按结束盘点按钮！ ';
@@ -1866,6 +1945,7 @@ elseif ($_REQUEST['act'] == 'stocktake_add') {
                     ." WHERE storage_id={$pre['storage_id']}";
 
                 $GLOBALS['db']->query($sql_update);
+                record_operate($sql_update, 'inventory_storage');
             }
 
             $filter = array(
@@ -2015,6 +2095,7 @@ elseif ($_REQUEST['act'] == 'mod_actual_quantity'){
         $sql_update  = 'UPDATE '.$GLOBALS['ecs']->table('inventory_storage')." SET actual_quantity=$quantity WHERE storage_id=$storage_id"; 
         $res['code'] = $GLOBALS['db']->query($sql_update);
         if($res['code']){
+            record_operate($sql_update, 'inventory_storage');
             $res['message']  = '修改成功';
             $res['quantity'] = '<label onclick = "modActualQuantity(this,'.$quantity
                 .",$storage_id)\">$quantity";
@@ -2072,6 +2153,7 @@ elseif ($_REQUEST['act'] == 'set_alarm_admin'){
 
     $result = $GLOBALS['db']->query($sql_update);
     if($result){
+        record_operate($sql_update, 'admin_user');
         $res['code']    = true;
         $res['message']  = '设置成功';
     }else{
@@ -2264,6 +2346,7 @@ elseif($_REQUEST['act'] == 'control_order_sheet'){
         $result = $GLOBALS['db']->query($sql_del);
         $res['code'] = $result;
         if($result){
+            record_operate($sql_del, 'order_sheet');
             $res['message'] = '删除成功';
         }else{
             $res['message'] = '删除失败';
@@ -2277,6 +2360,46 @@ elseif($_REQUEST['act'] == 'control_order_sheet'){
     die($json->encode($res));
 }
 
+/* 更新商品最低售价 */
+elseif ($_REQUEST['act'] == 'update_min_price') {
+    $msg = array (
+        'req_msg' => true,
+        'timeout' => 2000,
+    );
+
+    $value    = floatval($_REQUEST['field']);
+    $goods_sn = $_REQUEST['goods_sn'];
+    if (empty($value)) {
+        $msg['message'] = '请输入正确的价格！';
+
+        echo $json->encode($msg);
+        return;
+    }
+
+    if (!is_numeric($goods_sn)) {
+        $msg['message'] = '商品编号错误，请刷新页面后再次尝试！';
+
+        echo $json->encode($msg);
+        return;
+    }
+
+    $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('goods')." SET min_price={$value} WHERE goods_sn={$goods_sn}";
+    if ($GLOBALS['db']->query($sql_update)) {
+        record_operate($sql_update, 'goods');
+        $msg['message'] = '商品最低售价已修改成功！';
+        $msg['value']   = sprintf('%.2f', $value);
+        $msg['form_id'] = "storage.php?act=update_min_price&goods_sn={$goods_sn}";
+
+        echo $json->encode($msg);
+        return;
+    } else {
+        $msg['message'] = '商品编号错误 或 商品已被其他用户删除！请确认后再次尝试修改！';
+
+        echo $json->encode($msg);
+        return;
+    }
+}
+
 /**
  * 获取订货单列表
  */
@@ -2285,8 +2408,8 @@ function stock_list($user_id, $account_type = '')
     // 检查参数 
     // $where = " WHERE user_id = '$user_id' ";
     if (in_array($account_type, array('user_money', 'frozen_money', 'rank_points', 'pay_points')))
-    {;
-    $where .= " AND $account_type <> 0 ";
+    {
+        $where .= " AND $account_type <> 0 ";
     }
 
     //初始化分页参数 
@@ -2581,7 +2704,7 @@ function stats_shipping_goods ()
     }
 
     //实时库存
-   $current_stock = get_current_stock(); 
+    $current_stock = get_current_stock(); 
 
     $stock = array();
     foreach($current_stock as $value){
@@ -2741,6 +2864,7 @@ function timely_stock_alarm(){
                 ." WHERE goods_sn='{$alarm_stock_goods['goods_sn']}'";
 
             $GLOBALS['db']->query($sql_update);
+            record_operate($sql_update, 'stock_goods');
         }
 
         if($alarm_stock_goods){
@@ -2987,13 +3111,13 @@ function get_where_for_shipping_log(){
 /*条件内只退货，没有发货记录*/
 function zero_shipping_but_return_goods($goods_list){
     if(!empty($_REQUEST['order_time_start']) && !empty($_REQUEST['order_time_end'])){
-    if(strlen($_REQUEST['order_time_start'])>10 && strlen($_REQUEST['order_time_end'])>10){
-        $return_time_start = strtotime($_REQUEST['order_time_start']);
-        $return_time_end   = strtotime($_REQUEST['order_time_end']);
-    }else{
-        $return_time_start = $_REQUEST['order_time_start'];
-        $return_time_end   = $_REQUEST['order_time_end'];
-    }
+        if(strlen($_REQUEST['order_time_start'])>10 && strlen($_REQUEST['order_time_end'])>10){
+            $return_time_start = strtotime($_REQUEST['order_time_start']);
+            $return_time_end   = strtotime($_REQUEST['order_time_end']);
+        }else{
+            $return_time_start = $_REQUEST['order_time_start'];
+            $return_time_end   = $_REQUEST['order_time_end'];
+        }
     }elseif(!empty($_REQUEST['shipping_time_start']) && !empty($_REQUEST['shipping_time_end'])){
         if(strlen($_REQUEST['shipping_time_start']) >10){
             $return_time_start = strtotime($_REQUEST['shipping_time_start']);
