@@ -49,15 +49,15 @@
  top:30%; */
  z-index:100; display:none }
 .wu_min_input input[type=text] { width:130px; margin-right:5px }
-.btn_new{ color:#3367AC; 
- cursor:pointer }
-display:inline; cursor:pointer; color:#3367AC
+.btn_new{ color:#3367AC; border: 0px; background: transparent; cursor:pointer }
 .btn_new:hover{ color:rgb(202,103,47) }
 .tab1{ width:96%; font-family:'微软雅黑' }
+
 h2{ display:inline; 
  float:left }
 img{ cursor:pointer }
 .top_form label,input,{ margin-left:10px; margin-left:5px }
+
 /*平台账号查询*/
 #explain { height:60px; border-bottom:1px solid #999999; background:#eee; font-size:14px; color:#666; text-align:
 center; line-height:60px }

@@ -98,9 +98,9 @@ elseif ($_REQUEST['act'] == 'records')
 {
     $result = service_records(); // 服务记录
 
-    if($power == 0) {
+    if(admin_priv('all','',false)) {
         $customer_service = get_admin_tmp_list();
-    } elseif($power == 1) {
+    } elseif(admin_priv('service_group_view','',false)) {
         $sql_select = 'SELECT user_name, user_id FROM '.$GLOBALS['ecs']->table('admin_user').
             " WHERE status>0 AND stats>0 AND group_id=$group_id";
         $customer_service = $GLOBALS['db']->getAll($sql_select);
@@ -285,7 +285,7 @@ elseif ($_REQUEST['act'] == 'service_delete')
 
 //添加预约服务模板
 elseif($_REQUEST['act'] == 'add_appointment_view'){
-    $user_id = intval($_REQUEST['user_id']);
+    $user_id = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
     $res = array(
         'req_msg'    => true,
         'message'    => '',
@@ -315,15 +315,15 @@ elseif($_REQUEST['act'] == 'book_service_list'){
     $where = " WHERE status=1 AND admin_id=$admin_id AND alarm_time>=$current_time";
     $condition = '';
 
-    if($_REQUEST['sch']){
-        if($_REQUEST['start_time'] && $_REQUEST['end_time']){
+    if(!empty($_REQUEST['sch'])){
+        if(!empty($_REQUEST['start_time']) && !empty($_REQUEST['end_time'])){
             $start_time = strtotime($_REQUEST['start_time']);
             $end_time   = strtotime($_REQUEST['end_time']);
             $where      .= " AND alarm_time>$start_time AND alarm_time<=$end_time";
             $condition  .= "&start_time=$start_time&end_time=$end_time";
         }
 
-        if($_REQUEST['user_name'] && mysql_real_escape_string($_REQUEST['user_name'])!=''){
+        if(!empty($_REQUEST['user_name']) && mysql_real_escape_string($_REQUEST['user_name'])!=''){
             $user_name = mysql_real_escape_string($_REQUEST['user_name']);
             $where     .= " AND user_name LIKE '%$user_name%'";
             $condition .= "&user_name=$user_name";
@@ -403,9 +403,9 @@ elseif($_REQUEST['act'] == 'book_service_list'){
 
 //修改预约服务
 elseif($_REQUEST['act'] == 'mod_appointment'){
-    $appointments_id = intval($_REQUEST['appointments_id']);
-    $behave          = mysql_real_escape_string($_REQUEST['behave']);
-    $tr_index        = intval($_REQUEST['tr_index']);
+    $appointments_id = isset($_REQUEST['appointments_id']) ? intval($_REQUEST['appointments_id']) : 0;
+    $behave          = isset($_REQUEST['behave']) ?  mysql_real_escape_string($_REQUEST['behave']) : '';
+    $tr_index        = isset($_REQUEST['tr_index']) ? intval($_REQUEST['tr_index']) : 0;
 
     $res = array(
         'req_msg' => true,
@@ -428,7 +428,7 @@ elseif($_REQUEST['act'] == 'mod_appointment'){
         break;
 
     case 'postphone' :  //推迟
-        if($_REQUEST['alarm_time'] && intval($_REQUEST['alarm_time']) != 0){
+        if(!empty($_REQUEST['alarm_time']) && intval($_REQUEST['alarm_time']) != 0){
             $res['alarm_time']      = $_REQUEST['alarm_time'];
             $res['appointments_id'] = $appointments_id;
             $alarm_time             = strtotime($_REQUEST['alarm_time']);
@@ -563,13 +563,14 @@ elseif ($_REQUEST['act'] == 'inventory_order_list')
 
     die($json->encode($res));
 }
+
 //搜索存货订单
 elseif ($_REQUEST['act'] == 'sch_inventory')
 {
-    $user_name  = mysql_real_escape_string(trim($_REQUEST['user_name']));
-    $phone      = mysql_real_escape_string(trim($_REQUEST['phone']));
-    $store_time = mysql_real_escape_string(trim($_REQUEST['store_time']));
-    $order_sn   = mysql_real_escape_string(trim($_REQUEST['order_sn']));
+    $user_name  = isset($_REQUEST['user_name']) ? mysql_real_escape_string(trim($_REQUEST['user_name'])) : '';
+    $phone      = isset($_REQUEST['phone']) ? mysql_real_escape_string(trim($_REQUEST['phone'])) : '';
+    $store_time = isset($_REQUEST['store_time']) ? mysql_real_escape_string(trim($_REQUEST['store_time'])) : '';
+    $order_sn   = isset($_REQUEST['order_sn']) ? mysql_real_escape_string(trim($_REQUEST['order_sn'])) : '';
 
     $where     = ' WHERE 1';
     $condition = '';
@@ -1087,9 +1088,9 @@ elseif ($_REQUEST['act'] == 'address')
  */
 elseif ($_REQUEST['act'] == 'healthy_manager')
 {
-    $user['user_id'] = intval($_REQUEST['user_id']);
-    $user['user_name'] = mysql_real_escape_string($_REQUEST['user_name']);
-    $user['sex'] = intval($_REQUEST['sex']);
+    $user['user_id']   = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : '';
+    $user['user_name'] = isset($_REQUEST['user_name']) ? mysql_real_escape_string($_REQUEST['user_name']) : '';
+    $user['sex']       = isset($_REQUEST['sex']) ? intval($_REQUEST['sex']) : '';
 
     //获取病例
     $sql_select = 'SELECT * FROM '.$GLOBALS['ecs']->table('disease').' WHERE available=1';
@@ -1115,7 +1116,7 @@ elseif ($_REQUEST['act'] == 'healthy_manager')
  */
 elseif ($_REQUEST['act'] == 'get_match_user')
 {
-    $user_name = mysql_real_escape_string($_REQUEST['user_name']);    //模糊查找顾客姓名
+    $user_name = isset($_REQUEST['user_name']) ? mysql_real_escape_string($_REQUEST['user_name']) : '';    //模糊查找顾客姓名
 
     $sql_select = 'SELECT u.user_id,u.user_name,u.sex,a.address FROM '.$GLOBALS['ecs']->table('users').
         ' AS u LEFT JOIN '.$GLOBALS['ecs']->table('user_address').' AS a ON u.user_id=a.user_id'.
@@ -1339,7 +1340,7 @@ elseif ($_REQUEST['act'] == 'user_rank')
     foreach($user_rank as &$val)
     {
         $val['modify_time'] = date('y-m-d H:i',$val['modify_time']);
-        if($val['platform'] != 'all'){}
+        if(isset($val['platform']) && $val['platform'] != 'all'){}
         else
         {
             $val['platform'] = '所有';
@@ -1651,10 +1652,8 @@ elseif ($_REQUEST['act'] == 'del_integrals')
 elseif ($_REQUEST['act'] == 'confirm_inte')
 {
     if(admin_priv('confirm_inte','',false) || admin_priv('all','',false)) {
-        $sort      = mysql_real_escape_string($_REQUEST['sort']);
-        $sort_type = mysql_real_escape_string($_REQUEST['sort_type']);
-        $sort      = empty($sort) ? 'receive_time' : $sort;
-        $sort_type = empty($sort_type) ? ' ASC' : ' '.$sort_type;
+        $sort      = empty($_REQUEST['sort']) ? 'receive_time' : mysql_real_escape_string($_REQUEST['sort']);
+        $sort_type = empty($_REQUEST['sort_type']) ? ' ASC' : ' '.mysql_real_escape_string($_REQUEST['sort_type']);
         $sort      = $sort.$sort_type;
 
         $sort_type = $sort_type == ' ASC' ? 'DESC' : 'ASC';
@@ -1702,7 +1701,7 @@ elseif ($_REQUEST['act'] == 'confirm_inte')
             'page_size'     => $filter['page_size'],
             'page'          => $filter['page'],
             'page_set'      => $page_set,
-            'condition'     => $condition,
+            'condition'     => empty($condition) ? '': $condition,
             'start'         => ($filter['page'] - 1)*$filter['page_size'] +1,
             'end'           => $filter['page']*$filter['page_size'],
             'act'           => 'confirm_inte',
@@ -2059,7 +2058,7 @@ elseif ($_REQUEST['act'] == 'ch_points_history')
             'page_size'     => $filter['page_size'],
             'page'          => $filter['page'],
             'page_set'      => $page_set,
-            'condition'     => $condition,
+            'condition'     => empty($condition) ? '' : $condition,
             'start'         => ($filter['page'] - 1)*$filter['page_size'] +1,
             'end'           => $filter['page']*$filter['page_size'],
             'act'           => 'ch_points_history',
@@ -3563,9 +3562,15 @@ function service_records($where = '')
     $user_name  = isset($_REQUEST['user_name']) ? trim(mysql_real_escape_string($_REQUEST['user_name'])) : '';
     $admin_id   = isset($_REQUEST['admin_id']) ? intval($_REQUEST['admin_id']) : 0;
     $condition  = '';
-    $start_date = strtotime($_REQUEST['start_time']);                //起始时间
-    $end_date   = strtotime($_REQUEST['end_time']);                  //终止时间
-    
+
+    if(isset($_REQUEST['start_time'])){
+        $start_date = strlen($_REQUEST['start_time'])<10 ? strtotime($_REQUEST['start_time']) : $_REQUEST['start_time'];                //起始时间
+    }
+
+    if(isset($_REQUEST['start_time'])){
+        $end_date = strlen($_REQUEST['end_time'])<10 ? strtotime($_REQUEST['end_time']) : $_REQUEST['end_time']; //结束时间
+    }
+
     if($admin_id > 0) {
         $where .= " AND s.admin_id=$admin_id";
         $condition .= "&admin_id=$admin_id";
@@ -3581,28 +3586,21 @@ function service_records($where = '')
         $condition .= "&admin_id={$_SESSION['admin_id']}";
     }
 
-    if($start_date != "" && $end_date != "") {
+    if(!empty($start_date) && !empty($end_date)) {
         $where     .= " AND s.service_time BETWEEN $start_date AND $end_date";
-        $condition .= "&startTime=$start_date&endTime=$end_date";
-    } elseif($start_date != "" || $end_date != "") {
-        if($start_date != "") {
+        $condition .= "&start_time=$start_date&end_time=$end_date";
+    } elseif(!empty($start_date) || !empty($end_date)) {
+        if(!empty($start_date)) {
             $where .= " AND s.service_time BETWEEN $start_date AND {$_SERVER['REQUEST_TIME']}"; 
-            $codition .= "&startTime=$start_date";
+            $condition .= "&start_time=$start_date&end_time={$_SERVER['REQUEST_TIME']}";
         } else {
             $where     .= " AND s.service_time BETWEEN 0 AND $end_date"; 
-            $condition .= "&endTime=$end_date"; 
+            $condition .= "&end_time=$end_date"; 
         }
     }
 
+    /*BUG URL传的中文参数被转码*/
     if($user_name != '') {
-        //中文乱码
-        if(!preg_match("/^[\x{4e00}-\x{9fa5}]+$/u",$user_name)){
-
-            $user_name = urlencode($user_name);
-            echo "1".$user_name;
-        }
-        exit;
-
         $where     .= " AND s.user_name LIKE '%$user_name%'";
         $condition .= "&user_name=$user_name";
     }
@@ -3809,8 +3807,9 @@ function account_list() {
     foreach ($list AS $key => $value) {
         $list[$key]['surplus_amount'] = price_format(abs($value['amount']), false);
         $list[$key]['add_date']       = local_date($GLOBALS['_CFG']['time_format'], $value['add_time']);
-        $list[$key]['process_type']   = $GLOBALS['_LANG']['surplus_type_' . $value['process_type']];
+        $list[$key]['process_type']   = $value['process_type'] ? '充值' : '提现';
     }
+
     $arr = array(
         'list'      => $list,
         'filter'    => $filter,
@@ -3871,17 +3870,17 @@ function sanitize_input_data($input_data)
 function sms_history()
 {
     // 通用参数
-    $filter['page_size']    = intval($_REQUEST['page_size']);
-    $filter['current_page'] = intval($_REQUEST['page_no']);
+    $filter['page_size']    = empty($_REQUEST['page_size']) ? 20 : intval($_REQUEST['page_size']);
+    $filter['current_page'] = empty($_REQUEST['page_no'])   ? 1  : intval($_REQUEST['page_no']);
 
-    $filter['page_size']    = $filter['page_size']    ? $filter['page_size'] : 15;
-    $filter['current_page'] = $filter['current_page'] ? $filter['current_page'] : 1;
+    $filter['page_size']    = $filter['page_size']    ?: 20;
+    $filter['current_page'] = $filter['current_page'] ?: 1;
 
     // 查询参数
-    $filter['start']    = strtotime($_REQUEST['start']);
-    $filter['end']      = strtotime($_REQUEST['end']);
-    $filter['admin_id'] = intval($_REQUEST['admin_id']);
-    $filter['keywords'] = mysql_real_escape_string($_REQUEST['keywords']);
+    $filter['start']    = empty($_REQUEST['start'])    ? '' : strtotime($_REQUEST['start']);
+    $filter['end']      = empty($_REQUEST['end'])      ? '' : strtotime($_REQUEST['end']);
+    $filter['admin_id'] = empty($_REQUEST['admin_id']) ? '' : intval($_REQUEST['admin_id']);
+    $filter['keywords'] = empty($_REQUEST['keywords']) ? '' : mysql_real_escape_string($_REQUEST['keywords']);
 
     $filter['start'] = $filter['start'] ? $filter['start'] : 0;
     $filter['end']   = $filter['end']   ? $filter['end']   : 0;

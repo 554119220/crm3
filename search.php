@@ -208,11 +208,11 @@ elseif ($_REQUEST['act'] == 'get_more_info'){
                         $val['order_status'] = $order_status[$val['order_status']];
                     }
 
-                    if (!$val['link']) {
+                    if (empty($val['link'])) {
                         $val['link'] = '上门自提';
                     }
 
-                    $order_text         = "{$val['order_time']}消费{$val['final_amount']}【{$val['role_describe']}-{$val['order_sn']}-{$val['order_status']}】【{$val['link']}】";
+                    $order_text         = "{$val['order_time']}消费{$val['final_amount']}【{$val['role_describe']}-{$val['order_sn']}-{$val['order_status']}】{$val['link']}";
                     $goods_text         = get_search_goods($goods_table,$val['order_id']);
 
                     $res .= '<details><summary>'.$order_text.'</summary>'.$goods_text.'</details><hr/><br/>';

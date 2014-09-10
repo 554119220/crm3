@@ -270,8 +270,9 @@ function getMoreInfo(user_id, condition, type) {
 
 function showGoods(res) {
 	var listInfo = document.getElementById('goods_search_res');
+  var tdlist = listInfo.getElementsByTagName('td');
+  tdlist[0].innerHTML = res;
 	listInfo.style.display = 'block';
-	listInfo.innerHTML = res;
 }
 
 //查看服务
@@ -1196,24 +1197,6 @@ function schRankVips(obj) {
 	if (data.length > 0) {
 		Ajax.call('users.php?act=vip_list', data.join('&'), fullSearchResponse, 'GET', 'JSON');
 	}
-}
-
-//公共查询中的商品列表
-function getGoodsList(id, target) {
-	if (target == 'old') {
-		user_type = 0;
-	}
-	else {
-		user_type = 1;
-	}
-	Ajax.call('finance_search.php', 'act=goods&id=' + id + '&user_type=' + user_type, showGoods, 'POST', 'TEXT');
-}
-
-/*显示商品信息*/
-function showGoods(res) {
-	var listGoods = document.getElementById('goods_search_res');
-	listGoods.style.display = '';
-	listGoods.innerHTML = res;
 }
 
 /*添加预约服务模板*/
