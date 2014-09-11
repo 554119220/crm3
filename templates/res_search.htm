@@ -11,7 +11,7 @@
     <!--老顾客-->
     {foreach from=$old_user_info item=val}
     <tr> 
-      <td>{$val.user_id}</td>
+      <td style="background:{if $val.is_black eq 1}red{elseif $val.is_black eq 4}yellow{/if}">{$val.user_id}</td>
       <td>{$val.user_name}</td>
       <td>
         {$val.admin_name}
@@ -40,7 +40,7 @@
     {/if}
     {foreach from=$new_user_info item=val}
     <tr> 
-      <td>{$val.user_id}</td>
+      <td style="background:{if $val.is_black eq 1}red{elseif $val.is_black eq 4}yellow{/if}">{$val.user_id}</td>
       <td>{$val.user_name}</td>
       <td>{$val.admin_name}</td>
       <td>-</td>

@@ -109,18 +109,18 @@ elseif ($act == 'search')
     } else {
         $keyword = substr($keyword, 1);
         if($user_old) {
-            $sql = 'SELECT u.user_id,u.user_name,u.rank_points, u.admin_name,u.admin_id, o.tracking_sn, o.shipping_code,a.account_name AS qq FROM '.$ecs->table('order_info').' o, '.
+            $sql = 'SELECT u.user_id,u.user_name,u.rank_points, u.admin_name,u.admin_id,u.is_black, o.tracking_sn, o.shipping_code,a.account_name AS qq FROM '.$ecs->table('order_info').' o, '.
                 $ecs->table('users')." u,".$GLOBALS['ecs']->table('account').' a '.
-                " WHERE o.order_status=5 AND o.pay_status=2 AND o.user_id=u.user_id AND u.is_black=0 AND a.admin_id=u.admin_id AND a.type_id=1 AND o.$condition='$keyword'";
+                " WHERE o.order_status=5 AND o.pay_status=2 AND o.user_id=u.user_id AND a.admin_id=u.admin_id AND a.type_id=1 AND o.$condition='$keyword'";
             $old_user_info = $db->getAll($sql);
             $old_user_info = get_admin_qq($old_user_info); 
             $user_old = true;
         }
 
         if($user_new) {
-            $sql = 'SELECT u.user_id,u.user_name,u.rank_points, u.admin_name,u.admin_id, o.tracking_sn, o.shipping_code,a.account_name AS qq FROM '.$ecs->table('ordersyn_info').' o, '.
+            $sql = 'SELECT u.user_id,u.user_name,u.rank_points, u.admin_name,u.admin_id,u.is_black, o.tracking_sn, o.shipping_code,a.account_name AS qq FROM '.$ecs->table('ordersyn_info').' o, '.
                 $ecs->table('users').' u, '.$GLOBALS['ecs']->table('account').' a '.
-                " WHERE o.order_status=5 AND o.pay_status=2 AND o.user_id=u.user_id AND u.is_black=0 AND a.admin_id=u.admin_id AND a.type_id=1 AND o.$condition='$keyword'";
+                " WHERE o.order_status=5 AND o.pay_status=2 AND o.user_id=u.user_id AND a.admin_id=u.admin_id AND a.type_id=1 AND o.$condition='$keyword'";
             $new_user_info = $db->getAll($sql);
             $new_user_info = get_admin_qq($new_user_info); 
             $user_new = true;
@@ -244,7 +244,6 @@ function get_user_id($table_name,$where,$keyword){
         $user_id = array();
 
         if(in_array($table_name,array('userssyn','users'))){
-            $where .= ' AND is_black=0';
 
             /*先在顾客表寻找*/
             $sql_select = 'SELECT user_id FROM '.$GLOBALS['ecs']->table($table_name)
@@ -290,8 +289,8 @@ function get_user_id($table_name,$where,$keyword){
 function get_user_info($table_name,$user_id){
     $tel = $_SESSION['action_list'] == 'all' ? 'CONCAT(home_phone, " ", mobile_phone) tel ' : "IF(admin_id=$_SESSION[admin_id], CONCAT(home_phone,' ', mobile_phone), '-') tel ";
 
-    $sql = "SELECT DISTINCT user_id,user_name,admin_name,$tel,admin_id FROM "
-        .$GLOBALS['ecs']->table($table_name)." WHERE user_id IN ($user_id) AND is_black IN(0,4)";
+    $sql = "SELECT DISTINCT user_id,user_name,admin_name,$tel,admin_id,is_black FROM "
+        .$GLOBALS['ecs']->table($table_name)." WHERE user_id IN ($user_id)";
 
     $user_info = $GLOBALS['db']->getAll($sql);
 
