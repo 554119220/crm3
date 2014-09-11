@@ -42,3 +42,5 @@ table[class=stock_alarm_site] th {border:1px solid #777;}
 
 .wd76_input {width:76px;}
 .disable_btn {background:#E0E0E0}
+
+#noborder th,#noborder td{border:none;margin:2px;height:12px;width:102px;};
