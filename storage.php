@@ -1565,6 +1565,7 @@ elseif ($_REQUEST['act'] == 'timely_stock_alarm'){
 
     if($alarm_stock_goods){
         $smarty->assign('alarm_stock_goods',$alarm_stock_goods);
+        $smarty->assign('stock_manager',true);
         $res = array(
             'req_msg'         => true,
             'response_action' => 'alarm_stock',
