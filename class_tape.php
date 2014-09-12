@@ -3,7 +3,7 @@ define('IN_ECS',true);
 require(dirname(__FILE__) . '/includes/init.php');
 date_default_timezone_set('Asia/Shanghai');
 
-$current_dir = scandir("../class_tape/");
+$current_dir = scandir("./class_tape/");
 
 array_shift($current_dir);
 array_shift($current_dir);

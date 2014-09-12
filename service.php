@@ -3503,7 +3503,7 @@ elseif($_REQUEST['act'] == 'clear_tape'){
         if($collected_favor_id){
             $collected_favor_id = join(',',$collected_favor_id); 
             $sql_del = 'DELETE FROM '.$GLOBALS['ecs']->table('tape_favorite').
-                " WHERE favor_id NOT IN($collected_favor_id) AND add_time>=$refer_time";
+                " WHERE favor_id NOT IN($collected_favor_id) AND add_time>=$refer_time AND public<>3";
         }
     }
 
