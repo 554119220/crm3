@@ -1,14 +1,14 @@
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="wu_table_list wu_rb_border rb_border tr_hover" id="favor_table">
-  {if $tape_collect_copyright eq 'boutique'}
-  <tr>
-    <th style="text-align:left;padding-left:14px;">
-      <label><input type="checkbox" name="tape_class" value="0"/> 减肥</label>
-      <label><input type="checkbox" name="tape_class" value="1"/> 补肾</label>
-      <label><input type="checkbox" name="tape_class" value="2"/> 三高</label>
-      <label><input type="checkbox" name="tape_class" value="3"/> 分类四</label>
-    </th>
-  </tr>
-  {/if}
+  <!--{if $tape_collect_copyright eq 'boutique'}-->
+  <!--<tr>-->
+  <!--  <th style="text-align:left;padding-left:14px;">-->
+  <!--    <label><input type="checkbox" name="tape_class" value="0"/> 减肥</label>-->
+  <!--    <label><input type="checkbox" name="tape_class" value="1"/> 补肾</label>-->
+  <!--    <label><input type="checkbox" name="tape_class" value="2"/> 三高</label>-->
+  <!--    <label><input type="checkbox" name="tape_class" value="3"/> 分类四</label>-->
+  <!--  </th>-->
+  <!--</tr>-->
+  <!--{/if}-->
   <tr>
     {if $tape_collect_copyright neq 'boutique'}
     {if $tape_favorite_view eq 1}
@@ -24,13 +24,23 @@
     {/if}
     <th width="13%">收藏时间</th>
     <th width="13%">操作</th>
+    {else}
+    <th width="10%">序号</th>
+    <th width="10%">操作</th>
+    <th width="10%">上传时间</th>
     {/if}
   </tr>
   {if $tape_collect neq null}
   {if $tape_collect_copyright eq 'boutique'}
-  <td>
-    <rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>播放{$smarty.foreach.i.iteration}</rec>
-  </td>
+  {foreach from=$tape_collect item=val}
+  <tr>
+    <td>{$val.favor_id}</td>
+    <td>
+      <rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>点击播放{$smarty.foreach.i.iteration}</rec>
+    </td>
+    <td>{$val.add_time}</td>
+  </tr>
+  {/foreach}
   {else}
   {foreach from=$tape_collect item=val}
   <tr>

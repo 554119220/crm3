@@ -3263,12 +3263,22 @@ elseif ($_REQUEST['act'] == 'tape_favorite') {
             break;
         }
     }
+    if('boutique' == $tape_collect_copyright){
 
-    if(!empty($user_name)){
-        $where .= " AND s.user_name LIKE '%$user_name%' ";
+        $sql_select = "SELECT favor_id,CONCAT('../',file_path) AS file_path,public,add_time FROM ".$GLOBALS['ecs']->table('tape_favorite').' WHERE public=3 ORDER BY file_path DESC';
+        $tape_collect = $GLOBALS['db']->getAll($sql_select);
+
+        if($tape_collect){
+            foreach($tape_collect as &$val){
+                $val['add_time'] = date('Y-m-d',$val['add_time']);
+            }
+        }
+    }else{
+        if(!empty($user_name)){
+            $where .= " AND s.user_name LIKE '%$user_name%' ";
+        }
+        $tape_collect = get_tape_collect($where,$order_by);
     }
-
-    $tape_collect = get_tape_collect($where,$order_by);
 
     $smarty->assign('tape_collect',$tape_collect);
     $smarty->assign('tape_collect_copyright',$tape_collect_copyright);
