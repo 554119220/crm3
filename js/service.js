@@ -1380,6 +1380,12 @@ function showRecListResp(res) {
 	return false;
 }
 
+function showClassTape(fid){
+ if (fid) {
+		Ajax.call('service.php?act=class_tape&favor_id=' + fid, '', showRecListResp, 'GET', 'JSON');
+	} 
+}
+
 /**
  * 添加录音到播放器
  */

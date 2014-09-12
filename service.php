@@ -3181,6 +3181,28 @@ elseif ($_REQUEST['act'] == 'rec_list') {
     return;
 }
 
+elseif($_REQUEST['act'] == 'class_tape'){
+    $favor_id = isset($_REQUEST['favor_id']) ? intval($_REQUEST['favor_id']) : 0;
+    if($favor_id){
+        $sql_select = 'SELECT favor_id,file_path FROM '.$GLOBALS['ecs']->table('tape_favorite').
+            " WHERE favor_id=$favor_id";
+        $file_list = $GLOBALS['db']->getRow($sql_select);
+        if($file_list){
+            $audio_list[] = $file_list['file_path'];
+            $smarty->assign('audio_list', $audio_list);
+        }
+    }
+
+    $msg = array(
+        'req_msg'    => true,
+        'title'      => '通话录音',
+        'btncontent' => '关闭',
+        'message'    => $smarty->fetch('tapes.htm')
+    );
+
+    die($json->encode($msg));
+}
+
 /* 收藏录音 */
 elseif ($_REQUEST['act'] == 'collect_tape') {
     $file = mysql_real_escape_string($_REQUEST['file']);
@@ -3265,7 +3287,7 @@ elseif ($_REQUEST['act'] == 'tape_favorite') {
     }
     if('boutique' == $tape_collect_copyright){
 
-        $sql_select = "SELECT favor_id,CONCAT('../',file_path) AS file_path,public,add_time FROM ".$GLOBALS['ecs']->table('tape_favorite').' WHERE public=3 ORDER BY file_path DESC';
+        $sql_select = "SELECT favor_id,file_path,public,add_time FROM ".$GLOBALS['ecs']->table('tape_favorite').' WHERE public=3 ORDER BY file_path DESC';
         $tape_collect = $GLOBALS['db']->getAll($sql_select);
 
         if($tape_collect){
@@ -4005,7 +4027,7 @@ function push_blacklist($table_name){
 
 /*获得通话录音收藏列表*/
 function get_tape_collect($where,$order_by){
-    $sql_select = 'SELECT t.favor_id,t.file_path,t.add_time,a.user_name AS admin_name,s.service_time,s.logbook,s.user_name,COUNT(g.favor_id) praise,t.simple_explain FROM '.
+    $sql_select = 'SELECT t.favor_id,t.file_path,t.add_time,a.user_name AS admin_name,s.service_time,s.service_id,s.logbook,s.user_name,COUNT(g.favor_id) praise,t.simple_explain FROM '.
         $GLOBALS['ecs']->table('tape_favorite').' t LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' a ON t.admin_id=a.user_id LEFT JOIN '.$GLOBALS['ecs']->table('service').
         ' s ON t.service_id=s.service_id LEFT JOIN '.$GLOBALS['ecs']->table('tape_grade').

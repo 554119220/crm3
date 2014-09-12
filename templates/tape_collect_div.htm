@@ -10,6 +10,7 @@
   <!--</tr>-->
   <!--{/if}-->
   <tr>
+    <th width="1%"></th>
     {if $tape_collect_copyright neq 'boutique'}
     {if $tape_favorite_view eq 1}
     <th width="10%">客服</th>
@@ -25,7 +26,7 @@
     <th width="13%">收藏时间</th>
     <th width="13%">操作</th>
     {else}
-    <th width="10%">序号</th>
+    <th width="3%">序号</th>
     <th width="10%">操作</th>
     <th width="10%">上传时间</th>
     {/if}
@@ -34,9 +35,13 @@
   {if $tape_collect_copyright eq 'boutique'}
   {foreach from=$tape_collect item=val}
   <tr>
-    <td>{$val.favor_id}</td>
     <td>
-      <rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>点击播放{$smarty.foreach.i.iteration}</rec>
+      <input type="checkbox" name="checkbox" value="{$val.favor_id}"/>
+    </td>
+    <td>{$val.favor_id}</td>
+    <td onclick="showClassTape({$val.favor_id})" style="cursor:pointer">
+      点击播放
+      <!--<rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>点击播放{$smarty.foreach.i.iteration}</rec>-->
     </td>
     <td>{$val.add_time}</td>
   </tr>
@@ -59,7 +64,8 @@
     {/if}
     <td>{$val.add_time}</td>
     <td>
-      <rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>播放{$smarty.foreach.i.iteration}</rec>
+      <button onclick="showRecList({$val.service_id})" style="cursor:pointer">点击查看</button>
+      <!--<rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>播放{$smarty.foreach.i.iteration}</rec>-->
       {if $tape_collect_copyright eq 'privacy'}
       <button class="btn_new" onclick="chTapePublic(this,'public',{$val.favor_id})" >公开</button> 
       {elseif $tape_collect_copyright eq 'other_public'}
