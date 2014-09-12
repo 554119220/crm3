@@ -32,13 +32,13 @@ elseif('feedback_done' == $action){
     if($_FILES['img1']['name']){
         $img1 = $_FILES['img1']['tmp_name'];
         $img1_name = rand(0,20).$_FILES['img1']['name'];
-        move_uploaded_file($_FILES['img1']['tmp_name'],ROOT_PATH.'images/feedback/'.$img1_name);
+        move_uploaded_file($_FILES['img1']['tmp_name'],$_SERVER['DOCUMENT_ROOT'].'/feedback/'.$img1_name);
     }
 
     if($_FILES['img2']['name']){
         $img2 = $_FILES['img2']['tmp_name'];
         $img2_name = rand(0,20).$_FILES['img2']['name'];
-        move_uploaded_file($_FILES['img2']['tmp_name'],ROOT_PATH.'images/feedback/'.$img2_name);
+        move_uploaded_file($_FILES['img2']['tmp_name'],$_SERVER['DOCUMENT_ROOT'].'/feedback/'.$img2_name);
     }
 
     if(!empty($message)){
@@ -71,11 +71,11 @@ elseif('feedback_more' == $action){
         $feedback = $GLOBALS['db']->getRow($sql_select); 
         if($feedback){
             if($feedback['image1']){
-                $feedback['image1'] = "../images/feedback/{$feedback['image1']}";
+                $feedback['image1'] = "../../feedback/{$feedback['image1']}";
             }
 
             if($feedback['image2']){
-                $feedback['image2'] = "../images/feedback/{$feedback['image2']}";
+                $feedback['image2'] = "../../feedback/{$feedback['image2']}";
             }
         }
     }

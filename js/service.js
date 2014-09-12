@@ -1542,3 +1542,8 @@ function selectAdmin() {
 function selectAdminResp(res) {
 	showMsg(res);
 }
+
+/*给通话录音添加说明*/
+function addExplance(fid){
+  
+}

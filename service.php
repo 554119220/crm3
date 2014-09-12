@@ -102,7 +102,7 @@ elseif ($_REQUEST['act'] == 'records')
         $customer_service = get_admin_tmp_list();
     } elseif(admin_priv('service_group_view','',false)) {
         $sql_select = 'SELECT user_name, user_id FROM '.$GLOBALS['ecs']->table('admin_user').
-            " WHERE status>0 AND stats>0 AND group_id=$group_id";
+            " WHERE status>0 AND stats>0 AND group_id={$_SESSION['group_id']}";
         $customer_service = $GLOBALS['db']->getAll($sql_select);
     }
 
@@ -3304,6 +3304,10 @@ elseif ($_REQUEST['act'] == 'tape_favorite') {
 
     $smarty->assign('tape_collect',$tape_collect);
     $smarty->assign('tape_collect_copyright',$tape_collect_copyright);
+
+    if(admin_priv('all','',false)){
+        $smarty->assign('authority','authority');
+    }
 
     if(isset($_REQUEST['from_sch'])){
         $res['main'] = $smarty->fetch('tape_collect_div.htm');

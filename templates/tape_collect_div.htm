@@ -27,6 +27,7 @@
     <th width="13%">操作</th>
     {else}
     <th width="3%">序号</th>
+    <th width="10%">简单说明</th>
     <th width="10%">操作</th>
     <th width="10%">上传时间</th>
     {/if}
@@ -39,13 +40,21 @@
       <input type="checkbox" name="checkbox" value="{$val.favor_id}"/>
     </td>
     <td>{$val.favor_id}</td>
-    <td onclick="showClassTape({$val.favor_id})" style="cursor:pointer">
-      点击播放
-      <!--<rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>点击播放{$smarty.foreach.i.iteration}</rec>-->
-    </td>
-    <td>{$val.add_time}</td>
-  </tr>
-  {/foreach}
+    <td>
+    {if $val.explane}
+    {$val.explane}
+    {elseif $authority}
+    <button class="btn_new">添加说明</button>
+    {else}-
+    {/if}
+  </td>
+  <td onclick="showClassTape({$val.favor_id})" style="cursor:pointer">
+    点击播放
+    <!--<rec onclick="showRecPlayer(this);" style="cursor:pointer"><audio src="{$val.file_path}" style="width:20px; height:10px; background-color:skyblue"></audio>点击播放{$smarty.foreach.i.iteration}</rec>-->
+  </td>
+  <td>{$val.add_time}</td>
+</tr>
+{/foreach}
   {else}
   {foreach from=$tape_collect item=val}
   <tr>
