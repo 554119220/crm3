@@ -1544,6 +1544,39 @@ function selectAdminResp(res) {
 }
 
 /*给通话录音添加说明*/
-function addExplance(fid){
-  
+function addExplance(fid,obj){
+  var comment = prompt('请填写简单说明');
+  if(comment){
+    obj.parentNode.innerHTML = '<button class="btn_new" onclick="addExplance('+fid+',this'+')">'+comment+'</button>';
+    Ajax.call('service.php?act=add_tape_explain','simple_explain='+comment+'&favor_id='+fid,showMsg,'GET','JSON');
+  }
+}
+
+/*通过分类选择通话录音*/
+function selectTape(obj){
+  Ajax.call('service.php?act=select_tape','class='+obj.value+'&tape_collect_copyright='+'boutique'+'&from_sch='+'from_sch',fullSearchResponse,'GET','JSON');
+}
+
+/*更改通话录音类别*/
+function showSelect(obj,fid){
+	var classId = obj.value;
+	var tdObj   = obj.parentNode;
+	var classList = ['减肥','补肾','三高'];
+
+	tdObj.id='td_'+fid;
+	tdObj.innerHTML = '';
+	for(var i = 0; i < classList.length; i++){
+		tdObj.innerHTML += '<label><input type="radio" name="tape_class" value="'+parseInt(i+1)+'" title="'+fid+'" onclick="showSelectDone(this)" act="service.php?act=modify_tape_class"/>'+classList[i]+'</label>';
+	}
+
+}
+
+/*公共*/
+/*表格中输入框*/
+function showSelectDone(obj){
+	Ajax.call(obj.getAttribute('act'),'id='+obj.title,selectDoneRes,'GET','JOSN');
+}
+
+function selectDoneRes(res){
+	document.getElementById('td'+res.id).innerHTML = res.main;
 }

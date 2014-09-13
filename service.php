@@ -3181,6 +3181,7 @@ elseif ($_REQUEST['act'] == 'rec_list') {
     return;
 }
 
+/*经典通话录音*/
 elseif($_REQUEST['act'] == 'class_tape'){
     $favor_id = isset($_REQUEST['favor_id']) ? intval($_REQUEST['favor_id']) : 0;
     if($favor_id){
@@ -3201,6 +3202,60 @@ elseif($_REQUEST['act'] == 'class_tape'){
     );
 
     die($json->encode($msg));
+}
+
+/*分类查找录音*/
+elseif($_REQUEST['act']=='select_tape'){
+    $class = isset($_REQUEST['class']) ? intval($_REQUEST['class']) : 0;
+    $where = ' WHERE public=3 ';
+    if($class){
+        $where .=" AND class=$class";
+    }
+
+    $sql_select = 'SELECT favor_id,simple_explain,add_time FROM '.$GLOBALS['ecs']->table('tape_favorite').$where;
+
+    $tape_collect = $GLOBALS['db']->getAll($sql_select);
+    if($tape_collect){
+        foreach($tape_collect as &$val){
+            $val['add_time'] = date('Y-m-d',$val['add_time']);
+        }
+    }
+
+    $smarty->assign('class',$class);
+    $smarty->assign('tape_collect_copyright','boutique');
+    $smarty->assign('tape_collect',$tape_collect);
+
+    if(admin_priv('all','',false)){
+        $smarty->assign('authority','authority');
+    }
+
+    $res['main'] = $smarty->fetch('tape_collect_div.htm');
+    die($json->encode($res));
+}
+
+/*添加录音说明*/
+elseif($_REQUEST['act'] == 'add_tape_explain'){
+    $simple_explain = isset($_REQUEST['simple_explain']) ? mysql_real_escape_string($_REQUEST['simple_explain']) : '';
+    $favor_id = isset($_REQUEST['favor_id']) ? intval($_REQUEST['favor_id']) : 0;
+
+    $res = array(
+        'req_msg' => true,
+        'timeout' => 2000,
+        'code'    => false,
+        'message' => ''
+    );
+
+    if($simple_explain && $favor_id){
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('tape_favorite').
+            " SET simple_explain='$simple_explain' WHERE favor_id=$favor_id";
+
+        $res['code'] = $GLOBALS['db']->query($sql_update);
+        $res['message'] = $res['code'] ? '添加成功' : '添加失败，请联系技术部';
+    }else{
+        $res['message'] = '添加失败';
+    }
+
+    die($json->encode($res));
 }
 
 /* 收藏录音 */
@@ -3287,7 +3342,7 @@ elseif ($_REQUEST['act'] == 'tape_favorite') {
     }
     if('boutique' == $tape_collect_copyright){
 
-        $sql_select = "SELECT favor_id,file_path,public,add_time FROM ".$GLOBALS['ecs']->table('tape_favorite').' WHERE public=3 ORDER BY file_path DESC';
+        $sql_select = "SELECT favor_id,file_path,public,add_time,simple_explain FROM ".$GLOBALS['ecs']->table('tape_favorite').' WHERE public=3 ORDER BY file_path DESC';
         $tape_collect = $GLOBALS['db']->getAll($sql_select);
 
         if($tape_collect){
