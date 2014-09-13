@@ -3184,7 +3184,7 @@ elseif ($_REQUEST['act'] == 'rec_list') {
 elseif($_REQUEST['act'] == 'class_tape'){
     $favor_id = isset($_REQUEST['favor_id']) ? intval($_REQUEST['favor_id']) : 0;
     if($favor_id){
-        $sql_select = 'SELECT favor_id,file_path FROM '.$GLOBALS['ecs']->table('tape_favorite').
+        $sql_select = "SELECT favor_id,CONCAT('../../',file_path) file_path FROM ".$GLOBALS['ecs']->table('tape_favorite').
             " WHERE favor_id=$favor_id";
         $file_list = $GLOBALS['db']->getRow($sql_select);
         if($file_list){

@@ -1,14 +1,14 @@
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="wu_table_list wu_rb_border rb_border tr_hover" id="favor_table">
-  <!--{if $tape_collect_copyright eq 'boutique'}-->
-  <!--<tr>-->
-  <!--  <th style="text-align:left;padding-left:14px;">-->
-  <!--    <label><input type="checkbox" name="tape_class" value="0"/> 减肥</label>-->
-  <!--    <label><input type="checkbox" name="tape_class" value="1"/> 补肾</label>-->
-  <!--    <label><input type="checkbox" name="tape_class" value="2"/> 三高</label>-->
-  <!--    <label><input type="checkbox" name="tape_class" value="3"/> 分类四</label>-->
-  <!--  </th>-->
-  <!--</tr>-->
-  <!--{/if}-->
+  {if $tape_collect_copyright eq 'boutique'}
+  <tr>
+    <th style="text-align:left;padding-left:14px;" colspan="5">
+      <label><input type="checkbox" name="tape_class" value="0"/> 减肥</label>
+      <label><input type="checkbox" name="tape_class" value="1"/> 补肾</label>
+      <label><input type="checkbox" name="tape_class" value="2"/> 三高</label>
+      <label><input type="checkbox" name="tape_class" value="3"/> 分类四</label>
+    </th>
+  </tr>
+  {/if}
   <tr>
     <th width="1%"></th>
     {if $tape_collect_copyright neq 'boutique'}
