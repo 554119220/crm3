@@ -1574,9 +1574,11 @@ function showSelect(obj,fid){
 /*公共*/
 /*表格中输入框*/
 function showSelectDone(obj){
-	Ajax.call(obj.getAttribute('act'),'id='+obj.title,selectDoneRes,'GET','JOSN');
+	Ajax.call(obj.getAttribute('act'),'id='+obj.title+'&value='+obj.value,selectDoneRes,'GET','JSON');
 }
 
 function selectDoneRes(res){
-	document.getElementById('td'+res.id).innerHTML = res.main;
+	if(document.getElementById('td_'+res.id)){
+		document.getElementById('td_'+res.id).innerHTML = res.main;
+	}
 }

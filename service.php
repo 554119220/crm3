@@ -3206,20 +3206,9 @@ elseif($_REQUEST['act'] == 'class_tape'){
 
 /*分类查找录音*/
 elseif($_REQUEST['act']=='select_tape'){
-    $class = isset($_REQUEST['class']) ? intval($_REQUEST['class']) : 0;
-    $where = ' WHERE public=3 ';
-    if($class){
-        $where .=" AND class=$class";
-    }
 
-    $sql_select = 'SELECT favor_id,simple_explain,add_time FROM '.$GLOBALS['ecs']->table('tape_favorite').$where;
-
-    $tape_collect = $GLOBALS['db']->getAll($sql_select);
-    if($tape_collect){
-        foreach($tape_collect as &$val){
-            $val['add_time'] = date('Y-m-d',$val['add_time']);
-        }
-    }
+    $class        = isset($_REQUEST['class']) ? intval($_REQUEST['class']) : 0;
+    $tape_collect = select_tape();
 
     $smarty->assign('class',$class);
     $smarty->assign('tape_collect_copyright','boutique');
@@ -3253,6 +3242,33 @@ elseif($_REQUEST['act'] == 'add_tape_explain'){
         $res['message'] = $res['code'] ? '添加成功' : '添加失败，请联系技术部';
     }else{
         $res['message'] = '添加失败';
+    }
+
+    die($json->encode($res));
+}
+
+//修改通话录音类别
+elseif($_REQUEST['act'] =='modify_tape_class'){
+
+    $favor_id    = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+    $class       = isset($_REQUEST['value']) ? intval($_REQUEST['value']) : 0;
+    $res['code'] = false;
+    $arr = array('减肥','补肾','三高');
+
+    if($favor_id && $class){
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('tape_favorite').
+            " SET class=$class WHERE favor_id=$favor_id";
+
+        $res['code'] = $GLOBALS['db']->query($sql_update);
+        $res['id']   = $favor_id;
+    }
+
+    if($res['code']){
+        $res['main'] = '<button onclick="showSelect(this,'.$favor_id.
+            ')" class="btn_new">'.$arr[$class-1].'</button>';
+    }else{
+        $res['main'] = '<button onclick="showSelect(this,'.$favor_id.
+            ')" class="btn_new">分类</button>';
     }
 
     die($json->encode($res));
@@ -3342,14 +3358,9 @@ elseif ($_REQUEST['act'] == 'tape_favorite') {
     }
     if('boutique' == $tape_collect_copyright){
 
-        $sql_select = "SELECT favor_id,file_path,public,add_time,simple_explain FROM ".$GLOBALS['ecs']->table('tape_favorite').' WHERE public=3 ORDER BY file_path DESC';
-        $tape_collect = $GLOBALS['db']->getAll($sql_select);
-
-        if($tape_collect){
-            foreach($tape_collect as &$val){
-                $val['add_time'] = date('Y-m-d',$val['add_time']);
-            }
-        }
+        $class        = isset($_REQUEST['class']) ? intval($_REQUEST['class']) : 0;
+        $tape_collect = select_tape();
+        $smarty->assign('class',$class);
     }else{
         if(!empty($user_name)){
             $where .= " AND s.user_name LIKE '%$user_name%' ";
@@ -4119,4 +4130,30 @@ function comment_tape($comment,&$res,$favor_id){
         $res['message']    = '你已经评论过此通话录音。';
     }
     $res['table_name'] = '';    
+}
+
+function select_tape(){
+    $class = isset($_REQUEST['class']) ? intval($_REQUEST['class']) : 0;
+    $where = ' WHERE public=3 ';
+    if($class){
+        $where .=" AND class=$class";
+    }
+
+    $sql_select = "SELECT favor_id,file_path,public,class,add_time,simple_explain FROM ".$GLOBALS['ecs']->table('tape_favorite')." $where ORDER BY file_path DESC";
+    $tape_collect = $GLOBALS['db']->getAll($sql_select);
+    $arr = array(
+        '0' => '',
+        '1' => '减肥',
+        '2' => '补肾',
+        '3' => '三高',
+    );
+
+    if($tape_collect){
+        foreach($tape_collect as &$val){
+                $val['add_time'] = date('Y-m-d',$val['add_time']);
+                $val['class_name'] = $arr[$val['class']];
+            }
+        }   
+
+    return $tape_collect;
 }
