@@ -2,6 +2,9 @@
 <br/>
 <h3>
   盘点记录
+  <span id="printer">
+    <a target="_blank" id="a_printer" href="{$p_url}" style="border:0px" class="b_submit">打印</a>
+  </span>
   <span style="float:right;margin-right:16px;margin-bottom:6px;">
     <span id="time_title">{if $start_time neq null}<font size="3px">开始盘点时间：</font>
       <font color="red">{$start_time}</font>{/if}</span>&nbsp;&nbsp;
@@ -48,11 +51,6 @@
     </select>
     <input type="text" id="keyword" name="keyword" placeholder="商品名称/商品编号"/>&nbsp;&nbsp;
     <input type='button' class="b_submit" onclick="schInventorySto(this.form)" value="搜 索"/>
-    <span id="printer">
-    <a target="_blank" id="a_printer" href="{$p_url}" style="border:0px">
-    <img src="images/printer.png" title="打印本次盘点记录" alt="打印本次盘点记录" class="png_btn" style="width:29px"/>
-    </a>
-    </span>
   </form>
 </div>
 <div id="resource">

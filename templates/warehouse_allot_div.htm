@@ -1,0 +1,48 @@
+<!--=============================================================================
+#     FileName: warehouse_allot_div.htm
+#         Desc: 
+#       Author: Wuyuanhang
+#        Email: 1828343841@qq.com
+#     HomePage: kjrs_crm
+#      Version: 0.0.1
+#   LastChange: 2014-09-15 15:59:55
+#      History:
+=============================================================================-->
+<table width="100%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover">
+  <tr>
+    <th width="16%">主题</th> 
+    <th width="10%">出货仓库</th> 
+    <th width="10%">入货仓库</th> 
+    <th width="10%">调拨时间</th> 
+    <th width="8%">验货人</th> 
+    <th width="8%">状态</th> 
+    <th width="8%">审批人</th> 
+    <th width="8%">负责人</th> 
+    <th width="10%">调拨产品</th>
+    <th width="10%">工具</th> 
+  </tr>
+  {if $allot_list}
+  {foreach from=$allot_list item=val}
+  <tr>
+    <td>{$val.title}</td>
+    <td>{$val.out_storage}</td>
+    <td>{$val.in_storage}</td>
+    <td>{$val.add_time}</td>
+    <td>{$val.check}</td>
+    <td>{$val.status}</td>
+    <td>{$val.examine}</td>
+    <td>{$val.admin_name}</td>
+    <td>
+      <button class="btn_new" onclick="showAllotGoods($val.allot_id)">调拨商品</button>
+    </td>
+    <td>
+      <button onclick="delAllot({$val.allot_id})">删除</button>
+    </td>
+  </tr>
+  {/foreach}
+  {else}
+  <tr>
+    <td colspan="10">没有记录</td> 
+  </tr>
+  {/if}
+</table>

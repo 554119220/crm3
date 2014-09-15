@@ -1799,10 +1799,8 @@ elseif ($_REQUEST['act'] == 'inventory_list'){
 
 /* 盘点记录 */
 elseif ($_REQUEST['act'] == 'stocktake_records') {
-
     $res['response_action'] = 'search_service';
     $res['main'] = $smarty->fetch('inventory_list_div.htm');
-
     die($json->encode($res));
 }
 
@@ -1815,7 +1813,6 @@ elseif ($_REQUEST['act'] == 'stocktake_add') {
     );
 
     if(admin_priv('mod_stock_quantity','',false) || admin_priv('all','',false)){
-
         $behave        = intval($_REQUEST['behave']);
         $res['behave'] = $behave;
 
@@ -2399,6 +2396,38 @@ elseif ($_REQUEST['act'] == 'update_min_price') {
         echo $json->encode($msg);
         return;
     }
+}
+
+/*仓库调拨*/
+//author : wuyuanhang
+elseif($_REQUEST['act'] == 'warehouse_allot'){
+    $warehouse_list = get_warehouse('simple');
+    $allot_list     = get_allot_list();
+
+    if($get_allot_list){
+        foreach($get_allot_list as &$al){
+            foreach($warehouse_list as $wl){
+                if($al['in_storage'] == $wl['warehouse_id']){
+                    $al['in_storage'] = $wl['warehouse_name'];
+                }
+
+                if($al['out_storage'] == $wl['warehoust_id']){
+                    $al['out_storage'] = $wl['warehouse_name'];
+                }
+            }
+        }    
+    }
+
+
+    if(isset($_REQUEST['from_sch'])){
+        $res['main'] = $smarty->fetch('warehouse_allot_div.htm');
+    }else{
+        $smarty->assign('warehouse_list',$warehouse_list);
+        $smarty->assign('allot_list_div',$smarty->fetch('warehouse_allot_div.htm'));
+        $res['main'] = $smarty->fetch('warehouse_allot.htm');
+    }
+
+    die($json->encode($res));
 }
 
 /**
@@ -3219,3 +3248,48 @@ function get_current_stock($where = ''){
     return $current_stock;
 }
 
+/*实体店列表*/
+function get_warehouse($des,$where=''){
+    if($whre){
+       $where .= " AND status=1";
+    }else{
+       $where = " WHERE status=1";  
+    }
+
+    if('detail' == $des){
+        $sql_select = 'SELECT warehouse_id,warehouse_name,admin_id,tel,address FROM ';
+    }elseif('simple' == $des){
+        $sql_select = 'SELECT warehouse_id,warehouse_name FROM ';
+    }
+
+    $sql_select .= $GLOBALS['ecs']->table('warehouse').$where;
+    $result = $GLOBALS['db']->getAll($sql_select);
+
+    return $result;
+}
+
+/*仓库调拨记录*/
+function get_allot_list(){
+    $where = ' WHERE w.status=1';
+
+    if(!empty($_REQUEST['add_time'])){
+       if(strlen($_REQUEST['admin_time']) < 10){
+          $add_time = strtotime(mysql_real_escape_string($_REQUEST['add_time'])); 
+       }else{
+          $add_time = intval($_REQUEST['add_time']); 
+       }
+       $where .= " AND w.add_time=$add_time ";
+    }
+
+    if(!empty($_REQUEST['warehouse_id'])){
+        $warehouse_id = intval($_REQUEST['warehouse_id']);
+        $whre .= " AND w.warehouse_id=$warehouse_id";
+    }
+
+    $sql_select = 'SELECT w.allot_id,w.admin_id,w.add_time,w.out_storage,w.in_storage,w.check,w.examine,w.title,w.check_time,w.examine_time,a.user_name as admin_name FROM '.
+        $GLOBALS['ecs']->table('warehouse_allot').' AS w LEFT JOIN '.
+        $GLOBALS['ecs']->table('admin_user').' AS a ON w.admin_id=a.user_id '.$where;
+    $result = $GLOBALS['db']->getAll($sql_select);
+
+    return $result;
+}
