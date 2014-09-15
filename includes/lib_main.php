@@ -1307,13 +1307,11 @@ function assoc_value ($arr, $key = 0)
  */
 function platform_list ($platform = array ())
 {
-    $sql_select = 'SELECT role_name,role_id,role_describe FROM '.$GLOBALS['ecs']->table('role').
-        " WHERE role_type>0 ";// AND action IN ({$_SESSION['action_list']})";
-    if (!admin_priv('all', '', false))
-    {
+    $sql_select = 'SELECT role_name,role_id,role_describe FROM '.$GLOBALS['ecs']->table('role')." WHERE role_type>0 ";
+    if (!admin_priv('all', '', false)) {
         $action = explode(',', $_SESSION['action_list']);
         $action = implode("','", $action);
-        $sql_select .= " AND action_list IN ('$action')";
+        $sql_select .= " AND action IN ('$action')";
     }
 
     if (!empty($platform)) {
@@ -1342,32 +1340,33 @@ function stamp2date ($str, $format = 'Y-m-d')
 /**
  * 获取有效客服列表
  */
-function get_admin_tmp_list ($role = 0,$group_id=0)
+function get_admin_tmp_list ($role = 0)
 {
-    $sql = 'SELECT user_name, user_id FROM '.$GLOBALS['ecs']->table('admin_user').' WHERE status>0 AND stats>0';
-
+    $sql = 'SELECT user_name,user_id,group_id,role_id FROM '.$GLOBALS['ecs']->table('admin_user').' WHERE status>0 AND stats>0';
     if ($role && $_SESSION['role_id']) {
         $sql .= " AND role_id={$_SESSION['role_id']}";
     } else {
-        $sql .= ' AND role_id IN (1,9,13) ';
+        $sql .= ' AND role_id IN ('.SALE.') ';
     }
 
-    if($group_id){
-        $sql .= " AND group_id=$group_id}";
+    $admin_list = $GLOBALS['db']->getAll($sql.' ORDER BY user_id ASC');
+    return $admin_list;
+}
+
+/**
+ * 线下销售客服列表
+ */
+function offline_admin_list ($role = 0)
+{
+    $sql = 'SELECT user_name,user_id,group_id,role_id FROM '.$GLOBALS['ecs']->table('admin_user').' WHERE status>0 AND stats>0';
+    if ($role && $_SESSION['role_id']) {
+        $sql .= " AND role_id={$_SESSION['role_id']}";
+    } else {
+        $sql .= ' AND role_id IN ('.OFFLINE_SALE.') ';
     }
 
     return $GLOBALS['db']->getAll($sql);
 }
-
-/*获得分组*/
-function get_group_list($role_id = 0){
-    $sql = 'SELECT group_id, group_name,group_boss FROM '.$GLOBALS['ecs']->table('group');
-    if($role_id){
-        $sql .= " WHERE role_id=$role_id";
-    }
-    return $GLOBALS['db']->getAll($sql);
-}
-
 /**
  * 获取顾客类型
  */
@@ -1394,10 +1393,99 @@ function report_statistics_limit ($profile_id)
     return $config;
 }
 
-/*获取可操作功能*/
-function get_function_list(){
-    $sql_select = 'SELECT function_act FROM '.$GLOBALS['ecs']->table('admin_user')
-        ." WHERE user_id={$_SESSION['admin_id']}";
-    return $GLOBALS['db']->getOne($sql_select);
+/**
+ * 获取小组列表
+ */
+function get_group_list ($role_id) 
+{
+    $sql_select = 'SELECT group_id,group_name FROM '.$GLOBALS['ecs']->table('group');
+    if ($role_id) {
+        $sql_select .= " WHERE role_id IN ($role_id)";
+    }
+
+    return $GLOBALS['db']->getAll($sql_select);
+}
+
+/**
+ * get_admin_list_by_group
+ * @return Array
+ * @author Nixus
+ **/
+function get_admin_list_by_group($group_id)
+{
+    $group_id = intval($group_id);
+    if (! $group_id) {
+        return false;
+    }
+
+    $sql_select = 'SELECT user_name,user_id FROM '.$GLOBALS['ecs']->table('admin_user')." WHERE group_id=$group_id";
+    $admin_list = $GLOBALS['db']->getAll($sql_select);
+
+    return $admin_list;
+}
+
+/**
+ * 分页函数
+ */
+function break_pages($record_count, $page_size, $current_page) 
+{
+    $page['page_count'] = $record_count>0 ? ceil($record_count/$page_size) : 1;
+
+    // 设置分页
+    $page['page_set'] = array (1,2,3,4,5,6,7);
+    if ($current_page > 4) {
+        foreach ($page['page_set'] as &$val) {
+            $val += $current_page -4;
+        }
+    }
+
+    if (end($page['page_set']) > $page['page_count']) {
+        $page['page_set'] = array ();
+
+        for ($i = 7; $i >= 0; $i--) {
+            if ($page['page_count'] - $i > 0) {
+                $page['page_set'][] = $page['page_count'] - $i;
+            }
+        }
+    }
+
+    $page['start'] = ($current_page - 1)*$page_size +1;
+    $page['end']   = $current_page*$page_size;
+
+    return $page;
+}
+
+/**
+ * 订单来源
+ */
+function order_source_list () {
+    $sql_select = 'SELECT source_id,source_name FROM '.$GLOBALS['ecs']->table('order_source');
+    $order_source_list = $GLOBALS['db']->getAll($sql_select);
+
+    return $order_source_list;
+}
+
+/**
+ * 获取电话录音
+ */
+function scan_phone_records($user_id)
+{
+    $dir_name = 'records/record_'.($user_id%7)."/{$user_id}";
+    if (!file_exists("/WebSite/$dir_name")) {
+        return false;
+    }
+
+    $records_list = scandir("/WebSite/$dir_name");
+
+    array_shift($records_list);
+    array_shift($records_list);
+
+    $final_list = array();
+    foreach ($records_list as $val){
+        preg_match('/\d+-\d+-(\d{8})-/', $val, $key);
+        $final_list[$key[1]][] = "../../$dir_name/$val";
+    }
+
+    return $final_list;
 }
 
