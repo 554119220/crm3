@@ -8,35 +8,52 @@
 #   LastChange: 2014-09-15 17:50:48
 #      History:
 =============================================================================-->
-<br />
-<h3>{$title}</h3>
-<br />
 <div>
-  <form action="javascript:void(0)" onsubmit="addAllotDone(this)" > 
-    <table>
+  <br />
+  <form action="javascript:void(0)" onsubmit="addAllotDone(this)" name="allot_form"> 
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
       <tr>
-        <th></th>
+        <td>主题：</td>
+        <td>
+          <input type="text" name="title" value="" required />
+        </td>
+        <td>出货仓库：</td>
+        <td>
+          <select name="in_storage">
+            {foreach from=$warehouse item=val}
+            <option value="{$val.warehouse_id">{$val.warehouse_name}</option>
+            {/foreach}
+          </select>
+        </td>
       </tr>
       <tr>
-        <th></th>
-      </tr>
-      <tr>
-        <th></th>
+        <td>入货仓库：</td>
+        <td>
+          <select name="out_storage">
+            {foreach from=$warehouse item=val}
+            <option value="{$val.warehouse_id">{$val.warehouse_name}</option>
+            {/foreach}
+          </select>
+        </td>
+        <td>调拨日期：</td>
+        <td>
+          <input type="text" name="add_time" value="" onclick="wDatePricker({dFmt(yyyy-M-dd)})"requried/>
+        </td>
       </tr>
     </table>
   </form>
 </div>
 
 <div>
-<table width="100%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover">
-  <caption>产品详细信息</caption>  
-  <tr>
-    <th width="10%">序列号</th>
-    <th width="10%">产品编号</th>
-    <th width="10%">产品名</th>
-    <th width="10%">批次</th>
-    <th width="10%">数量</th>
-  </tr>
-</table>
+  <table width="100%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" id="goods_list_table">
+    <caption style="margin-bottom:4px;font-size:16px;">产品详细信息</caption>  
+    <tr>
+      <th width="10%">序列号</th>
+      <th width="10%">产品编号</th>
+      <th width="10%">产品名</th>
+      <th width="10%">批次</th>
+      <th width="10%">数量</th>
+    </tr>
+  </table>
 </div>
 <div></div>

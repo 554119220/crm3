@@ -2430,6 +2430,22 @@ elseif($_REQUEST['act'] == 'warehouse_allot'){
     die($json->encode($res));
 }
 
+/*创建仓库调拨*/
+elseif($_REQUEST['act'] =='create_allot'){
+    $behave = isset($_REQUEST['behave']) ? mysql_real_escape_string($_REQUEST['behave']) : '';
+    $res['response_action'] = 'search_service';
+
+    if('show' == $behave){
+        $res['main'] = $smarty->fetch('add_allot.htm');
+    }elseif('add' == $behave){
+        
+    }elseif('modify' == $behave){
+        
+    }
+
+    die($json->encode($res));
+}
+
 /**
  * 获取订货单列表
  */
