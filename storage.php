@@ -2438,7 +2438,9 @@ elseif($_REQUEST['act'] == 'warehouse_allot'){
 elseif($_REQUEST['act'] =='create_allot'){
     $behave = isset($_REQUEST['behave']) ? mysql_real_escape_string($_REQUEST['behave']) : '';
     $res['response_action'] = 'search_service';
+    $warehouse_list = get_warehouse('simple','');
 
+    $smarty->assign('warehouse',$warehouse_list);
     if('show' == $behave){
         $res['main'] = $smarty->fetch('add_allot.htm');
     }elseif('add' == $behave){
