@@ -54,8 +54,9 @@ elseif($_REQUEST['act'] == 'add_receipt') {
         $smarty->assign('nav_2nd', $nav[1][$file]);
         $smarty->assign('nav_3rd', $nav[2]);
         $smarty->assign('file_name', $file);
-        $res['left'] = $smarty->fetch('left.htm');     
+        $res['left'] = $smarty->fetch('left.htm');
     }
+
     $smarty->assign('daytime',time());
 
     //查找商品的类型
@@ -827,7 +828,7 @@ elseif ($_REQUEST['act'] == 'insert_package')
 
             // 完善商品相关信息
             $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('goods').' g,'.$GLOBALS['ecs']->table('packing_goods').
-                ' p SET p.brand_id=g.brand_id,p.goods_name=g.goods_name,p.goods_price=g.goods_price '.
+                ' p SET p.brand_id=g.brand_id,p.goods_name=g.goods_name,p.goods_price=g.shop_price '.
                 " WHERE packing_id=$packing_id";
             $GLOBALS['db']->query($sql_update);
             record_operate($sql_update, 'goods');
@@ -1799,8 +1800,10 @@ elseif ($_REQUEST['act'] == 'inventory_list'){
 
 /* 盘点记录 */
 elseif ($_REQUEST['act'] == 'stocktake_records') {
+
     $res['response_action'] = 'search_service';
     $res['main'] = $smarty->fetch('inventory_list_div.htm');
+
     die($json->encode($res));
 }
 
@@ -1813,6 +1816,7 @@ elseif ($_REQUEST['act'] == 'stocktake_add') {
     );
 
     if(admin_priv('mod_stock_quantity','',false) || admin_priv('all','',false)){
+
         $behave        = intval($_REQUEST['behave']);
         $res['behave'] = $behave;
 
@@ -2742,6 +2746,7 @@ function stats_shipping_goods ()
         .$GLOBALS['ecs']->table('packing_goods')
         .' pg ON pg.packing_id=p.packing_id LEFT JOIN '.$GLOBALS['ecs']->table('goods')
         ." g ON g.goods_id=pg.goods_id WHERE p.packing_desc IN ('$package_sn')";
+
     $package_list = $GLOBALS['db']->getAll($sql_select);
 
     $package = array();
@@ -2749,18 +2754,71 @@ function stats_shipping_goods ()
         $package[$val['goods_sn']] += $val['num'] * $packing_goods[$val['packing_desc']];
     }
 
+
+    if($package){
+        $pack_goods_sn = array_keys($package);
+        $pack_goods_sn = implode("','",$pack_goods_sn);
+
+        $sql_select = 'SELECT goods_sn, goods_name,LEFT(goods_name,13) goods_short_name FROM '.
+            $GLOBALS['ecs']->table('goods')." WHERE goods_sn IN('$pack_goods_sn')";
+        $pack_goods = $GLOBALS['db']->getAll($sql_select);
+
+        if($pack_goods){
+           foreach($package as $key=>$val){
+               foreach($pack_goods as &$pg){
+                   if($key == $pg['goods_sn']){
+                       $pg['goods_number'] = $val; 
+                   }
+               }
+           } 
+        }
+
+        if($shipping_goods){
+            foreach($pack_goods as $key=>&$pg){
+                foreach($shipping_goods as $key=>&$sg){
+                    if($sg['goods_sn'] == $pg['goods_sn']){
+                        $sg['goods_number'] = $pg['goods_sn'];
+                        unset($package_goods[$key]);
+                    }
+                }
+            }
+
+            if(count($pack_goods) > 0){
+                foreach($pack_goods as $val){
+                    array_unshift($shipping_goods,$val);
+                }
+            }
+        }else{
+            foreach($pack_goods as $val){
+                array_unshift($shipping_goods,$val);
+            }
+        }
+    }
+
+    if($shipping_goods){
+        $shipping_goods_sn = array();
+        foreach($shipping_goods as $val){
+            $shipping_goods_sn[] = $val['goods_sn'];
+        }
+
+        $shipping_goods_sn = implode("','",$shipping_goods_sn);
+        if($shipping_goods_sn){
+            $where = " WHERE goods_sn IN('$shipping_goods_sn') ";
+        }
+    }
+
     //实时库存
-    $current_stock = get_current_stock(); 
+    $current_stock = get_current_stock($where); 
 
     $stock = array();
     foreach($current_stock as $value){
-        $stock[$value['goods_sn']] = $value['stock'];
+        if($value['goods_sn']){
+            $stock[trim($value['goods_sn'])] = $value['stock'];
+        }
     }
 
-    foreach ($shipping_goods as &$value)
-    {
-        $value['goods_number'] += $package[$value['goods_sn']];
 
+    foreach ($shipping_goods as &$value) {
         $value['current_stock'] = $stock[$value['goods_sn']] <= 800 ? '<font color="red">'.intval($stock[$value['goods_sn']]).'</font>' : $stock[$value['goods_sn']];
 
         //生产日期
@@ -2775,7 +2833,8 @@ function stats_shipping_goods ()
 
     $res = array (
         'shipping_goods'    =>  $shipping_goods,
-        'filter'            =>  $filter
+        'filter'            =>  $filter,
+        'pack_goods_sn'     =>  $pack_goods_sn
     );
 
     return $res;
@@ -2926,8 +2985,9 @@ function timely_stock_alarm(){
 
 //统计退货数量
 function get_return_number($goods_list){
-    if(!$goods_list)
+    if(!$goods_list){
         return $goods_list;
+    }
 
     foreach($goods_list as $val){
         if($val['goods_sn'] && is_numeric($val['goods_sn'])){
@@ -2954,62 +3014,73 @@ function get_return_number($goods_list){
         $where = " AND r.return_time BETWEEN $shipping_time_start AND $shipping_time_end ";
     }
 
-    $goods_sn_list = implode(',',$goods_sn_list);
-
-    //$sql = 'SELECT g.goods_sn, SUM(g.goods_number) goods_number FROM '
-    //    .$GLOBALS['ecs']->table('order_goods').' g LEFT JOIN '
-    //    .$GLOBALS['ecs']->table('order_info').'o ON o.order_id=g.order_id, '
-    //    .$GLOBALS['ecs']->table('returns_order')
-    //    ." r WHERE r.order_id=g.order_id AND g.goods_sn IN($goods_sn_list)";
-
     /*发货和退货记录*/
     $sql = 'SELECT g.goods_sn, SUM(g.goods_number) goods_number FROM '
         .$GLOBALS['ecs']->table('order_goods').' g, '
-        .$GLOBALS['ecs']->table('returns_order')
-        ." r WHERE r.order_id=g.order_id AND g.goods_sn IN($goods_sn_list)";
+        .$GLOBALS['ecs']->table('returns_order').' r WHERE r.order_id=g.order_id ';
 
-    $sql_select = $sql." AND g.goods_sn NOT LIKE '%\_%' $where GROUP BY g.goods_sn";
+    if($goods_sn_list){
+        $goods_sn_list = implode(',',$goods_sn_list);
 
-    $return_goods = $GLOBALS['db']->getAll($sql_select);
+        $sql_select = $sql." AND g.goods_sn IN($goods_sn_list) AND g.goods_sn NOT LIKE '%\_%' $where GROUP BY g.goods_sn";;
 
-    foreach($return_goods as $val){
-        $res[$val['goods_sn']] = $val['goods_number'];
+        $return_goods = $GLOBALS['db']->getAll($sql_select);
+        foreach($return_goods as $val){
+            $res[$val['goods_sn']] = $val['goods_number'];
+        }
     }
 
     // 分解套餐 统计套餐中的商品数量
     $sql_select = $sql." AND g.goods_sn LIKE '%\_%' $where";
     $package_goods = $GLOBALS['db']->getAll($sql_select);
 
-    $package_sn = array();
-    foreach ($package_goods as $v){
-        $package_sn[] = $v['goods_sn'];
-        $packing_goods[$v['goods_sn']] += $v['goods_number'];
+    if($package_goods){
+        $package_sn = array();
+        foreach ($package_goods as $v){
+            $package_sn[] = $v['goods_sn'];
+            $packing_goods[$v['goods_sn']] += $v['goods_number'];
+        }
+
+        $package_sn = implode("','", $package_sn);
+        $sql_select = 'SELECT p.packing_desc,pg.goods_id,g.goods_sn,pg.num FROM '
+            .$GLOBALS['ecs']->table('packing').' p LEFT JOIN '
+            .$GLOBALS['ecs']->table('packing_goods')
+            .' pg ON pg.packing_id=p.packing_id LEFT JOIN '.$GLOBALS['ecs']->table('goods')
+            ." g ON g.goods_id=pg.goods_id WHERE p.packing_desc IN ('$package_sn')";
+        $package_list = $GLOBALS['db']->getAll($sql_select);
+
+        $package = array();
+        if($package_list){
+            foreach ($package_list as $val){
+                $package[$val['goods_sn']] += $val['num'] * $packing_goods[$val['packing_desc']];
+            }    
+        }
     }
 
-    $package_sn = implode("','", $package_sn);
-    $sql_select = 'SELECT p.packing_desc,pg.goods_id,g.goods_sn,pg.num FROM '
-        .$GLOBALS['ecs']->table('packing').' p LEFT JOIN '
-        .$GLOBALS['ecs']->table('packing_goods')
-        .' pg ON pg.packing_id=p.packing_id LEFT JOIN '.$GLOBALS['ecs']->table('goods')
-        ." g ON g.goods_id=pg.goods_id WHERE p.packing_desc IN ('$package_sn')";
-    $package_list = $GLOBALS['db']->getAll($sql_select);
-
-    $package = array();
-    foreach ($package_list as $val){
-        $package[$val['goods_sn']] += $val['num'] * $packing_goods[$val['packing_desc']];
-    }
-
-    foreach($goods_list as &$val){
-        foreach($package as $key=>$pack_val){
-            if($val['goods_sn'] === $key){
-                $val['return_number'] += $pack_val;
+    if(count($return_goods) && count($package)){
+        foreach($return_goods as &$val){
+            foreach($package as $key=>$pack_val){
+                if($val['goods_sn'] === $key){
+                    $val['goods_number'] += $pack_val;
+                    unset($package[$key]);
+                }
             }
+
+            if(count($package)){
+                foreach($package as $key=>&$val){
+                    $return_goods[] = array('goods_sn'=>$key,'goods_number'=>$val);
+                }
+            }
+        }
+    }elseif(count($package)){
+        foreach($package as $key=>&$val){
+            $return_goods[] = array('goods_sn'=>$key,'goods_number'=>$val);
         }
     }
 
     foreach($return_goods as $re_goods){
         foreach($goods_list as &$val){
-            if($re_goods['goods_sn'] === $val['goods_sn']){
+            if($re_goods['goods_sn'] == $val['goods_sn']){
                 $val['return_number'] += $re_goods['goods_number'];
             }
         }

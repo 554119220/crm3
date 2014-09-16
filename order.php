@@ -5694,32 +5694,3 @@ function false_order_list()
         'end'          => $filter['page']*$filter['page_size'],
     );
 }
-
-
-function break_pages($record_count, $page_size, $current_page) 
-{
-    $page['page_count'] = $record_count> 0 ? ceil($record_count/$page_size) : 1;
-
-    // 设置分页
-    $page['page_set'] = array (1,2,3,4,5,6,7);
-    if ($current_page > 4) {
-        foreach ($page['page_set'] as &$val) {
-            $val += $current_page -4;
-        }
-    }
-
-    if (end($page['page_set']) > $page['page_count']) {
-        $page['page_set'] = array ();
-
-        for ($i = 7; $i >= 0; $i--) {
-            if ($page['page_count'] - $i > 0) {
-                $page['page_set'][] = $page['page_count'] - $i;
-            }
-        }
-    }
-
-    $page['start'] = ($current_page - 1)*$page_size +1;
-    $page['end']   = $current_page*$page_size;
-
-    return $page;
-}
