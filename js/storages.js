@@ -887,5 +887,13 @@ function controlOrderSheetResp(res) {
 
 /*创建仓库调拨记录*/
 function createAllot(){
-  Ajax.call('storage.php?act=create_allot','behave=show',fullSearchResponse,'GET','JSON');
+  if(document.getElementById('add_allot_div')){
+    document.getElementById('resource').innerHTML = '';
+  }else{
+    Ajax.call('storage.php?act=create_allot','behave=show',fullSearchResponse,'GET','JSON');
+  }
+}
+
+function schAllot(obj){
+  
 }

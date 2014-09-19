@@ -2693,7 +2693,7 @@ function stats_shipping_goods ()
     $page_set = array (1,2,3,4,5,6,7);
     if ($filter['page'] > 4) {
         foreach ($page_set as &$val) {
-            $val += $filter['page'] - 4;
+            $val += $filter['page'] -4;
         }
     }
 
@@ -2719,7 +2719,7 @@ function stats_shipping_goods ()
         'act'           => 'shipping_log',
     );
 
-    $sql_select = 'SELECT g.goods_sn, SUM(g.goods_number) goods_number, g.goods_name,LEFT(g.goods_name,13) goods_short_name,brand_id FROM '
+    $sql_select = 'SELECT g.goods_sn, SUM(g.goods_number) goods_number, g.goods_name,LEFT(g.goods_name,13) goods_short_name FROM '
         .$GLOBALS['ecs']->table('order_goods').' g LEFT JOIN '
         .$GLOBALS['ecs']->table('order_info')
         ." i ON g.order_id=i.order_id WHERE $ex_where AND i.order_status IN (1,5) AND shipping_status "
@@ -2729,16 +2729,11 @@ function stats_shipping_goods ()
     $shipping_goods = $GLOBALS['db']->getAll($sql_select);
 
     // 分解套餐 统计套餐中的商品数量
-    //if($ex_where){
-    //    $ex_where = str_replace('g.','p.',$ex_where);
-    //}
-
-    $sql_select = 'SELECT i.consignee,g.goods_sn, SUM(g.goods_number) goods_number FROM '
+    $sql_select = 'SELECT i.consignee,g.goods_sn, g.goods_number FROM '
         .$GLOBALS['ecs']->table('order_goods')
         .' g LEFT JOIN '.$GLOBALS['ecs']->table('order_info')
-        .' i ON g.order_id=i.order_id '
-        ." WHERE $ex_where AND "
-        .' i.order_status IN (1,5) AND shipping_status IN (1,2,4) AND g.goods_sn LIKE "%\_%" GROUP BY g.goods_sn';
+        ." i ON g.order_id=i.order_id WHERE $ex_where AND "
+        .' i.order_status IN (1,5) AND shipping_status IN (1,2,4) AND g.goods_sn LIKE "%\_%" ';
     $package_goods = $GLOBALS['db']->getAll($sql_select);
 
     $package_sn = array();
@@ -2765,7 +2760,7 @@ function stats_shipping_goods ()
         $pack_goods_sn = array_keys($package);
         $pack_goods_sn = implode("','",$pack_goods_sn);
 
-        $sql_select = 'SELECT goods_sn, goods_name,LEFT(goods_name,13) goods_short_name,brand_id FROM '.
+        $sql_select = 'SELECT goods_sn, goods_name,LEFT(goods_name,13) goods_short_name FROM '.
             $GLOBALS['ecs']->table('goods')." WHERE goods_sn IN('$pack_goods_sn')";
         $pack_goods = $GLOBALS['db']->getAll($sql_select);
 
@@ -2784,7 +2779,7 @@ function stats_shipping_goods ()
                 foreach($shipping_goods as &$sg){
                     if($sg['goods_sn'] == $pg['goods_sn']){
                         $sg['goods_number'] += $pg['goods_number'];
-                        unset($pack_goods[$key]);
+                        unset($package_goods[$key]);
                     }
                 }
             }
@@ -2824,6 +2819,7 @@ function stats_shipping_goods ()
         }
     }
 
+
     foreach ($shipping_goods as &$value) {
         $value['current_stock'] = $stock[$value['goods_sn']] <= 800 ? '<font color="red">'.intval($stock[$value['goods_sn']]).'</font>' : $stock[$value['goods_sn']];
 
@@ -2835,14 +2831,6 @@ function stats_shipping_goods ()
 
         $value['production_stock']['total'] = count($production_stock);
         $value['production_stock']['stock_list'] = $production_stock;
-    }
-
-    if($shipping_goods){
-        foreach($shipping_goods as $key=>&$val){
-            $goods_number[$key] = $val['goods_number']; 
-        }
-
-        array_multisort($goods_number,SORT_DESC,$shipping_goods);    
     }
 
     $res = array (
@@ -3045,7 +3033,7 @@ function get_return_number($goods_list){
     }
 
     // 分解套餐 统计套餐中的商品数量
-    $sql_select = $sql." AND g.goods_sn LIKE '%\_%' $where GROUP BY g.goods_sn";
+    $sql_select = $sql." AND g.goods_sn LIKE '%\_%' $where";
     $package_goods = $GLOBALS['db']->getAll($sql_select);
 
     if($package_goods){
@@ -3072,18 +3060,18 @@ function get_return_number($goods_list){
     }
 
     if(count($return_goods) && count($package)){
-        foreach($package as $key=>&$pack_val){
-            foreach($return_goods as &$val){
-                if($val['goods_sn'] == $key){
+        foreach($return_goods as &$val){
+            foreach($package as $key=>$pack_val){
+                if($val['goods_sn'] === $key){
                     $val['goods_number'] += $pack_val;
                     unset($package[$key]);
                 }
             }
-        }
 
-        if(count($package)){
-            foreach($package as $key=>&$val){
-                $return_goods[] = array('goods_sn'=>$key,'goods_number'=>$val);
+            if(count($package)){
+                foreach($package as $key=>&$val){
+                    $return_goods[] = array('goods_sn'=>$key,'goods_number'=>$val);
+                }
             }
         }
     }elseif(count($package)){
@@ -3092,14 +3080,12 @@ function get_return_number($goods_list){
         }
     }
 
-    if($return_goods){
-        foreach($return_goods as $re_goods){
-            foreach($goods_list as &$val){
-                if($re_goods['goods_sn'] == $val['goods_sn']){
-                    $val['return_number'] += $re_goods['goods_number'];
-                }
+    foreach($return_goods as $re_goods){
+        foreach($goods_list as &$val){
+            if($re_goods['goods_sn'] == $val['goods_sn']){
+                $val['return_number'] += $re_goods['goods_number'];
             }
-        }    
+        }
     }
 
     return $goods_list;
@@ -3354,9 +3340,9 @@ function get_current_stock($where = ''){
 /*实体店列表*/
 function get_warehouse($des,$where=''){
     if($whre){
-        $where .= " AND status=1";
+       $where .= " AND status=1";
     }else{
-        $where = " WHERE status=1";  
+       $where = " WHERE status=1";  
     }
 
     if('detail' == $des){
@@ -3376,12 +3362,12 @@ function get_allot_list(){
     $where = ' WHERE w.status=1';
 
     if(!empty($_REQUEST['add_time'])){
-        if(strlen($_REQUEST['admin_time']) < 10){
-            $add_time = strtotime(mysql_real_escape_string($_REQUEST['add_time'])); 
-        }else{
-            $add_time = intval($_REQUEST['add_time']); 
-        }
-        $where .= " AND w.add_time=$add_time ";
+       if(strlen($_REQUEST['admin_time']) < 10){
+          $add_time = strtotime(mysql_real_escape_string($_REQUEST['add_time'])); 
+       }else{
+          $add_time = intval($_REQUEST['add_time']); 
+       }
+       $where .= " AND w.add_time=$add_time ";
     }
 
     if(!empty($_REQUEST['warehouse_id'])){

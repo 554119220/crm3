@@ -902,14 +902,6 @@ function userTraceResp(res) {
 }
 
 /**
- * 列出客服自定义的分组
- */
-function getAdminList(obj) {
-  var role_id  = obj.elements['roles'].value;
-  var group_id = obj.elements['group_id'].value;
-}
-
-/**
  * 显示顾客列表
  */
 function showUserList (url) {

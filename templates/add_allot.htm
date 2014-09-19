@@ -8,10 +8,9 @@
 #   LastChange: 2014-09-15 17:50:48
 #      History:
 =============================================================================-->
-<div>
-  <br />
+<div id="add_allot_div">
   <form action="javascript:void(0)" onsubmit="addAllotDone(this)" name="allot_form"> 
-    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" class="table_form" style="background-color:#fff">
       <tr>
         <td>主题：</td>
         <td>
@@ -25,8 +24,6 @@
             {/foreach}
           </select>
         </td>
-      </tr>
-      <tr>
         <td>入货仓库：</td>
         <td>
           <select name="out_storage">
@@ -35,18 +32,40 @@
             {/foreach}
           </select>
         </td>
+      </tr>
+      <tr>
         <td>调拨日期：</td>
         <td>
-          <input type="text" name="add_time" value="" onclick="wDatePricker({dFmt(yyyy-M-dd)})"requried/>
+          <input name="add_time" id="add_time" type="text" onclick="WdatePicker({dateFmt:'yyyy-M-d'})" required>
         </td>
+        <td>验货人：</td>
+        <td>
+          <input type="text" name="check" value="" required />
+        </td>
+        <td>状态：</td>
+        <td>
+          <select name="status">
+            <option value="0">未调拨</option>
+            <option value="1">审核中</option>
+            <option value="2">验货中</option>
+            <option value="3">已调拨</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+       <td>负责人：</td> 
+       <td>
+         <input type="text" name="name" oninput="getAdminList(this)"/>
+         <select name="admin_id" id="admin_id">
+           <option value="0">请选择负责人</option>
+         </select>
+       </td>
       </tr>
     </table>
   </form>
 </div>
-
 <div>
   <table width="100%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" id="goods_list_table">
-    <caption style="margin-bottom:4px;font-size:16px;">产品详细信息</caption>  
     <tr>
       <th width="10%">序列号</th>
       <th width="10%">产品编号</th>
