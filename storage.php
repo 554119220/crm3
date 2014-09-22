@@ -2422,7 +2422,6 @@ elseif($_REQUEST['act'] == 'warehouse_allot'){
         }    
     }
 
-
     if(isset($_REQUEST['from_sch'])){
         $res['main'] = $smarty->fetch('warehouse_allot_div.htm');
     }else{
@@ -2442,11 +2441,32 @@ elseif($_REQUEST['act'] =='create_allot'){
 
     $smarty->assign('warehouse',$warehouse_list);
     if('show' == $behave){
+        $smarty->assign('goods_div',$smarty->fetch('allot_goods.htm'));
         $res['main'] = $smarty->fetch('add_allot.htm');
     }elseif('add' == $behave){
         
     }elseif('modify' == $behave){
         
+    }
+
+    die($json->encode($res));
+}
+
+//商品批次和批次库存
+elseif($_REQUEST['act'] == 'get_pdc_day'){
+    $result = get_pdc_day(' AND quantity>0 ');
+    $res['text'] = '请选择批次';
+
+    if($result){
+        $res['length'] = count($result);
+        $res['id'] = 'production_day';
+
+        foreach($result as &$val){
+            $res['options'][] = array(
+                'value' => $val['rec_id'],
+                'text' => "{$val['production_day']}【库存：{$val['quantity']}】",
+            );
+        }
     }
 
     die($json->encode($res));
@@ -3396,3 +3416,25 @@ function get_allot_list(){
 
     return $result;
 }
+
+function get_pdc_day($sql_where=''){
+    $goods_sn = isset($_REQUEST['goods_sn']) ? mysql_real_escape_string($_REQUEST['goods_sn']) : '';
+
+    $where = ' WHERE is_delete=0 ';
+    if($goods_sn){
+        $where .= " AND goods_sn='$goods_sn' ";
+    }
+
+    $sql_select = 'SELECT rec_id,goods_sn,production_day,quantity FROM '.
+        $GLOBALS['ecs']->table('stock_goods').$where.$sql_where.' ORDER BY quantity DESC';
+    $result = $GLOBALS['db']->getAll($sql_select);
+
+    if($result){
+        foreach($result as &$val){
+            $val['production_day'] = date('Y-m-d',$val['production_day']);
+        }
+    }
+
+    return $result;
+}
+

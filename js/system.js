@@ -821,6 +821,11 @@ function getAdminList(obj) {
 function getAdminListResp(res) {
 	if (res.length > 0) {
 		var sltObj = document.getElementById('admin_id');
+    sltObj.options.length = 0;
+    var optObj = document.createElement('option');
+    optObj.text = '请选择';
+    optObj.value= 0;
+    sltObj.appendChild(optObj);
 		for (var i = 0; i < res.length; i++) {
 			var optObj = document.createElement('option');
 			optObj.value = res[i].user_id;
@@ -892,3 +897,7 @@ function showAndInmain(res) {
 	inMain(res);
 }
 
+/*只通过员工名获得员工列表*/
+function justGetAdmin(user_name){ 
+    Ajax.call('system.php?act=admin_list','user_name='+user_name,getAdminListResp,'GET','JSON');
+}

@@ -976,12 +976,22 @@ elseif ($_REQUEST['act'] == 'group_list') {
     die($json->encode($group_list));
 }
 
-/*查询小组下的员工*/
+/*查询员工*/
 elseif($_REQUEST['act'] == 'admin_list'){
-    $group_id = intval($_REQUEST['group_id']);
-    $role_id = intval($_REQUEST['role_id']);
-    $sql_select = 'SELECT user_id,user_name FROM '.$GLOBALS['ecs']->table('admin_user')." WHERE group_id=$group_id AND role_id=$role_id";
+    $group_id  = isset($_REQUEST['group_id']) ? intval($_REQUEST['group_id']) : 0;
+    $role_id   = isset($_REQUEST['role_id']) ? intval($_REQUEST['role_id']) : 0;
+    $user_name = isset($_REQUEST['user_name']) ? trim(mysql_real_escape_string($_REQUEST['user_name'])) : '';
 
+    $where = ' WHERE status=1 AND freeze=0 ';
+    if($group_id && $role_id){
+        $where .= " AND role_id=$role_id AND group_id=$group_id ";
+    }
+
+    if ($user_name) {
+        $where .= " AND user_name LIKE '%$user_name%' ";
+    }
+
+    $sql_select = 'SELECT user_id,user_name FROM '.$GLOBALS['ecs']->table('admin_user').$where;
     $admin_list = $GLOBALS['db']->getAll($sql_select);
 
     die($json->encode($admin_list));

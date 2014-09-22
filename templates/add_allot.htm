@@ -55,7 +55,7 @@
       <tr>
        <td>负责人：</td> 
        <td>
-         <input type="text" name="name" oninput="getAdminList(this)"/>
+         <input type="text" name="name" oninput="justGetAdmin(this.value)"/>
          <select name="admin_id" id="admin_id">
            <option value="0">请选择负责人</option>
          </select>
@@ -65,14 +65,17 @@
   </form>
 </div>
 <div>
-  <table width="100%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" id="goods_list_table">
-    <tr>
-      <th width="10%">序列号</th>
-      <th width="10%">产品编号</th>
-      <th width="10%">产品名</th>
-      <th width="10%">批次</th>
-      <th width="10%">数量</th>
-    </tr>
-  </table>
 </div>
-<div></div>
+<div class="tools_div">
+  <form action="javascript:void(0)" onsubmit="addAllotGoods(this)" name="allotGoodsForm" >
+    <input type="text" name="search" value="" size="20" oninput="searchGoods(this)" onblur="searchGoods(this)">
+    <select name="goods_id" id="goods_id" style="width:364px;" onchange="getPdcDay(this.value)">
+      <option value="0">请先输入要搜索的商品</option>
+    </select>
+    <select name="production_day" id="production_day" style="width:223px;">
+      <option value="0">请选择批次</option>
+    </select>
+    <input type="submit" name="" value="添 加" class="b_submit"/>
+  </form>
+</div>
+<div id="goods_table">{$goods_div}</div>

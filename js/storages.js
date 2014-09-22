@@ -897,3 +897,28 @@ function createAllot(){
 function schAllot(obj){
   
 }
+
+function getPdcDay(goods_sn){
+  if(goods_sn){
+    Ajax.call('storage.php?act=get_pdc_day','goods_sn='+goods_sn,inSelect,'GET','JSON');
+  }
+}
+
+function inSelect(res){
+  if(res.length > 0){
+    var sltObj = document.getElementById(res.id);
+    sltObj.options.length = 0;
+
+    var optObj = document.createElement('option');
+    optObj.value = 0;
+    optObj.text  = res.text;
+    sltObj.appendChild(optObj);
+
+    for(var i = 0; i < res.options.length; i++){
+      var optObj = document.createElement('option');
+      optObj.value = res.options[i].value;
+      optObj.text  = res.options[i].text;
+      sltObj.appendChild(optObj);
+    }
+  }
+}

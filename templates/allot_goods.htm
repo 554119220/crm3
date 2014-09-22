@@ -1,0 +1,28 @@
+<table width="100%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" id="goods_list_table">
+  <tr>
+    <th width="3%"></th>
+    <th width="10%">序列号</th>
+    <th width="10%">产品编号</th>
+    <th width="10%">产品名</th>
+    <th width="10%">批次</th>
+    <th width="10%">数量</th>
+  </tr>
+  {if $allot_goods}
+  {foreach from=$allot_goods item=val name=i}
+  <tr>
+    <td>
+      <input type="checkbox" name="allot_goods" value="{$val.goods_sn}"/>
+    </td>
+    <td>{$smarty.foreach.i.iteration}</td>
+    <td>{$val.goods_sn}</td>
+    <td>{$val.goods_name}</td>
+    <td>{$val.production_day}</td>
+    <td>{$val.quantity}</td>
+  </tr>
+  {/foreach}
+  {else}
+  <tr>
+    <td colspan="6">没有添加调拨的商品</td>
+  </tr>
+  {/if}
+</table>
