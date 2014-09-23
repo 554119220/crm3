@@ -7,7 +7,7 @@
       商品名：
       <input type="text" name="keyword" value="{$keyword}"/>
       <input type="submit" name="" value="搜 索" class="b_submit" />
-      <a href="service.php?act=add_knowlage" target="_blank" class="b_submit" style="padding:5px">添加新产品知识</a>
+      <a href="school_mgr.php?act=add_knowlage" target="_blank" class="b_submit" style="padding:5px">添加新产品知识</a>
     </form>
   </div><br/>
   <div id="resource">
@@ -26,17 +26,17 @@
         <td>{$val.goods_sn}</td> 
         <td style="text-align:left;padding-left:10px;">{$val.goods_name}</td> 
         <td>
-          <a class="btn_new" href="service.php?act=add_knowlage&knowlage_id={$val.introduction}&goods_sn={$val.goods_sn}&goods_name={$val.goods_name}&knowlage_class=2" target="_blank">
+          <a class="btn_new" href="school_mgr.php?act=add_knowlage&knowlage_id={$val.introduction}&goods_sn={$val.goods_sn}&goods_name={$val.goods_name}&knowlage_class=2" target="_blank">
             {if $val.introduction} 修改 {else}<font color="#873C46"> 添加 </font>{/if}
           </a>
         </td>
         <td>
-          <a class="btn_new" href="service.php?act=add_knowlage&knowlage_id={$val.goods_knowlage}&goods_sn={$val.goods_sn}&goods_name={$val.goods_name}&knowlage_class=1" target="_blank">
+          <a class="btn_new" href="school_mgr.php?act=add_knowlage&knowlage_id={$val.goods_knowlage}&goods_sn={$val.goods_sn}&goods_name={$val.goods_name}&knowlage_class=1" target="_blank">
             {if $val.goods_knowlage}修改 {else}<font color="#873C46"> 添加 </font> {/if}
           </a>
           </td>
           <td>
-            <a class="btn_new" href="service.php?act=add_knowlage&knowlage_id={$val.talk_skill}&goods_sn={$val.goods_sn}&goods_name={$val.goods_name}&knowlage_class=3" target="_blank"> 添加 </a>
+            <a class="btn_new" href="school_mgr.php?act=add_knowlage&knowlage_id={$val.talk_skill}&goods_sn={$val.goods_sn}&goods_name={$val.goods_name}&knowlage_class=3" target="_blank"> 添加 </a>
         </td>
         <td>
           <a class="btn_new" href="{$val.goods_id}" target="_blank" >修改</a>
