@@ -2580,8 +2580,7 @@ function package_list ()
     $res = $GLOBALS['db']->getAll($sql_select);
 
     // 格式化时间
-    foreach ($res as &$val)
-    {
+    foreach ($res as &$val) {
         $val['add_time'] = date('Y-m-d', $val['add_time']);
     }
 
@@ -2692,7 +2691,6 @@ function stats_shipping_goods ()
     $condition = $ex_where['condition'];
     $ex_where  = $ex_where['ex_where'];
 
-    /* 分页大小 */
     $filter['page'] = empty($_REQUEST['page']) || (intval($_REQUEST['page'])<=0) ? 1 : intval($_REQUEST['page']);
     if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0) {
         $filter['page_size'] = intval($_REQUEST['page_size']);
@@ -2700,13 +2698,134 @@ function stats_shipping_goods ()
         $filter['page_size'] = 20; 
     }
 
-    //发出商品品数
-    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('order_goods')
-        .' g LEFT JOIN '.$GLOBALS['ecs']->table('order_info')
-        ." i ON g.order_id=i.order_id WHERE $ex_where AND i.order_status IN (1,5)"
-        .' AND g.goods_sn NOT LIKE "%\_%" AND shipping_status IN (1,2,4) GROUP BY g.goods_sn';
+    $mem = new Memcache;
+    $mem->connect('127.0.0.1',11211);
 
-    $filter['record_count'] = count($GLOBALS['db']->getCol($sql_select));
+    /*Memcache缓存*/
+    if(!$mem->get("shipping_log_{$_SESSION['admin_id']}")){
+        $sql_append = 'SELECT g.goods_sn, SUM(g.goods_number) goods_number, g.goods_name,LEFT(g.goods_name,13) goods_short_name,brand_id FROM '
+            .$GLOBALS['ecs']->table('order_goods').' g LEFT JOIN '
+            .$GLOBALS['ecs']->table('order_info').' i ON g.order_id=i.order_id ';
+
+        $sql_select = $sql_append."WHERE $ex_where AND i.order_status IN (1,5) AND shipping_status "
+            ." IN (1,2,4) AND g.goods_sn NOT LIKE '%\_%' GROUP BY g.goods_sn ORDER BY SUM(g.goods_number) DESC ";
+
+        $shipping_goods = $GLOBALS['db']->getAll($sql_select);
+
+        $sql_select = $sql_append." WHERE $ex_where AND "
+            .' i.order_status IN (1,5) AND shipping_status IN (1,2,4) AND g.goods_sn LIKE "%\_%" GROUP BY g.goods_sn';
+        $package_goods = $GLOBALS['db']->getAll($sql_select);
+
+        $package_sn = array();
+        foreach ($package_goods as $v){
+            $package_sn[] = $v['goods_sn'];
+            $packing_goods[$v['goods_sn']] += $v['goods_number'];
+        }
+
+        $package_sn = implode("','", $package_sn);
+        $sql_select = 'SELECT p.packing_desc,pg.goods_id,g.goods_sn,pg.num FROM '
+            .$GLOBALS['ecs']->table('packing').' p LEFT JOIN '
+            .$GLOBALS['ecs']->table('packing_goods')
+            .' pg ON pg.packing_id=p.packing_id LEFT JOIN '.$GLOBALS['ecs']->table('goods')
+            ." g ON g.goods_id=pg.goods_id WHERE p.packing_desc IN ('$package_sn')";
+
+        $package_list = $GLOBALS['db']->getAll($sql_select);
+
+        $package = array();
+        foreach ($package_list as $val){
+            $package[$val['goods_sn']] += $val['num'] * $packing_goods[$val['packing_desc']];
+        }
+
+        if($package){
+            $pack_goods_sn = array_keys($package);
+            $pack_goods_sn = implode("','",$pack_goods_sn);
+
+            $sql_select = 'SELECT goods_sn, goods_name,LEFT(goods_name,13) goods_short_name,brand_id FROM '.
+                $GLOBALS['ecs']->table('goods')." WHERE goods_sn IN('$pack_goods_sn')";
+            $pack_goods = $GLOBALS['db']->getAll($sql_select);
+
+            if($pack_goods){
+                foreach($package as $key=>$val){
+                    foreach($pack_goods as &$pg){
+                        if($key == $pg['goods_sn']){
+                            $pg['goods_number'] = $val; 
+                        }
+                    }
+                } 
+            }
+
+            if($shipping_goods){
+                foreach($pack_goods as $key=>&$pg){
+                    foreach($shipping_goods as &$sg){
+                        if($sg['goods_sn'] == $pg['goods_sn']){
+                            $sg['goods_number'] += $pg['goods_number'];
+                            unset($pack_goods[$key]);
+                        }
+                    }
+                }
+
+                if(count($pack_goods) > 0){
+                    foreach($pack_goods as $val){
+                        array_unshift($shipping_goods,$val);
+                    }
+                }
+
+            }else{
+                foreach($pack_goods as $val){
+                    array_unshift($shipping_goods,$val);
+                }
+            }
+        }
+
+        if($shipping_goods){
+            $shipping_goods_sn = array();
+            foreach($shipping_goods as $val){
+                $shipping_goods_sn[] = $val['goods_sn'];
+            }
+
+            $shipping_goods_sn = implode("','",$shipping_goods_sn);
+            if($shipping_goods_sn){
+                $where = " WHERE goods_sn IN('$shipping_goods_sn') ";
+            }
+        }
+
+        //实时库存
+        $current_stock = get_current_stock($where); 
+
+        $stock = array();
+        foreach($current_stock as $value){
+            if($value['goods_sn']){
+                $stock[trim($value['goods_sn'])] = $value['stock'];
+            }
+        }
+
+        foreach ($shipping_goods as &$value) {
+            $value['current_stock'] = $stock[$value['goods_sn']] <= 800 ? '<font color="red">'.intval($stock[$value['goods_sn']]).'</font>' : $stock[$value['goods_sn']];
+
+            //生产日期
+            $sql_select = "SELECT quantity,FROM_UNIXTIME(production_day,'%Y-%m-%d') AS production_day,TIMESTAMPDIFF(month,FROM_UNIXTIME(production_day,'%y-%m-%d'),NOW()) AS diff_date FROM "
+                .$GLOBALS['ecs']->table('stock_goods')." WHERE goods_sn='{$value['goods_sn']}'";
+
+            $production_stock = $GLOBALS['db']->getAll($sql_select);
+
+            $value['production_stock']['total'] = count($production_stock);
+            $value['production_stock']['stock_list'] = $production_stock;
+        }
+
+        if($shipping_goods){
+            foreach($shipping_goods as $key=>&$val){
+                $goods_number[$key] = $val['goods_number']; 
+            }
+
+            array_multisort($goods_number,SORT_DESC,$shipping_goods);    
+
+            $mem->set('shipping_log'.$_SESSION['admin_id'], $shipping_goods, 0, 1200);
+        }
+    }else{
+        $shipping_goods = $mem->get('shipping_log'.$_SESSION['admin_id']);
+    }
+
+    $filter['record_count'] = count($shipping_goods);
     $filter['page_count'] = $filter['record_count']>0 ? ceil($filter['record_count']/$filter['page_size']) : 1;
 
     // 设置分页
@@ -2726,6 +2845,20 @@ function stats_shipping_goods ()
         }
     }
 
+    if($shipping_goods){
+        $start = ($filter['page'] - 1 ) * $filter['page_size'];
+        $end   = $start + $filter['page_size'];
+
+        for($i=$start,$j=1;$i<$end && $j<=$filter['record_count'];$i++,$j++){
+            if($shipping_goods[$i]){
+                $goods_list[] = $shipping_goods[$i]; 
+            }else{
+                break;
+            }
+        }
+        $shipping_goods = $goods_list;
+    }
+
     $filter = array (
         'filter'        => $filter,
         'page_count'    => $filter['page_count'],
@@ -2739,136 +2872,10 @@ function stats_shipping_goods ()
         'act'           => 'shipping_log',
     );
 
-    $sql_select = 'SELECT g.goods_sn, SUM(g.goods_number) goods_number, g.goods_name,LEFT(g.goods_name,13) goods_short_name,brand_id FROM '
-        .$GLOBALS['ecs']->table('order_goods').' g LEFT JOIN '
-        .$GLOBALS['ecs']->table('order_info')
-        ." i ON g.order_id=i.order_id WHERE $ex_where AND i.order_status IN (1,5) AND shipping_status "
-        ." IN (1,2,4) AND g.goods_sn NOT LIKE '%\_%' GROUP BY g.goods_sn ORDER BY SUM(g.goods_number) DESC LIMIT "
-        .($filter['page']-1)*$filter['page_size'].",{$filter['page_size']}";
-
-    $shipping_goods = $GLOBALS['db']->getAll($sql_select);
-
-    // 分解套餐 统计套餐中的商品数量
-    //if($ex_where){
-    //    $ex_where = str_replace('g.','p.',$ex_where);
-    //}
-
-    $sql_select = 'SELECT i.consignee,g.goods_sn, SUM(g.goods_number) goods_number FROM '
-        .$GLOBALS['ecs']->table('order_goods')
-        .' g LEFT JOIN '.$GLOBALS['ecs']->table('order_info')
-        .' i ON g.order_id=i.order_id '
-        ." WHERE $ex_where AND "
-        .' i.order_status IN (1,5) AND shipping_status IN (1,2,4) AND g.goods_sn LIKE "%\_%" GROUP BY g.goods_sn';
-    $package_goods = $GLOBALS['db']->getAll($sql_select);
-
-    $package_sn = array();
-    foreach ($package_goods as $v){
-        $package_sn[] = $v['goods_sn'];
-        $packing_goods[$v['goods_sn']] += $v['goods_number'];
-    }
-
-    $package_sn = implode("','", $package_sn);
-    $sql_select = 'SELECT p.packing_desc,pg.goods_id,g.goods_sn,pg.num FROM '
-        .$GLOBALS['ecs']->table('packing').' p LEFT JOIN '
-        .$GLOBALS['ecs']->table('packing_goods')
-        .' pg ON pg.packing_id=p.packing_id LEFT JOIN '.$GLOBALS['ecs']->table('goods')
-        ." g ON g.goods_id=pg.goods_id WHERE p.packing_desc IN ('$package_sn')";
-
-    $package_list = $GLOBALS['db']->getAll($sql_select);
-
-    $package = array();
-    foreach ($package_list as $val){
-        $package[$val['goods_sn']] += $val['num'] * $packing_goods[$val['packing_desc']];
-    }
-
-    if($package){
-        $pack_goods_sn = array_keys($package);
-        $pack_goods_sn = implode("','",$pack_goods_sn);
-
-        $sql_select = 'SELECT goods_sn, goods_name,LEFT(goods_name,13) goods_short_name,brand_id FROM '.
-            $GLOBALS['ecs']->table('goods')." WHERE goods_sn IN('$pack_goods_sn')";
-        $pack_goods = $GLOBALS['db']->getAll($sql_select);
-
-        if($pack_goods){
-           foreach($package as $key=>$val){
-               foreach($pack_goods as &$pg){
-                   if($key == $pg['goods_sn']){
-                       $pg['goods_number'] = $val; 
-                   }
-               }
-           } 
-        }
-
-        if($shipping_goods){
-            foreach($pack_goods as $key=>&$pg){
-                foreach($shipping_goods as &$sg){
-                    if($sg['goods_sn'] == $pg['goods_sn']){
-                        $sg['goods_number'] += $pg['goods_number'];
-                        unset($pack_goods[$key]);
-                    }
-                }
-            }
-
-            if(count($pack_goods) > 0){
-                foreach($pack_goods as $val){
-                    array_unshift($shipping_goods,$val);
-                }
-            }
-
-        }else{
-            foreach($pack_goods as $val){
-                array_unshift($shipping_goods,$val);
-            }
-        }
-    }
-
-    if($shipping_goods){
-        $shipping_goods_sn = array();
-        foreach($shipping_goods as $val){
-            $shipping_goods_sn[] = $val['goods_sn'];
-        }
-
-        $shipping_goods_sn = implode("','",$shipping_goods_sn);
-        if($shipping_goods_sn){
-            $where = " WHERE goods_sn IN('$shipping_goods_sn') ";
-        }
-    }
-
-    //实时库存
-    $current_stock = get_current_stock($where); 
-
-    $stock = array();
-    foreach($current_stock as $value){
-        if($value['goods_sn']){
-            $stock[trim($value['goods_sn'])] = $value['stock'];
-        }
-    }
-
-    foreach ($shipping_goods as &$value) {
-        $value['current_stock'] = $stock[$value['goods_sn']] <= 800 ? '<font color="red">'.intval($stock[$value['goods_sn']]).'</font>' : $stock[$value['goods_sn']];
-
-        //生产日期
-        $sql_select = "SELECT quantity,FROM_UNIXTIME(production_day,'%Y-%m-%d') AS production_day,TIMESTAMPDIFF(month,FROM_UNIXTIME(production_day,'%y-%m-%d'),NOW()) AS diff_date FROM "
-            .$GLOBALS['ecs']->table('stock_goods'). " WHERE goods_sn='".$value['goods_sn']."'";
-
-        $production_stock = $GLOBALS['db']->getAll($sql_select);
-
-        $value['production_stock']['total'] = count($production_stock);
-        $value['production_stock']['stock_list'] = $production_stock;
-    }
-
-    if($shipping_goods){
-        foreach($shipping_goods as $key=>&$val){
-            $goods_number[$key] = $val['goods_number']; 
-        }
-
-        array_multisort($goods_number,SORT_DESC,$shipping_goods);    
-    }
-
     $res = array (
-        'shipping_goods'    =>  $shipping_goods,
-        'filter'            =>  $filter,
-        'pack_goods_sn'     =>  $pack_goods_sn
+        'shipping_goods' => $shipping_goods,
+        'pack_goods_sn'  => $pack_goods_sn,
+        'filter'         => $filter
     );
 
     return $res;
@@ -3352,12 +3359,14 @@ function zero_shipping_but_return_goods($goods_list){
     }
 
     $current_stock = get_current_stock();
-    foreach($current_stock as $stock){
-        foreach($goods_list as &$goods){
-            if($stock['goods_sn'] == $goods['goods_sn']){
-                $goods['current_stock'] = $stock['quantity'] <= 800 ? "<font color=red>{$stock['quantity']}</font>" : $stock['quantity'];
+    if($goods_list && $current_stock){
+        foreach($current_stock as $stock){
+            foreach($goods_list as &$goods){
+                if($stock['goods_sn'] == $goods['goods_sn']){
+                    $goods['current_stock'] = $stock['quantity'] <= 800 ? "<font color=red>{$stock['quantity']}</font>" : $stock['quantity'];
+                }
             }
-        }
+        }    
     }
 
     return $goods_list;
