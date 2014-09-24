@@ -11,14 +11,14 @@ function get_index_alarm_stock(){
 
     //分页参数
     $page          = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1 ;
-    $recorder_size = isset($_REQUEST['page_size']) ? intval($_REQUEST['page']) : 7;
+    $recorder_size = isset($_REQUEST['page_size']) ? intval($_REQUEST['page']) : 5;
 
-    $sql = 'SELECT sg.goods_sn,g.goods_name,g.warn_number,g.goods_id,SUM(sg.quantity) quantity FROM '
+    $sql = 'SELECT sg.goods_sn,g.goods_name,g.warn_number,g.goods_id,SUM(sg.quantity) quantity,sg.is_delete FROM '
         .$GLOBALS['ecs']->table('goods').' g, '
         .$GLOBALS['ecs']->table('stock_goods').' sg '
-        .' WHERE g.goods_sn=sg.goods_sn AND g.is_delete=0 AND quantity>0 GROUP BY sg.goods_sn  ';
+        .' WHERE g.goods_sn=sg.goods_sn AND g.is_delete=0 AND sg.quantity>0 GROUP BY sg.goods_sn  ';
 
-    $unlimit        = $GLOBALS['db']->getAll($sql.'HAVING quantity<warn_number ORDER BY SUM(sg.quantity) DESC');
+    $unlimit        = $GLOBALS['db']->getAll($sql.'HAVING quantity<=warn_number ORDER BY SUM(sg.quantity) DESC');
 
     $hot_sale_goods = get_hot_sale();
 

@@ -922,3 +922,33 @@ function inSelect(res){
     }
   }
 }
+
+/*修改商品状态*/
+function modGoodsStatus(obj){
+  if(obj.getAttribute('value')){
+    obj.parentNode.id = 'td_'+obj.value;
+    Ajax.call('storage.php?act=mod_goods_status','goods_sn='+obj.getAttribute('value')+'&td_id='+obj.parentNode.id+'&status='+obj.getAttribute('sta'),inTd,'GET','JSON');
+  }
+}
+
+/*将结果填入单元格中*/
+function inTd(res){
+  if(res.req_msg){
+    showMsgRes(res);  
+  }
+
+  if(document.getElementById(res.td_id)){
+    document.getElementById(res.td_id).innerHTML = res.content;
+  }
+}
+
+/*鼠标经过显示控制图标*/
+function mouseoverShowCtr(id,sta){
+  if(document.getElementById(id)){
+    if(sta){
+      document.getElementById(id).style.display = 'inline';
+    }else{
+      document.getElementById(id).style.display = 'none';
+    }  
+  }
+}

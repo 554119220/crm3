@@ -29,6 +29,7 @@
           {/if}
         </tr>
         {foreach from=$alarm_stock_goods item=val}
+        {if $val.is_delete eq 0}
         <tr>
           <td>{$val.goods_name}</td>
           {if $stock_manager}
@@ -36,6 +37,7 @@
           <td>{$val.quantity}</td>
           {/if}
         </tr>
+        {/if}
         {/foreach}
       </table>
       <span style="float:right;margin:6px;">

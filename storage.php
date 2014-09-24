@@ -481,17 +481,6 @@ elseif($_REQUEST['act'] == 'goods_list')
 
     $smarty->assign('goods_list'   , $goods_list['goods']);
     $smarty->assign('sort_info'    , $goods_list['filter']);
-    //$smarty->assign('record_count' , $goods_list['record_count']);
-    //$smarty->assign('page_count' , $goods_list['page_count']);
-    //$smarty->assign('page_start' , $goods_list['start']);
-    //$smarty->assign('page_end'   , $goods_list['end']);
-    //$smarty->assign('full_page'  , 1);
-    //$smarty->assign('page_set'   , $goods_list['page_set']);
-    //$smarty->assign('page'       , $goods_list['page']);
-    //$smarty->assign('page_link'  , $goods_list['condition']);
-    //$smarty->assign('page_size'  , $goods_list['page_size']);
-    //$smarty->assign('act'        , $_REQUEST['act']);
-
     $smarty->assign('keyword',  empty($_REQUEST['keyword']) ? 0 : $_REQUEST['keyword']);
     $smarty->assign('brand_id', $res['id']);
     $smarty->assign('filter', isset($_REQUEST['filter'])?$_REQUEST['filter']:'');
@@ -2472,6 +2461,41 @@ elseif($_REQUEST['act'] == 'get_pdc_day'){
     die($json->encode($res));
 }
 
+/*修改商品状态*/
+elseif($_REQUEST['act'] == 'mod_goods_status'){
+    $goods_sn = isset($_REQUEST['goods_sn']) ? mysql_real_escape_string($_REQUEST['goods_sn']) : '';
+    $status = isset($_REQUEST['status']) ? intval($_REQUEST['status']) : 0;
+    $td_id = isset($_REQUEST['td_id']) ? mysql_real_escape_string($_REQUEST['td_id']) : '';
+    $res = array(
+        'timeout' => 2000,
+        'code'    => false,
+        'message' => '',
+        'req_msg' => true,
+        'td_id'   => $td_id
+    );
+
+    if($goods_sn){
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
+            " SET is_delete=$status WHERE goods_sn='$goods_sn'";
+
+        $res['code']    = $GLOBALS['db']->Query($sql_update);
+        $res['message'] = $res['code'] ? '操作成功' : '操作失败,请联系技术部';
+
+        if($res['code']){
+            $title  = $status == 0 ? '点击不再进货该商品' : '点击恢复进货该商品';
+            $src    = $status == 0 ? 'images/track.png' : 'images/nottrack.gif';
+            $status = $status == 0 ? 2 : 0;
+            $res['content'] = '<img src="'.$src.'" onclick="modGoodsStatus(this)" value="'.
+                $goods_sn.'" sta="0" class="png_btn" title="'.$title.'">';    
+        }
+
+    }else{
+        $res['message'] = '操作失败，请联系技术部';
+    }
+
+    die($json->encode($res));
+}
+
 /**
  * 获取订货单列表
  */
@@ -2985,7 +3009,7 @@ function timely_stock_alarm(){
     }
 
     $time_now   = $_SERVER['REQUEST_TIME'];
-    $sql_select = 'SELECT g.goods_sn,g.goods_name,SUM(quantity) AS quantity,warn_number, add_sto_order_time,predict_arrival_time FROM '
+    $sql_select = 'SELECT g.goods_sn,g.goods_name,SUM(s.quantity) AS quantity,warn_number, add_sto_order_time,predict_arrival_time FROM '
         .$GLOBALS['ecs']->table('stock_goods').' s LEFT JOIN '.$GLOBALS['ecs']->table('goods')
         .' g ON g.goods_sn=s.goods_sn'
         ." WHERE g.is_delete=0 $where AND warn_number<>0 GROUP BY s.goods_sn ";
@@ -3018,10 +3042,9 @@ function timely_stock_alarm(){
             $alarm_stock_goods['predict_arrival_time'] = $alarm_stock_goods['predict_arrival_time'] ? date('Y-m-d H:i',$alarm_stock_goods['predict_arrival_time']) : 0;
         }
 
-        return $alarm_stock_goods;
-    }else{
-        return $alarm_stock_goods;
     }
+
+    return $alarm_stock_goods;
 }
 
 //统计退货数量
