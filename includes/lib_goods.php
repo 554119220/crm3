@@ -927,12 +927,10 @@ function goods_list($is_delete, $real_goods=1)
 
         //   'LIMIT '
         //    .($filter['page'] -1)*$filter['page_size'].', '.$filter['page_size'];
-        //$filter['keyword'] = stripslashes($filter['keyword']);
+        $filter['keyword'] = stripslashes($filter['keyword']);
 
         set_filter($filter, $sql, $param_str);
-    }
-    else
-    {
+    } else {
         $sql    = $result['sql'];
         $filter = $result['filter'];
     }
@@ -961,6 +959,12 @@ function goods_list($is_delete, $real_goods=1)
     //    'end'          => $filter['page']*$filter['page_size'],
     //);
 
+    if (!admin_priv('storage_number', '', false)) {
+        foreach ($row as &$val){
+            $val['goods_number'] = $val['goods_number'] >= 100 ? '库存充足' : '库存紧张';
+        }
+    }
+    
     $arr = array(
         'goods'        => $row,
         'filter'       => $filter,
@@ -1389,7 +1393,7 @@ function move_image_file($source, $dest)
  */
 function brand_list ($is_show = 0)
 {
-    $sql_select = 'SELECT brand_id,brand_name,brand_desc,is_show FROM '.$GLOBALS['ecs']->table('brand');
+    $sql_select = 'SELECT brand_id,brand_id rec_id,brand_name,brand_desc,is_show FROM '.$GLOBALS['ecs']->table('brand');
 
     if ($is_show){
         $sql_select .= ' WHERE is_show=1 ';

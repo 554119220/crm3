@@ -910,10 +910,40 @@ function createAllot() {
 	}
 }
 
+/*搜索仓库调拨记录*/
 function schAllot(obj) {
 
 }
 
+function addAllotGoods(obj){
+  var goodsObj      = obj.elements['goods_id'];
+  var productionDay = obj.elements['production_day'];
+  var goodsOpts     = goodsObj.options;
+  var dayOpts       = productionDay.options;
+  var table         = document.getElementById['goods_list_table'];
+  var goodsInfo     = {};
+
+  for(var i = 0; i < goodsOpts.length; i++){
+    if(goodsObj[i].selected){
+      goodsInfo.goods_sn   = goodsOpts[i].value;
+      goodsInfo.goods_name = goodsOpts[i].text;
+      goodsInfo.length = 1;
+      break;
+    }
+  }
+  
+  if(goodsInfo.length){
+    for(var i = 0; i < dayOpts.length; i++){
+     if (dayOpts[i].selected) {
+       goodsInfo.rec_id = dayOpts[i].value;
+       break;
+     }
+    }
+    goodsInfo.number = obj.elements['goods_num'].value;
+  }
+}
+
+/*商品生产日期批次及库存*/
 function getPdcDay(goods_sn) {
 	if (goods_sn) {
 		Ajax.call('storage.php?act=get_pdc_day', 'goods_sn=' + goods_sn, inSelect, 'GET', 'JSON');

@@ -13,6 +13,7 @@ define('IN_ECS',true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_common.php');
+require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_goods.php');
 date_default_timezone_set('Asia/Shanghai');
 
 $act = isset($_REQUEST['act']) ? mysql_real_escape_string($_REQUEST['act']) : 'menu';
@@ -31,7 +32,7 @@ if ($act == 'menu')
 /*添加知识库表单*/
 elseif($_REQUEST['act'] == 'add_knowlage'){
     $knowlage_class_list = get_knowlage_class(0,1);
-    $brank_list          = get_brand();
+    $brank_list          = brand_list();
     $knowlage_id         = isset($_REQUEST['knowlage_id']) ? intval($_REQUEST['knowlage_id']) : 0;
     $unedit = false;
 
@@ -128,7 +129,7 @@ elseif($_REQUEST['act'] == 'add_knowlage_done'){
     }
 
     $knowlage_class_list = get_knowlage_class(0,1);
-    $brank_list          = get_brand();
+    $brank_list          = brand_list();
     include_once(ROOT_PATH."includes/fckeditor/fckeditor.php");
 
     create_html_editor('FCKeditor1',$content);
@@ -232,7 +233,7 @@ elseif($_REQUEST['act'] == 'knowlage_ctr'){
             $knowlage_info['tags'] = implode(',',$tags); 
 
             $knowlage_class_list = get_knowlage_class(0,1);
-            $brank_list          = get_brand();
+            $brank_list          = brand_list();
 
             $smarty->assign('brank_list',$brank_list);
             $smarty->assign('knowlage_class_list',$knowlage_class_list);
