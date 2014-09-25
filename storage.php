@@ -2476,17 +2476,18 @@ elseif($_REQUEST['act'] == 'mod_goods_status'){
 
     if($goods_sn){
         $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
-            " SET is_delete=$status WHERE goods_sn='$goods_sn'";
+            " SET status=$status WHERE goods_sn='$goods_sn'";
 
         $res['code']    = $GLOBALS['db']->Query($sql_update);
-        $res['message'] = $res['code'] ? '操作成功' : '操作失败,请联系技术部';
+        $message = $status == 1 ? ' 还会进货该商品' : '不再货该商品';
+        $res['message'] = $res['code'] ? "操作成功,$message" : '操作失败,请联系技术部';
 
         if($res['code']){
-            $title  = $status == 0 ? '点击不再进货该商品' : '点击恢复进货该商品';
-            $src    = $status == 0 ? 'images/track.png' : 'images/nottrack.gif';
-            $status = $status == 0 ? 2 : 0;
+            $title  = $status == 1 ? '点击不再进货该商品' : '点击恢复进货该商品';
+            $src    = $status == 1 ? 'images/track.png' : 'images/nottrack.gif';
+            $status = $status == 1 ? 0 : 1;
             $res['content'] = '<img src="'.$src.'" onclick="modGoodsStatus(this)" value="'.
-                $goods_sn.'" sta="0" class="png_btn" title="'.$title.'">';    
+                $goods_sn.'" sta="'.$status.'" class="png_btn" title="'.$title.'">';    
         }
 
     }else{
@@ -3012,7 +3013,7 @@ function timely_stock_alarm(){
     $sql_select = 'SELECT g.goods_sn,g.goods_name,SUM(s.quantity) AS quantity,warn_number, add_sto_order_time,predict_arrival_time FROM '
         .$GLOBALS['ecs']->table('stock_goods').' s LEFT JOIN '.$GLOBALS['ecs']->table('goods')
         .' g ON g.goods_sn=s.goods_sn'
-        ." WHERE g.is_delete=0 $where AND warn_number<>0 GROUP BY s.goods_sn ";
+        ." WHERE g.is_delete=0 AND s.status=1 $where AND warn_number<>0 GROUP BY s.goods_sn ";
 
     $stock_goods = $GLOBALS['db']->getAll($sql_select.'ORDER BY quantity DESC');
 

@@ -885,70 +885,87 @@ function controlOrderSheetResp(res) {
 	return;
 }
 
+/**
+ * 显示/隐藏品牌
+ */
+function showOrHideBrand(bid) {
+	Ajax.call('storage.php', 'act=show_or_hide&brand_id=' + bid, showOrHideBrandResp, 'POST', 'JSON');
+}
+
+function showOrHideBrandResp(res) {
+	showMsg(res);
+	if (res.success) {
+		var brandObj = null;
+		document.getElementById('brand_' + res.brand_id).src = 'images/' + res.is_show + '.gif';
+	}
+}
+
+
 /*创建仓库调拨记录*/
-function createAllot(){
-  if(document.getElementById('add_allot_div')){
-    document.getElementById('resource').innerHTML = '';
-  }else{
-    Ajax.call('storage.php?act=create_allot','behave=show',fullSearchResponse,'GET','JSON');
-  }
+function createAllot() {
+	if (document.getElementById('add_allot_div')) {
+		document.getElementById('resource').innerHTML = '';
+	} else {
+		Ajax.call('storage.php?act=create_allot', 'behave=show', fullSearchResponse, 'GET', 'JSON');
+	}
 }
 
-function schAllot(obj){
-  
+function schAllot(obj) {
+
 }
 
-function getPdcDay(goods_sn){
-  if(goods_sn){
-    Ajax.call('storage.php?act=get_pdc_day','goods_sn='+goods_sn,inSelect,'GET','JSON');
-  }
+function getPdcDay(goods_sn) {
+	if (goods_sn) {
+		Ajax.call('storage.php?act=get_pdc_day', 'goods_sn=' + goods_sn, inSelect, 'GET', 'JSON');
+	}
 }
 
-function inSelect(res){
-  if(res.length > 0){
-    var sltObj = document.getElementById(res.id);
-    sltObj.options.length = 0;
+function inSelect(res) {
+	if (res.length > 0) {
+		var sltObj = document.getElementById(res.id);
+		sltObj.options.length = 0;
 
-    var optObj = document.createElement('option');
-    optObj.value = 0;
-    optObj.text  = res.text;
-    sltObj.appendChild(optObj);
+		var optObj = document.createElement('option');
+		optObj.value = 0;
+		optObj.text = res.text;
+		sltObj.appendChild(optObj);
 
-    for(var i = 0; i < res.options.length; i++){
-      var optObj = document.createElement('option');
-      optObj.value = res.options[i].value;
-      optObj.text  = res.options[i].text;
-      sltObj.appendChild(optObj);
-    }
-  }
+		for (var i = 0; i < res.options.length; i++) {
+			var optObj = document.createElement('option');
+			optObj.value = res.options[i].value;
+			optObj.text = res.options[i].text;
+			sltObj.appendChild(optObj);
+		}
+	}
 }
 
 /*修改商品状态*/
-function modGoodsStatus(obj){
-  if(obj.getAttribute('value')){
-    obj.parentNode.id = 'td_'+obj.value;
-    Ajax.call('storage.php?act=mod_goods_status','goods_sn='+obj.getAttribute('value')+'&td_id='+obj.parentNode.id+'&status='+obj.getAttribute('sta'),inTd,'GET','JSON');
-  }
+function modGoodsStatus(obj) {
+	if (obj.getAttribute('value')) {
+		obj.parentNode.id = 'field_' + obj.getAttribute('value');
+		Ajax.call('storage.php?act=mod_goods_status', 'goods_sn=' + obj.getAttribute('value') + '&td_id=' + obj.parentNode.id + '&status=' + obj.getAttribute('sta'), inTd, 'GET', 'JSON');
+	}
 }
 
 /*将结果填入单元格中*/
-function inTd(res){
-  if(res.req_msg){
-    showMsgRes(res);  
-  }
+function inTd(res) {
+	if (res.req_msg) {
+		showMsgRes(res);
+	}
 
-  if(document.getElementById(res.td_id)){
-    document.getElementById(res.td_id).innerHTML = res.content;
-  }
+	if (document.getElementById(res.td_id)) {
+		document.getElementById(res.td_id).innerHTML = res.content;
+	}
 }
 
 /*鼠标经过显示控制图标*/
-function mouseoverShowCtr(id,sta){
-  if(document.getElementById(id)){
-    if(sta){
-      document.getElementById(id).style.display = 'inline';
-    }else{
-      document.getElementById(id).style.display = 'none';
-    }  
-  }
+function mouseoverShowCtr(id, sta) {
+	if (document.getElementById(id)) {
+		if (sta) {
+			document.getElementById(id).style.display = 'inline';
+		} else {
+			document.getElementById(id).style.display = 'none';
+		}
+	}
 }
+

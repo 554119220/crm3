@@ -13,7 +13,7 @@ function get_index_alarm_stock(){
     $page          = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1 ;
     $recorder_size = isset($_REQUEST['page_size']) ? intval($_REQUEST['page']) : 5;
 
-    $sql = 'SELECT sg.goods_sn,g.goods_name,g.warn_number,g.goods_id,SUM(sg.quantity) quantity,sg.is_delete FROM '
+    $sql = 'SELECT sg.goods_sn,g.goods_name,g.warn_number,g.goods_id,SUM(sg.quantity) quantity,sg.status FROM '
         .$GLOBALS['ecs']->table('goods').' g, '
         .$GLOBALS['ecs']->table('stock_goods').' sg '
         .' WHERE g.goods_sn=sg.goods_sn AND g.is_delete=0 AND sg.quantity>0 GROUP BY sg.goods_sn  ';
@@ -226,15 +226,11 @@ function stats_service($start,$end) {
 
     if(admin_priv('service_all_mgr','',false) || admin_priv('all','',false)){
         $sql_select .= " GROUP BY admin_id $order_by";
+    }elseif(admin_priv('service_part_mgr','',false)){
+        $sql_select .= " AND s.platform=$role_id GROUP BY admin_id $order_by";
     }else{
         $sql_select .= " AND s.platform=$role_id GROUP BY admin_id $order_by";
     }
-
-    //elseif(admin_priv('service_part_mgr','',false)){
-    //    $sql_select .= " AND s.platform=$role_id GROUP BY admin_id $order_by";
-    //}else{
-    //    $sql_select .= " AND s.platform=$role_id GROUP BY admin_id $order_by";
-    //}
 
     return $GLOBALS['db']->getAll($sql_select);
 }

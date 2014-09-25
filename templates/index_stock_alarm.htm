@@ -26,13 +26,13 @@
         {else}
         <img src="images/order.ico" onclick="addOrderSheet('{$val.goods_sn}','{$val.goods_name}')" class="png_btn" title="点击订货该商品">
         {/if}
-        <label>
-          {if $val.is_delete eq 2}
-          <img src="images/nottrack.gif" onclick="modGoodsStatus(this)" value="{$val.goods_sn}" sta="0" class="png_btn" title="点击恢复进货该商品">
+        <span>
+          {if $val.status eq 0}
+          <img src="images/nottrack.gif" onclick="modGoodsStatus(this)" value="{$val.goods_sn}" sta="1" class="png_btn" title="点击恢复进货该商品">
           {else}
-          <img src="images/track.png" onclick="modGoodsStatus(this)" value="{$val.goods_sn}" sta="2" class="png_btn" title="点击不再进货该商品">
+          <img src="images/track.png" onclick="modGoodsStatus(this)" value="{$val.goods_sn}" sta="0" class="png_btn" title="点击不再进货该商品">
           {/if}
-        </label>
+        </span>
         {else}-
         {/if}
       </span>

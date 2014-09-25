@@ -918,44 +918,7 @@ function goods_list($is_delete, $real_goods=1)
         $sql = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('goods')." AS g WHERE g.is_delete='$is_delete' $where";
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);
 
-        //[> 分页大小 <]
-        //$filter['page'] = empty($_REQUEST['page']) || (intval($_REQUEST['page'])<=0) ? 1 : intval($_REQUEST['page']);
-        //if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0)
-        //{
-        //    $filter['page_size'] = intval($_REQUEST['page_size']);
-        //}
-        //else
-        //{
-        //    $filter['page_size'] = 15; 
-        //}
-
-        //$filter['page_count'] = $filter['record_count']>0 ? ceil($filter['record_count']/$filter['page_size']) : 1;
-
-        //// 设置分页
-        //$page_set = array (1,2,3,4,5,6,7);
-        //if ($filter['page'] > 4)
-        //{
-        //    foreach ($page_set as &$val)
-        //    {
-        //        $val += $filter['page'] -4;
-        //    }
-        //}
-
-        //if (end($page_set) > $filter['page_count'])
-        //{
-        //    $page_set = array ();
-        //    for ($i = 7; $i >= 0; $i--)
-        //    {
-        //        if ($filter['page_count'] - $i > 0)
-        //        {
-        //            $page_set[] = $filter['page_count'] - $i;
-        //        }
-        //    }
-        //}
-
-        //$filter['start'] = ($filter['page'] -1)*$filter['page_size'] +1;
-
-        $sql = 'SELECT g.goods_id,g.goods_name,g.goods_type,g.goods_sn,g.shop_price,g.integral,g.shelflife,g.bar_code,g.warn_number,g.is_on_sale,'.
+        $sql = 'SELECT g.goods_id,g.goods_name,g.goods_type,g.goods_sn,g.shop_price,g.integral,g.shelflife,g.bar_code,g.warn_number,g.is_on_sale,s.status, '.
             ' g.goods_weight,IF(SUM(quantity), SUM(quantity), 0) goods_number, COUNT(quantity) stock_times  FROM '
             .$GLOBALS['ecs']->table('goods').' g LEFT JOIN '.$GLOBALS['ecs']->table('stock_goods')
             .' s ON g.goods_sn=s.goods_sn'
