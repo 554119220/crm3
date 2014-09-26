@@ -25,6 +25,7 @@
                 <input type="text" name="knowlage_name" value="{$filter.knowlage_name}" required style="width:85%"/>
               </td>
             </tr>
+            {if !$no_goods}
             <tr>
               <th>选择商品<font color="red">*</font></th>
               <td>
@@ -40,6 +41,7 @@
                 </select>
               </td>
             </tr>
+            {/if}
             <tr>
               <th>标签：</th>
               <td colspan="2">
@@ -78,5 +80,5 @@
 {insert_scripts files="json2.js,reportSorting.js,main.js,system.js,storages.js,users.js,order_detail.js,performance.js,service.js,account.js"}
 {insert_scripts files="js.js,tab.js,tabControl.js,goods.js,healthy_archive.js,index.js"}
 <!-- ecshop原JS文件 -->
-{insert_scripts files="common.js,transport.js,validator.js,utils.js,region.js,ask_customer.js,stats.js,order.js,reportSorting.js"}
+{insert_scripts files="common.js,transport.js,validator.js,utils.js,stats.js,order.js,reportSorting.js"}
 {insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}

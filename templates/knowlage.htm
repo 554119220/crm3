@@ -1,0 +1,13 @@
+<br />
+<h3>{$title}</h3>
+<br />
+<div style="width:85%;margin-bottom:6px;">
+  <form action="javascript:void(0)" onsubmit="schKnowlage(this)" name="schKnowForm">
+    <input type="text" name="keyword" value="" placeholder="标题，关键字" style="width:320px;"/>
+    <input type="submit" name="" value="搜 索" class="b_submit" />
+    {if $knowlage_mgr}
+    <span style="margin-left:15px;"><a href="school_mgr.php?act=add_knowlage&knowlage_class=4" value="上传新的知识" id="a_btn" target="_blank"/>上传新的知识</a></span>
+    {/if}
+  </form>
+</div>
+<div id="resourec">{$knowlage_div}</div>

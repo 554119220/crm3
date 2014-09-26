@@ -927,75 +927,83 @@ function addAllotGoods(obj){
     if(goodsObj[i].selected){
       goodsInfo.goods_sn   = goodsOpts[i].value;
       goodsInfo.goods_name = goodsOpts[i].text;
-      goodsInfo.length = 1;
       break;
     }
   }
   
   if(goodsInfo.length){
     for(var i = 0; i < dayOpts.length; i++){
-     if (dayOpts[i].selected) {
-       goodsInfo.rec_id = dayOpts[i].value;
-       break;
-     }
+      if (dayOpts[i].selected) {
+        goodsInfo.rec_id = dayOpts[i].value;
+        goodsInfo.proday = dayOpts[i].text;
+        break;
+      }
     }
+
     goodsInfo.number = obj.elements['goods_num'].value;
+    var trObj        = table.insertRow(table.rows.length);
+    var content      = '<td></td><td>'+(table.rows.length-1)+'</td><td>'+goodsInfo.goods_sn+'</td><td>'+goodsInfo.goods_name+'</td><td>'+goodsInfo.proday+'</td><td><input type="number" min="0" name="num_'+goodsInfo.goods_sn+'" /><td><button class="btn_new" onclick="delGoods(this)>删 除</button></td>';
+    trObj.innerHTML = content;
   }
+}
+
+function delGoods(obj){
+  var table         = document.getElementById['goods_list_table'];
 }
 
 /*商品生产日期批次及库存*/
 function getPdcDay(goods_sn) {
-	if (goods_sn) {
-		Ajax.call('storage.php?act=get_pdc_day', 'goods_sn=' + goods_sn, inSelect, 'GET', 'JSON');
-	}
+  if (goods_sn) {
+    Ajax.call('storage.php?act=get_pdc_day', 'goods_sn=' + goods_sn, inSelect, 'GET', 'JSON');
+  }
 }
 
 function inSelect(res) {
-	if (res.length > 0) {
-		var sltObj = document.getElementById(res.id);
-		sltObj.options.length = 0;
+  if (res.length > 0) {
+    var sltObj = document.getElementById(res.id);
+    sltObj.options.length = 0;
 
-		var optObj = document.createElement('option');
-		optObj.value = 0;
-		optObj.text = res.text;
-		sltObj.appendChild(optObj);
+    var optObj = document.createElement('option');
+    optObj.value = 0;
+    optObj.text = res.text;
+    sltObj.appendChild(optObj);
 
-		for (var i = 0; i < res.options.length; i++) {
-			var optObj = document.createElement('option');
-			optObj.value = res.options[i].value;
-			optObj.text = res.options[i].text;
-			sltObj.appendChild(optObj);
-		}
-	}
+    for (var i = 0; i < res.options.length; i++) {
+      var optObj = document.createElement('option');
+      optObj.value = res.options[i].value;
+      optObj.text = res.options[i].text;
+      sltObj.appendChild(optObj);
+    }
+  }
 }
 
 /*修改商品状态*/
 function modGoodsStatus(obj) {
-	if (obj.getAttribute('value')) {
-		obj.parentNode.id = 'field_' + obj.getAttribute('value');
-		Ajax.call('storage.php?act=mod_goods_status', 'goods_sn=' + obj.getAttribute('value') + '&td_id=' + obj.parentNode.id + '&status=' + obj.getAttribute('sta'), inTd, 'GET', 'JSON');
-	}
+  if (obj.getAttribute('value')) {
+    obj.parentNode.id = 'field_' + obj.getAttribute('value');
+    Ajax.call('storage.php?act=mod_goods_status', 'goods_sn=' + obj.getAttribute('value') + '&td_id=' + obj.parentNode.id + '&status=' + obj.getAttribute('sta'), inTd, 'GET', 'JSON');
+  }
 }
 
 /*将结果填入单元格中*/
 function inTd(res) {
-	if (res.req_msg) {
-		showMsgRes(res);
-	}
+  if (res.req_msg) {
+    showMsgRes(res);
+  }
 
-	if (document.getElementById(res.td_id)) {
-		document.getElementById(res.td_id).innerHTML = res.content;
-	}
+  if (document.getElementById(res.td_id)) {
+    document.getElementById(res.td_id).innerHTML = res.content;
+  }
 }
 
 /*鼠标经过显示控制图标*/
 function mouseoverShowCtr(id, sta) {
-	if (document.getElementById(id)) {
-		if (sta) {
-			document.getElementById(id).style.display = 'inline';
-		} else {
-			document.getElementById(id).style.display = 'none';
-		}
-	}
+  if (document.getElementById(id)) {
+    if (sta) {
+      document.getElementById(id).style.display = 'inline';
+    } else {
+      document.getElementById(id).style.display = 'none';
+    }
+  }
 }
 

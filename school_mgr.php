@@ -14,12 +14,12 @@ define('IN_ECS',true);
 require(dirname(__FILE__) . '/includes/init.php');
 require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_common.php');
 require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_goods.php');
+include_once(ROOT_PATH."includes/fckeditor/fckeditor.php");
 date_default_timezone_set('Asia/Shanghai');
 
 $act = isset($_REQUEST['act']) ? mysql_real_escape_string($_REQUEST['act']) : 'menu';
 
-if ($act == 'menu')
-{
+if ($act == 'menu') {
     $file = strstr(basename($_SERVER['PHP_SELF']), '.', true);
     $nav = list_nav();
     $smarty->assign('nav_2nd', $nav[1][$file]);
@@ -31,11 +31,11 @@ if ($act == 'menu')
 
 /*添加知识库表单*/
 elseif($_REQUEST['act'] == 'add_knowlage'){
+
     $knowlage_class_list = get_knowlage_class(0,1);
     $brank_list          = brand_list();
     $knowlage_id         = isset($_REQUEST['knowlage_id']) ? intval($_REQUEST['knowlage_id']) : 0;
-    $unedit = false;
-
+    $unedit              = false;
 
     if(!empty($knowlage_id)){
         $sql_select = 'SELECT knowlage_name,knowlage_class,content FROM '.
@@ -43,18 +43,20 @@ elseif($_REQUEST['act'] == 'add_knowlage'){
         $filter = $GLOBALS['db']->getRow($sql_select);
     }
 
-    $filter['goods_sn']        = isset($_REQUEST['goods_sn']) ? mysql_real_escape_string($_REQUEST['goods_sn']) : '';
-    $filter['goods_name']      = isset($_REQUEST['goods_name']) ? mysql_real_escape_string($_REQUEST['goods_name']) : '';
     $filter['knowlage_class'] = isset($_REQUEST['knowlage_class']) ? intval($_REQUEST['knowlage_class']) : 0;
-    $filter['knowlage_id']     = $knowlage_id;
+    if($filter['knowlage_class'] < 4){
+        $filter['goods_sn']       = isset($_REQUEST['goods_sn']) ? mysql_real_escape_string($_REQUEST['goods_sn']) : '';
+        $filter['goods_name']     = isset($_REQUEST['goods_name']) ? mysql_real_escape_string($_REQUEST['goods_name']) : '';
+    }else{
+        $smarty->assign('no_goods',true);
+    }
 
+    $filter['knowlage_id']    = $knowlage_id;
     if(!empty($filter['goods_sn'])){
         $unedit = true;
     }
 
     $content = $filter ? $filter['content'] : '';
-
-    include_once(ROOT_PATH."includes/fckeditor/fckeditor.php");
 
     /* 创建 html editor */
     create_html_editor('FCKeditor1',$content);
@@ -70,8 +72,9 @@ elseif($_REQUEST['act'] == 'add_knowlage'){
 /*添加知识库操作*/
 elseif($_REQUEST['act'] == 'add_knowlage_done'){
     $knowlage_name  = trim(mysql_real_escape_string($_REQUEST['knowlage_name']));
-    $knowlage_class = intval($_REQUEST['knowlage_class']);
-    $goods_sn       = mysql_real_escape_string($_REQUEST['goods_id']);
+    $knowlage_class = isset($_REQUEST['knowlage_class
+            ']) ? intval($_REQUEST['knowlage_class']) : '';
+    $goods_sn       = isset($_REQUEST['goods_id']) ? mysql_real_escape_string($_REQUEST['goods_id']) : '';
     $tags           = trim(mysql_real_escape_string($_REQUEST['tags']));
     $content        = $_REQUEST['FCKeditor1'];
     $knowlage_id    = isset($_REQUEST['knowlage_id']) ? intval($_REQUEST['knowlage_id']) : '';
@@ -130,7 +133,6 @@ elseif($_REQUEST['act'] == 'add_knowlage_done'){
 
     $knowlage_class_list = get_knowlage_class(0,1);
     $brank_list          = brand_list();
-    include_once(ROOT_PATH."includes/fckeditor/fckeditor.php");
 
     create_html_editor('FCKeditor1',$content);
 
@@ -292,6 +294,27 @@ elseif($_REQUEST['act'] == 'get_knowlage'){
     die($json->encode($res));
 }
 
+//学习分享
+elseif($_REQUEST['act'] == 'share_knowlage'){
+
+}
+
+//健康知识
+elseif($_REQUEST['act'] == 'health_knowlage'){
+    setAuthority();
+    $smarty->assign('knowlage_div',$smarty->fetch('knowlage_div.htm'));
+    $res['main'] = $smarty->fetch('knowlage.htm');
+    die($json->encode($res));
+
+}
+
+//销售知识
+elseif($_REQUEST['act'] == 'sale_knowalge'){
+    $smarty->assign('knowlage_div',$smarty->fetch('knowlage_div.htm'));
+    $res['main'] = $smarty->fetch('knowlage.htm');
+    die($json->encode($res));
+}
+
 //函数区
 /*知识分类*/
 function get_knowlage_class($parent_class=0,$level=0){
@@ -328,5 +351,12 @@ function get_knowlage_list($keyword){
 
     $knowlage_list = $GLOBALS['db']->getAll($sql_select);
     return $knowlage_list;
+}
+
+function setAuthority(){
+    global $smarty;
+    if(admin_priv('all','',false) || admin_priv('knowlage_mgr','',false)){
+        $smarty->assign('knowlage_mgr',true);
+    }
 }
 ?>

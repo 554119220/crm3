@@ -44,3 +44,14 @@ table[class=stock_alarm_site] th {border:1px solid #777;}
 .disable_btn {background:#E0E0E0}
 
 #noborder th,#noborder td{border:none;margin:2px;height:12px;width:102px;};
+
+#a_btn {
+  padding: 2px 10px;
+  float: left;
+  border-radius: 3px;
+  border: 1px #898989 solid;
+  color: #333;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFF), color-stop(1, #e9ecef));
+  text-decoration: none;
+  font: normal 12px "宋体"; 
+}
