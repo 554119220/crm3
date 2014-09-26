@@ -900,7 +900,6 @@ function showOrHideBrandResp(res) {
 	}
 }
 
-
 /*创建仓库调拨记录*/
 function createAllot() {
 	if (document.getElementById('add_allot_div')) {
@@ -915,49 +914,104 @@ function schAllot(obj) {
 
 }
 
-function addAllotGoods(obj){
-  var goodsObj      = obj.elements['goods_id'];
-  var productionDay = obj.elements['production_day'];
-  var goodsOpts     = goodsObj.options;
-  var dayOpts       = productionDay.options;
-  var table         = document.getElementById['goods_list_table'];
-  var goodsInfo     = {};
+function addAllotGoods(obj) {
+	var goodsObj = obj.elements['goods_id'];
+	var productionDay = obj.elements['production_day'];
+	var goodsOpts = goodsObj.options;
+	var dayOpts = productionDay.options;
+	var table = document.getElementById('goods_list_table');
+	var goodsInfo = {};
+  var re = /【/;
+  var arr = {};
 
-  for(var i = 0; i < goodsOpts.length; i++){
-    if(goodsObj[i].selected){
-      goodsInfo.goods_sn   = goodsOpts[i].value;
-      goodsInfo.goods_name = goodsOpts[i].text;
-      break;
-    }
-  }
-  
-  if(goodsInfo.length){
-    for(var i = 0; i < dayOpts.length; i++){
-      if (dayOpts[i].selected) {
-        goodsInfo.rec_id = dayOpts[i].value;
-        goodsInfo.proday = dayOpts[i].text;
-        break;
+	for (var i = 1; i < goodsOpts.length; i++) {
+		if (goodsObj[i].selected) {
+			goodsInfo.goods_sn = goodsOpts[i].value;
+      arr = re.exec(goodsOpts[i].text);
+			goodsInfo.goods_name = goodsOpts[i].text.substr(0,arr.index);
+      goodsInfo.length = 1;
+			break;
+		}
+	}
+
+	if (goodsInfo.length && goodsInfo.goods_sn) {
+		for (var i = 0; i < dayOpts.length; i++) {
+			if (dayOpts[i].selected && dayOpts[i].value > 0) {
+				goodsInfo.rec_id = dayOpts[i].value;
+        arr = re.exec(dayOpts[i].text);
+        if(arr){
+          goodsInfo.proday = dayOpts[i].text.substr(0,arr.index);
+        }
+				break;
+			}
+		}
+
+    if(goodsInfo.rec_id > 0){
+      goodsInfo.number = obj.elements['goods_num'].value;
+      if(document.getElementById('non_result')){
+        table.deleteRow(document.getElementById('non_result').rowIndex);
+      }
+
+      //累加商品数量
+      if(document.getElementById('rec_id_'+goodsInfo.rec_id)){
+        document.getElementById('num_'+goodsInfo.rec_id).value = parseInt(document.getElementById('num_'+goodsInfo.rec_id).value) + parseInt(goodsInfo.number); 
+      }else{
+        var trObj = table.insertRow(table.rows.length);
+        var content = '<td>' + (table.rows.length - 1) + '</td><td>' + goodsInfo.goods_sn + '</td><td>' + goodsInfo.goods_name + '</td><td>' + goodsInfo.proday + '</td><td><input type="number" min="0" style="width:54px;" name="num_' + goodsInfo.rec_id +'" value="'+goodsInfo.number+'" id="num_'+goodsInfo.rec_id+'"/></td><td><input class="hide" type="checkbox" name="list_id[]" value="'+goodsInfo.rec_id+'" id="rec_id_'+goodsInfo.rec_id+'"/><button class="btn_new" onclick="justRemoveGoods(this)">删 除</button></td>';
+        trObj.innerHTML = content; 
       }
     }
-
-    goodsInfo.number = obj.elements['goods_num'].value;
-    var trObj        = table.insertRow(table.rows.length);
-    var content      = '<td></td><td>'+(table.rows.length-1)+'</td><td>'+goodsInfo.goods_sn+'</td><td>'+goodsInfo.goods_name+'</td><td>'+goodsInfo.proday+'</td><td><input type="number" min="0" name="num_'+goodsInfo.goods_sn+'" /><td><button class="btn_new" onclick="delGoods(this)>删 除</button></td>';
-    trObj.innerHTML = content;
   }
 }
 
-function delGoods(obj){
-  var table         = document.getElementById['goods_list_table'];
+function delGoods(obj) {
+  var table = document.getElementById['goods_list_table'];
 }
 
 /*商品生产日期批次及库存*/
 function getPdcDay(goods_sn) {
   if (goods_sn) {
-    Ajax.call('storage.php?act=get_pdc_day', 'goods_sn=' + goods_sn, inSelect, 'GET', 'JSON');
+    Ajax.call('storage.php?act=get_pdc_day', 'goods_sn=' + goods_sn, getPdcDayResp, 'GET', 'JSON');
   }
 }
 
+/*获得生产日期*/
+function getPdcDayResp(res){
+  inSelect(res); 
+  //重新计算库存
+  if(document.getElementById('goods_num')){
+    if(document.forms['goods_list_form']){
+      var formObj = document.forms['goods_list_form'];
+      var inputList = formObj.getElementsByTagName('input');
+
+      var listObj = [];
+      for(var i = 0; i<inputList.length; i++){
+        if(inputList[i].type == 'checkbox' && inputList[i].name == 'list_id[]'){
+          listObj.push(inputList[i].value);
+        }
+      }
+
+      if(listObj.length > 0){
+        var sltObj = document.getElementById(res.id);
+        var optList = sltObj.options;
+
+        for(var i = 0; i < optList.length; i++){
+          for(var j = 0; j < listObj.length; j++){
+            if(optList[i].value == listObj[j]){
+              var storageObj = formObj.elements['num_'+listObj[j]];
+              var storage = parseInt(optList[i].text.match(/【库存：(\d+)】/)[1])-storageObj.value;
+              optList[i].text = optList[i].text.replace(/【库存：(\d+)】/,'【库存：'+storage+'】');
+            }
+          }
+        }
+      }else{
+        return ;
+      }
+    }
+  }
+}
+
+/*创建select*/
 function inSelect(res) {
   if (res.length > 0) {
     var sltObj = document.getElementById(res.id);
@@ -1007,3 +1061,8 @@ function mouseoverShowCtr(id, sta) {
   }
 }
 
+/*删除商品非订单*/
+function justRemoveGoods (obj) {
+    var rowObj = obj.parentNode.parentNode;       
+    rowObj.parentNode.deleteRow(rowObj.rowIndex);
+}
