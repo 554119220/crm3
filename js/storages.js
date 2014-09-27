@@ -938,6 +938,7 @@ function addAllotGoods(obj) {
 		for (var i = 0; i < dayOpts.length; i++) {
 			if (dayOpts[i].selected && dayOpts[i].value > 0) {
 				goodsInfo.rec_id = dayOpts[i].value;
+        
         arr = re.exec(dayOpts[i].text);
         if(arr){
           goodsInfo.proday = dayOpts[i].text.substr(0,arr.index);
@@ -947,25 +948,40 @@ function addAllotGoods(obj) {
 		}
 
     if(goodsInfo.rec_id > 0){
-      goodsInfo.number = obj.elements['goods_num'].value;
       if(document.getElementById('non_result')){
         table.deleteRow(document.getElementById('non_result').rowIndex);
       }
+
+      goodsInfo.number = obj.elements['goods_num'].value;
+      var storage = parseInt(dayOpts[i].text.match(/【库存：(\d+)】/)[1]) - goodsInfo.number;
+      if(storage < 0){
+        var msg = [];
+        msg['req_msg'] = true;
+        msg['message'] = '调拨商品数量不能多于库存';
+        msg['timeout'] = 2000;
+        showMsg(res);
+        return;
+      }
+      dayOpts[i].text = dayOpts[i].text.replace(/【库存：(\d+)】/,'【库存：'+storage+'】');
+      document.getElementById('goods_num').max = storage;
 
       //累加商品数量
       if(document.getElementById('rec_id_'+goodsInfo.rec_id)){
         document.getElementById('num_'+goodsInfo.rec_id).value = parseInt(document.getElementById('num_'+goodsInfo.rec_id).value) + parseInt(goodsInfo.number); 
       }else{
+
         var trObj = table.insertRow(table.rows.length);
         var content = '<td>' + (table.rows.length - 1) + '</td><td>' + goodsInfo.goods_sn + '</td><td>' + goodsInfo.goods_name + '</td><td>' + goodsInfo.proday + '</td><td><input type="number" min="0" style="width:54px;" name="num_' + goodsInfo.rec_id +'" value="'+goodsInfo.number+'" id="num_'+goodsInfo.rec_id+'"/></td><td><input class="hide" type="checkbox" name="list_id[]" value="'+goodsInfo.rec_id+'" id="rec_id_'+goodsInfo.rec_id+'"/><button class="btn_new" onclick="justRemoveGoods(this)">删 除</button></td>';
+
         trObj.innerHTML = content; 
       }
+
+      //统计添加数量
+      var goods_total = parseInt(document.getElementById('goods_total').getAttribute('value'))+parseInt(goodsInfo.number);
+      document.getElementById('goods_total').innerHTML = goods_total;
+      document.getElementById('goods_total').value = goods_total;
     }
   }
-}
-
-function delGoods(obj) {
-  var table = document.getElementById['goods_list_table'];
 }
 
 /*商品生产日期批次及库存*/
@@ -1065,4 +1081,38 @@ function mouseoverShowCtr(id, sta) {
 function justRemoveGoods (obj) {
     var rowObj = obj.parentNode.parentNode;       
     rowObj.parentNode.deleteRow(rowObj.rowIndex);
+
+    if(document.getElementById('goods_total')){
+      document.getElementById('goods_total').value = document.getElementById('goods_num');
+      var total = parseInt(document.getElementById('goods_num').value)-parseInt(document.getElementById('goods_total').value); 
+      document.getElementById('goods_total').innerHTML = total >=0  ? total : 0; 
+    }
+}
+
+/*切换TAB*/
+function showTabDiv(obj,id){
+  var ul = obj.parentNode;
+  for (var i in ul.children) {
+    if (i != 'length') {
+      ul.children[i].className = '';
+      if (ul.children[i].type != undefined) {
+        if (document.getElementById(ul.children[i].type)) document.getElementById(ul.children[i].type).className = 'hide';
+      }
+    }
+  }
+  obj.className = 'o_select';
+
+  Ajax.call('users.php?act=vip_list', 'id=' + id + '&from_sel=' + true, showNumRes, 'GET', 'JSON');
+}
+
+/*设置最大数量*/
+function setMaxValue(obj){
+  var optList = obj.options;
+  for(var i = 0; i < optList.length; i++){
+    if(optList[i].selected){
+      var maxValue = optList[i].text.match(/【库存：(\d+)】/)[i];
+      document.getElementById('goods_num').max = maxValue;
+      break;
+    }
+  }
 }

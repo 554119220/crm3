@@ -16,14 +16,6 @@
         <td>
           <input type="text" name="title" value="" required />
         </td>
-        <td>出货仓库：</td>
-        <td>
-          <select name="in_storage">
-            {foreach from=$warehouse item=val}
-            <option value="{$val.warehouse_id">{$val.warehouse_name}</option>
-            {/foreach}
-          </select>
-        </td>
         <td>入货仓库：</td>
         <td>
           <select name="out_storage">
@@ -32,6 +24,7 @@
             {/foreach}
           </select>
         </td>
+        <td></td>
       </tr>
       <tr>
         <td>调拨日期：</td>
@@ -64,15 +57,13 @@
     </table>
   </form>
 </div>
-<div>
-</div>
 <div class="tools_div">
   <form action="javascript:void(0)" onsubmit="addAllotGoods(this)" name="allotGoodsForm" >
     <input type="text" name="search" value="" size="20" oninput="searchGoods(this)" onblur="searchGoods(this)">
     <select name="goods_id" id="goods_id" style="width:364px;" onchange="getPdcDay(this.value)">
       <option value="0">请先输入要搜索的商品</option>
     </select>
-    <select name="production_day" id="production_day" style="width:200px;">
+    <select name="production_day" id="production_day" style="width:200px;" onchange="setMaxValue(this)">
       <option value="0">请选择批次</option>
     </select>
     <input type="number" id="goods_num" name="goods_num" value="1" min="1" required style="width:54px;"/>

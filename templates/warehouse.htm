@@ -1,0 +1,20 @@
+<br />
+<h3>实体店</h3>
+<br />
+<divjijjjjjjjjjjjj>
+  <div>
+    <div class="box_nav">
+      <div class="detail_tab" style="margin:0">
+        <ul>
+          <li type="warehouse_0" class="o_select" onclick="showTabDiv(this,0)"><span>全部</span></li>
+          {foreach from=$warehouse_list item=val name=i}
+          <li type="warehouse_{$val.warehouse_id}" onclick="showTabDiv(this,{$val.warehouse_id})"><span>{$val.warehouse_name}</span></li>
+          {/foreach}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="list_panel" style="margin-bottom:0px;">
+  </div>
+  <div id="resource">{$warehouse_info}</div>
+</div>

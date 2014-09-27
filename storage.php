@@ -2441,6 +2441,16 @@ elseif($_REQUEST['act'] =='create_allot'){
     die($json->encode($res));
 }
 
+/*实体店列表*/
+elseif($_REQUEST['act'] == 'warehouse'){
+    $warehouse_list = get_warehouse('simple');
+    
+    $smarty->assign('warehouse_info',$smarty->assign('warehouse_innfo.htm'));
+    $smarty->assign('warehouse_list',$warehouse_list);
+    $res['main'] = $smarty->fetch('warehouse.htm');
+    die($json->encode($res));
+}
+
 //商品批次和批次库存
 elseif($_REQUEST['act'] == 'get_pdc_day'){
     $result = get_pdc_day(' AND quantity>0 ');

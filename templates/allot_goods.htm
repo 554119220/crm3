@@ -1,4 +1,4 @@
-<form name="goods_list_form" action="javascript:void(0);" >
+<form name="goods_list_form" action="javascript:void(0);" onsubmit="addAllotDone()">
 <table width="90%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" id="goods_list_table">
   <tr>
     <th width="5%">序号</th>
@@ -24,5 +24,14 @@
     <td colspan="6" >没有添加调拨的商品</td>
   </tr>
   {/if}
+</table>
+<br />
+<table width="90%" cellpadding="0" cellspacing="0" width="0" border="0" >
+  <tr>
+    <td width="15%">总计：【 <label id="goods_total" value="0">0</label> 】 件</td>
+    <td>
+      <input type="submit" value="保 存" class="b_submit" >
+    </td>
+  </tr>
 </table>
 </form>
