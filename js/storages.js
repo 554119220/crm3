@@ -921,15 +921,15 @@ function addAllotGoods(obj) {
 	var dayOpts = productionDay.options;
 	var table = document.getElementById('goods_list_table');
 	var goodsInfo = {};
-  var re = /【/;
-  var arr = {};
+	var re = /【/;
+	var arr = {};
 
 	for (var i = 1; i < goodsOpts.length; i++) {
 		if (goodsObj[i].selected) {
 			goodsInfo.goods_sn = goodsOpts[i].value;
-      arr = re.exec(goodsOpts[i].text);
-			goodsInfo.goods_name = goodsOpts[i].text.substr(0,arr.index);
-      goodsInfo.length = 1;
+			arr = re.exec(goodsOpts[i].text);
+			goodsInfo.goods_name = goodsOpts[i].text.substr(0, arr.index);
+			goodsInfo.length = 1;
 			break;
 		}
 	}
@@ -938,50 +938,60 @@ function addAllotGoods(obj) {
 		for (var i = 0; i < dayOpts.length; i++) {
 			if (dayOpts[i].selected && dayOpts[i].value > 0) {
 				goodsInfo.rec_id = dayOpts[i].value;
-        
-        arr = re.exec(dayOpts[i].text);
-        if(arr){
-          goodsInfo.proday = dayOpts[i].text.substr(0,arr.index);
-        }
+
+				arr = re.exec(dayOpts[i].text);
+				if (arr) {
+					goodsInfo.proday = dayOpts[i].text.substr(0, arr.index);
+				}
 				break;
 			}
 		}
 
-    if(goodsInfo.rec_id > 0){
-      if(document.getElementById('non_result')){
-        table.deleteRow(document.getElementById('non_result').rowIndex);
+		if (goodsInfo.rec_id > 0) {
+			if (document.getElementById('non_result')) {
+				table.deleteRow(document.getElementById('non_result').rowIndex);
+			}
+
+			goodsInfo.number = obj.elements['goods_num'].value;
+			var storageTotal = parseInt(dayOpts[i].text.match(/【库存：(\d+)】/)[1]);
+			var storage = storageTotal - goodsInfo.number;
+			if (storage < 0) {
+				var msg = [];
+				msg['req_msg'] = true;
+				msg['message'] = '调拨商品数量不能多于库存';
+				msg['timeout'] = 2000;
+				showMsg(res);
+				return;
+			}
+			dayOpts[i].text = dayOpts[i].text.replace(/【库存：(\d+)】/, '【库存：' + storage + '】');
+			document.getElementById('goods_num').max = storage;
+
+			//累加商品数量
+			if (document.getElementById('rec_id_' + goodsInfo.rec_id)) {
+				var goodsNum = parseInt(document.getElementById('num_' + goodsInfo.rec_id).getAttribute('value')) + parseInt(goodsInfo.number);
+				document.getElementById('num_' + goodsInfo.rec_id).setAttribute('value', goodsNum);
+				document.getElementById('num_' + goodsInfo.rec_id).innerHTML = goodsNum;
+			} else {
+
+				var trObj = table.insertRow(table.rows.length - 1);
+				var content = '<td>' + (table.rows.length - 2) + '</td><td>' + goodsInfo.goods_sn + '</td><td>' + goodsInfo.goods_name + '</td><td>' + goodsInfo.proday + '</td><td><label class="green" max="' + storageTotal + '" value="' + goodsInfo.number + '" id="num_' + goodsInfo.rec_id + '" recid="'+goodsInfo.rec_id+'">' + goodsInfo.number + '</label><img class="png_btn hide" style="margin-right:6px;" onclick="editValue(this)" src="images/edit.gif" id="edit_'+goodsInfo.rec_id+'" recid="'+goodsInfo.rec_id+'"/></td><td><input class="hide" type="checkbox" name="list_id[]" value="' + goodsInfo.rec_id + '" id="rec_id_' + goodsInfo.rec_id + '"/><button class="btn_new" onclick="justRemoveGoods(this)" value="' + goodsInfo.rec_id + '">删 除</button></td>';
+				trObj.innerHTML = content;
+
+        trObj.onmouseover = function (){
+          if (document.getElementById('edit_'+goodsInfo.rec_id)) {
+            document.getElementById('edit_'+goodsInfo.rec_id).style.display = 'inline';
+          }
+        };
+
+        trObj.onmouseout = function (){
+          if (document.getElementById('edit_'+goodsInfo.rec_id)){
+            document.getElementById('edit_'+goodsInfo.rec_id).style.display = 'none';
+          }
+        }
       }
-
-      goodsInfo.number = obj.elements['goods_num'].value;
-      var storage = parseInt(dayOpts[i].text.match(/【库存：(\d+)】/)[1]) - goodsInfo.number;
-      if(storage < 0){
-        var msg = [];
-        msg['req_msg'] = true;
-        msg['message'] = '调拨商品数量不能多于库存';
-        msg['timeout'] = 2000;
-        showMsg(res);
-        return;
-      }
-      dayOpts[i].text = dayOpts[i].text.replace(/【库存：(\d+)】/,'【库存：'+storage+'】');
-      document.getElementById('goods_num').max = storage;
-
-      //累加商品数量
-      if(document.getElementById('rec_id_'+goodsInfo.rec_id)){
-        document.getElementById('num_'+goodsInfo.rec_id).value = parseInt(document.getElementById('num_'+goodsInfo.rec_id).value) + parseInt(goodsInfo.number); 
-      }else{
-
-        var trObj = table.insertRow(table.rows.length);
-        var content = '<td>' + (table.rows.length - 1) + '</td><td>' + goodsInfo.goods_sn + '</td><td>' + goodsInfo.goods_name + '</td><td>' + goodsInfo.proday + '</td><td><input type="number" min="0" style="width:54px;" name="num_' + goodsInfo.rec_id +'" value="'+goodsInfo.number+'" id="num_'+goodsInfo.rec_id+'"/></td><td><input class="hide" type="checkbox" name="list_id[]" value="'+goodsInfo.rec_id+'" id="rec_id_'+goodsInfo.rec_id+'"/><button class="btn_new" onclick="justRemoveGoods(this)">删 除</button></td>';
-
-        trObj.innerHTML = content; 
-      }
-
-      //统计添加数量
-      var goods_total = parseInt(document.getElementById('goods_total').getAttribute('value'))+parseInt(goodsInfo.number);
-      document.getElementById('goods_total').innerHTML = goods_total;
-      document.getElementById('goods_total').value = goods_total;
     }
   }
+  reCalculateStorage();
 }
 
 /*商品生产日期批次及库存*/
@@ -992,37 +1002,14 @@ function getPdcDay(goods_sn) {
 }
 
 /*获得生产日期*/
-function getPdcDayResp(res){
-  inSelect(res); 
+function getPdcDayResp(res) {
+  inSelect(res);
   //重新计算库存
-  if(document.getElementById('goods_num')){
-    if(document.forms['goods_list_form']){
-      var formObj = document.forms['goods_list_form'];
-      var inputList = formObj.getElementsByTagName('input');
-
-      var listObj = [];
-      for(var i = 0; i<inputList.length; i++){
-        if(inputList[i].type == 'checkbox' && inputList[i].name == 'list_id[]'){
-          listObj.push(inputList[i].value);
-        }
-      }
-
-      if(listObj.length > 0){
-        var sltObj = document.getElementById(res.id);
-        var optList = sltObj.options;
-
-        for(var i = 0; i < optList.length; i++){
-          for(var j = 0; j < listObj.length; j++){
-            if(optList[i].value == listObj[j]){
-              var storageObj = formObj.elements['num_'+listObj[j]];
-              var storage = parseInt(optList[i].text.match(/【库存：(\d+)】/)[1])-storageObj.value;
-              optList[i].text = optList[i].text.replace(/【库存：(\d+)】/,'【库存：'+storage+'】');
-            }
-          }
-        }
-      }else{
-        return ;
-      }
+  if (document.getElementById('goods_num')) {
+    if (document.getElementById('goods_list_div')) {
+      reCalculateStorage();
+    } else {
+      return;
     }
   }
 }
@@ -1078,19 +1065,27 @@ function mouseoverShowCtr(id, sta) {
 }
 
 /*删除商品非订单*/
-function justRemoveGoods (obj) {
-    var rowObj = obj.parentNode.parentNode;       
-    rowObj.parentNode.deleteRow(rowObj.rowIndex);
+function justRemoveGoods(obj) {
+  var selObj = document.getElementById('production_day');
+  var optList = selObj.options;
 
-    if(document.getElementById('goods_total')){
-      document.getElementById('goods_total').value = document.getElementById('goods_num');
-      var total = parseInt(document.getElementById('goods_num').value)-parseInt(document.getElementById('goods_total').value); 
-      document.getElementById('goods_total').innerHTML = total >=0  ? total : 0; 
+  for(var i = 0; i < optList.length; i++){
+    if(parseInt(optList[i].value) == parseInt(obj.value)){
+      var storage =  optList[i].text.match(/【库存：(\d+)】/)[1];
+      var num = document.getElementById('num_'+obj.value).getAttribute('value');
+      storage = parseInt(num) + parseInt(storage);
+      optList[i].text = optList[i].text.replace(/【库存：(\d+)】/, '【库存：' + storage + '】');
+      optList[0].selected = true;
     }
+  }
+
+  var rowObj = obj.parentNode.parentNode;
+  rowObj.parentNode.deleteRow(rowObj.rowIndex);
+  reCalculateStorage();
 }
 
 /*切换TAB*/
-function showTabDiv(obj,id){
+function showTabDiv(obj, id) {
   var ul = obj.parentNode;
   for (var i in ul.children) {
     if (i != 'length') {
@@ -1106,13 +1101,132 @@ function showTabDiv(obj,id){
 }
 
 /*设置最大数量*/
-function setMaxValue(obj){
+function setMaxValue(obj) {
   var optList = obj.options;
-  for(var i = 0; i < optList.length; i++){
-    if(optList[i].selected){
-      var maxValue = optList[i].text.match(/【库存：(\d+)】/)[i];
+  for (var i = 0; i < optList.length; i++) {
+    if (optList[i].selected) {
+      var maxValue = optList[i].text.match(/【库存：(\d+)】/)[1];
       document.getElementById('goods_num').max = maxValue;
       break;
     }
   }
+}
+
+/*修改调拨商品数量*/
+function setAllotGoodsNum(obj) {
+  var recid = obj.value.match(/\d+/);
+  var inputObj = document.getElementById('num_'+recid);
+  var max = inputObj.max;
+  var number = inputObj.value; 
+
+  obj.parentNode.innerHTML = '<label class="green" max="' + max + '" value="' + number + '" id="num_' + recid + '" recid="'+recid+'" >' + number + '</label><img class="png_btn hide" style="margin-right:6px;" onclick="editValue(this)" src="images/edit.gif" id="edit_'+recid+'" recid="'+recid+'"/>';
+
+  reCalculateStorage();
+}
+
+function editValue(obj){
+  obj.parentNode.innerHTML = '<input type="number" min="0" max="'+obj.previousSibling.getAttribute('max')+'" value="'+obj.previousSibling.getAttribute('value')+'" id="num_'+obj.getAttribute('recid')+'"/>  <button class="btn_new" value="'+obj.id+'" onclick="setAllotGoodsNum(this)">保存</button>';
+
+  if (document.getElementById('num_' + obj.getAttribute('recid'))) {
+    document.getElementById('num_' + obj.getAttribute('recid')).onchange = function() {
+      if (parseInt(this.value) > parseInt(this.max)) {
+        this.value = this.max;
+      }
+    };
+  }
+}
+
+//重新计算库存
+function reCalculateStorage() {
+  var selObj = document.getElementById('production_day');
+  var optList = selObj.options;
+  var table = document.getElementById('goods_list_table');
+  var labelList = table.getElementsByTagName('label');
+  var total = 0;
+
+  if(labelList.length > 0){
+    for(var j = 0; j < labelList.length; j++){
+      var recid = labelList[j].getAttribute('recid');
+      var max = parseInt(labelList[j].getAttribute('max'));
+      var goodsNum = parseInt(labelList[j].getAttribute('value'));
+
+      for (var i = 0; i < optList.length; i++) {
+        if (optList[i].value == labelList[j].getAttribute('recid')) {
+          var storage = max - goodsNum;
+          optList[i].text = optList[i].text.replace(/【库存：(\d+)】/, '【库存：' + storage + '】');
+        }
+      }
+
+      total += goodsNum; 
+    }
+
+    document.getElementById('goods_total').innerHTML = total;
+  }else{
+    document.getElementById('goods_total').innerHTML = 0;
+  }
+}
+
+/*添加商品调拨记录*/
+function addAllotLog(){
+  var allotForm = document.forms['add_allot_form'];
+  var elementsList = allotForm.elements;
+  var data = {};
+  var allotBaseInfo = {};
+  var msg = [];
+  msg['timeout'] = 3000;
+  msg['req_msg'] = true;
+
+  //信息是否填写完整
+  for(var i = 0; i < elementsList.length; i++){
+    if(elementsList[i].name == 'name' || elementsList[i].name == 'status'){
+      continue;
+    }else{
+      if(elementsList[i].value == '' || elementsList[i].value == 0){
+        msg['message'] = elementsList[i].getAttribute('title') + '不能为空';
+        showMsg(msg);
+        return ;
+      }else{
+        allotBaseInfo[elementsList[i].name] = elementsList[i].value;
+      }
+    }
+  }
+
+  //是否添加商品
+  var goodsTable = document.getElementById('goods_list_table');
+  var inputList = goodsTable.getElementsByTagName('input');
+
+  if(inputList.length > 0){
+    var goods =  {};
+    for(var i = 0; i < inputList.length && inputList[i].type == 'checkbox'; i++){
+      goods[i] = {
+        "rec_id" : inputList[i].value,
+        "goods_num" : document.getElementById('num_'+inputList[i].value).getAttribute('value'),
+        "goods_name" : inputList[i].parentNode.parentNode.cells[2].innerHTML,
+      };
+    }
+
+    data['base_info'] = allotBaseInfo;
+    data['goods'] = goods;
+    Ajax.call('storage.php?act=add_allot_log',data,addAllotLogResp,'GET','JSON');
+       
+  }else{
+    msg['message'] = '请添加调拨商品';
+    showMsg(msg);
+    return ;
+  }
+}
+
+function addAllotLogResp(res){
+  showMsg(res);
+}
+
+//查看调拨商品
+function showAllotGoods(allotId){
+ if(allotId){
+   Ajax.call('storage.php?act=show_allot_goods','allot_id='+allotId,showAllotGoodsResp,'GET','JSON');
+ }
+
+ function showAllotGoodsResp(res){
+   
+ }
 }

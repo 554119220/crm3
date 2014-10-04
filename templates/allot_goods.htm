@@ -1,37 +1,34 @@
-<form name="goods_list_form" action="javascript:void(0);" onsubmit="addAllotDone()">
-<table width="90%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" id="goods_list_table">
-  <tr>
-    <th width="5%">序号</th>
-    <th width="10%">产品编号</th>
-    <th width="25%">产品名</th>
-    <th width="20%">批次</th>
-    <th width="10%">数量</th>
-    <th width="10%">操作</th>
-  </tr>
-  {if $allot_goods}
-  {foreach from=$allot_goods item=val name=i}
-  <tr>
-    <td>{$smarty.foreach.i.iteration}</td>
-    <td>{$val.goods_sn}</td>
-    <td>{$val.goods_name}</td>
-    <td>{$val.production_day}</td>
-    <td>{$val.quantity}</td>
-    <td>-</td>
-  </tr>
-  {/foreach}
-  {else}
-  <tr id="non_result">
-    <td colspan="6" >没有添加调拨的商品</td>
-  </tr>
-  {/if}
-</table>
-<br />
-<table width="90%" cellpadding="0" cellspacing="0" width="0" border="0" >
-  <tr>
-    <td width="15%">总计：【 <label id="goods_total" value="0">0</label> 】 件</td>
-    <td>
-      <input type="submit" value="保 存" class="b_submit" >
-    </td>
-  </tr>
-</table>
-</form>
+<div id="goods_list_div" > 
+  <table width="90%" cellpadding="0" cellspacing="0" width="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" id="goods_list_table">
+    <tr>
+      <th width="5%">序号</th>
+      <th width="10%">产品编号</th>
+      <th width="25%">产品名</th>
+      <th width="20%">批次</th>
+      <th width="10%">数量</th>
+      <th width="10%">操作</th>
+    </tr>
+    {if $allot_goods}
+    {foreach from=$allot_goods item=val name=i}
+    <tr>
+      <td>{$smarty.foreach.i.iteration}</td>
+      <td>{$val.goods_sn}</td>
+      <td>{$val.goods_name}</td>
+      <td>{$val.production_day}</td>
+      <td>{$val.quantity}</td>
+      <td>-</td>
+    </tr>
+    {/foreach}
+    {else}
+    <tr id="non_result">
+      <td colspan="6" >没有添加调拨的商品</td>
+    </tr>
+    {/if}
+    <tr>
+      <td colspan="6" style="padding-right:6px;text-align:right">
+        总计：【 <span id="goods_total" value="0">0</span> 】 件
+        <button class="b_submit" onclick="addAllotLog()">保 存</button>
+      </td> 
+    </tr>
+  </table>
+</div>

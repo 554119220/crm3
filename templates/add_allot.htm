@@ -9,18 +9,18 @@
 #      History:
 =============================================================================-->
 <div id="add_allot_div">
-  <form action="javascript:void(0)" onsubmit="addAllotDone(this)" name="allot_form"> 
+  <form action="javascript:void(0)" onsubmit="addAllotDone(this)" name="add_allot_form"> 
     <table width="100%" cellpadding="0" cellspacing="0" border="0" class="table_form" style="background-color:#fff">
       <tr>
         <td>主题：</td>
         <td>
-          <input type="text" name="title" value="" required />
+          <input type="text" name="title" value="" required title="主题"/>
         </td>
         <td>入货仓库：</td>
         <td>
-          <select name="out_storage">
+          <select name="in_storage">
             {foreach from=$warehouse item=val}
-            <option value="{$val.warehouse_id">{$val.warehouse_name}</option>
+            <option value="{$val.warehouse_id}">{$val.warehouse_name}</option>
             {/foreach}
           </select>
         </td>
@@ -29,19 +29,19 @@
       <tr>
         <td>调拨日期：</td>
         <td>
-          <input name="add_time" id="add_time" type="text" onclick="WdatePicker({dateFmt:'yyyy-M-d'})" required>
+          <input name="add_time" title="调拨日期" id="add_time" type="text" onclick="WdatePicker({dateFmt:'yyyy-M-d'})" required value="{$add_time}">
         </td>
         <td>验货人：</td>
         <td>
-          <input type="text" name="check" value="" required />
+          <input type="text" name="check" title="验货人" value="" required />
         </td>
         <td>状态：</td>
         <td>
           <select name="status">
-            <option value="0">未调拨</option>
-            <option value="1">审核中</option>
-            <option value="2">验货中</option>
-            <option value="3">已调拨</option>
+            <option value="0" {if !$status}checked{/if>未调拨</option>
+            <option value="1" {if $status eq 1}checked{/if}>审核中</option>
+            <option value="2" {if $status eq 2}checked{/if}>验货中</option>
+            <option value="3" {if $status eq 3}checked{/if}>已调拨</option>
           </select>
         </td>
       </tr>
@@ -49,7 +49,7 @@
        <td>负责人：</td> 
        <td>
          <input type="text" name="name" oninput="justGetAdmin(this.value)"/>
-         <select name="admin_id" id="admin_id">
+         <select name="admin_id" id="admin_id" title="负责人">
            <option value="0">请选择负责人</option>
          </select>
        </td>

@@ -2397,19 +2397,27 @@ elseif($_REQUEST['act'] == 'warehouse_allot'){
     $warehouse_list = get_warehouse('simple');
     $allot_list     = get_allot_list();
 
-    if($get_allot_list){
-        foreach($get_allot_list as &$al){
+    if($allot_list){
+        foreach($allot_list as &$al){
             foreach($warehouse_list as $wl){
                 if($al['in_storage'] == $wl['warehouse_id']){
                     $al['in_storage'] = $wl['warehouse_name'];
                 }
-
-                if($al['out_storage'] == $wl['warehoust_id']){
-                    $al['out_storage'] = $wl['warehouse_name'];
-                }
+            }
+            switch($al['status']){
+            case 0 : $al['status'] = '未调拨';
+            break; 
+            case 1 : $al['status'] = '正在审核';
+            break; 
+            case 2 : $al['status'] = '正在验货';
+            break; 
+            case 3 : $al['status'] = '已调拨';
+            break;
             }
         }    
     }
+
+    $smarty->assign('allot_list',$allot_list);
 
     if(isset($_REQUEST['from_sch'])){
         $res['main'] = $smarty->fetch('warehouse_allot_div.htm');
@@ -2429,22 +2437,92 @@ elseif($_REQUEST['act'] =='create_allot'){
     $warehouse_list = get_warehouse('simple','');
 
     $smarty->assign('warehouse',$warehouse_list);
+    $smarty->assign('add_time',date('Y-m-d'));
     if('show' == $behave){
         $smarty->assign('goods_div',$smarty->fetch('allot_goods.htm'));
         $res['main'] = $smarty->fetch('add_allot.htm');
-    }elseif('add' == $behave){
-        
-    }elseif('modify' == $behave){
-        
     }
 
     die($json->encode($res));
 }
 
+//添加仓库调拨记录
+elseif($_REQUEST['act'] == 'add_allot_log'){
+    $allot_info = stripslashes($_REQUEST['JSON']);
+    $allot_info = json_decode($allot_info,true);
+    $allot_info = addslashes_deep($allot_info);
+
+    $res = array(
+        'req_msg' => true,
+        'code'    => false,
+        'timeout' => 3000,
+        'message' => ''
+    );
+
+    $allot_base = $allot_info['base_info'];
+    $goods_list = $allot_info['goods'];
+    extract($allot_base);
+
+    if($goods_list){
+        $rec_id_list = array();
+        $sql_values = '';
+
+        //检查库存是否满足调拨
+        foreach($goods_list as &$val){
+            $rec_id_list[] = $val['rec_id'];
+        }
+
+        if ($rec_id_list) {
+            $rec_id_list = implode("','",$rec_id_list);
+
+            $sql_select = 'SELECT rec_id,quantity,goods_sn FROM '.$GLOBALS['ecs']->table('stock_goods').
+                " WHERE rec_id IN('$rec_id_list')";
+
+            $goods_quantity = $GLOBALS['db']->getAll($sql_select);
+        }
+
+        foreach ($goods_list as &$glt) {
+            foreach ($goods_quantity as $gty) {
+                if($glt['rec_id'] == $gty['rec_id']){
+                    $glt['goods_sn'] = $gty['goods_sn'];
+
+                    if ($glt['goods_num'] >= $gty['quantity']) {
+                        $res['message'] = "【{$glt['goods_name']}】调拨数量超过的库存（{$gty['quantity']}）";
+                        die($json->encode($res));
+                    }
+                }
+            }
+        }
+
+        $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('warehouse_allot').
+            '(admin_id,add_time,in_storage,check_name,title)'.
+            "VALUES($admin_id,{$_SERVER['REQUEST_TIME']},$in_storage,'$check','$title')";
+        $GLOBALS['db']->query($sql_insert);
+
+        $allot_id = $GLOBALS['db']->insert_id();
+        if($allot_id){
+            $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('allot_goods').
+                '(goods_sn,goods_name,rec_id,number,allot_id)VALUES';
+            foreach($goods_list as &$val){
+                $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['goods_num']},$allot_id),";
+            }
+
+            $sql_insert .= substr($sql_values,0,-1).';';
+            $res['code'] = $GLOBALS['db']->query($sql_insert);
+            $res['message'] = $res['code'] ? '成功添加调拨记录' : '添加调拨记录失败，请联系技术';
+        }
+    }else{
+        $res['message'] = '调拨商品不能空';
+    }
+
+    die($json->encode($res));
+
+}
+
 /*实体店列表*/
 elseif($_REQUEST['act'] == 'warehouse'){
     $warehouse_list = get_warehouse('simple');
-    
+
     $smarty->assign('warehouse_info',$smarty->assign('warehouse_innfo.htm'));
     $smarty->assign('warehouse_list',$warehouse_list);
     $res['main'] = $smarty->fetch('warehouse.htm');
@@ -2505,6 +2583,14 @@ elseif($_REQUEST['act'] == 'mod_goods_status'){
     }
 
     die($json->encode($res));
+}
+
+//查看仓库调拨商品
+elseif($_REQUEST['act'] == 'show_allot_goods'){
+    $allot_id = isset($_REQUEST['allot_id']) ? intval($_REQUEST['allot_id']) : 0;
+    if ($allot_id) {
+        $sql_select = 'SELECT goods_sn,goods_name,number,,'
+    }
 }
 
 /**
@@ -3436,7 +3522,7 @@ function get_warehouse($des,$where=''){
 
 /*仓库调拨记录*/
 function get_allot_list(){
-    $where = ' WHERE w.status=1';
+    $where = ' WHERE w.status=0';
 
     if(!empty($_REQUEST['add_time'])){
         if(strlen($_REQUEST['admin_time']) < 10){
@@ -3452,7 +3538,7 @@ function get_allot_list(){
         $whre .= " AND w.warehouse_id=$warehouse_id";
     }
 
-    $sql_select = 'SELECT w.allot_id,w.admin_id,w.add_time,w.out_storage,w.in_storage,w.check,w.examine,w.title,w.check_time,w.examine_time,a.user_name as admin_name FROM '.
+    $sql_select = "SELECT w.allot_id,w.add_time,w.in_storage,w.check_name,w.examine,w.title,w.check_time,w.examine_time,a.user_name as admin_name FROM ".
         $GLOBALS['ecs']->table('warehouse_allot').' AS w LEFT JOIN '.
         $GLOBALS['ecs']->table('admin_user').' AS a ON w.admin_id=a.user_id '.$where;
     $result = $GLOBALS['db']->getAll($sql_select);
