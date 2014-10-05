@@ -16,9 +16,9 @@
     <th width="8%">验货人</th> 
     <th width="8%">审批人</th> 
     <th width="8%">负责人</th> 
-    <th width="10%">调拨产品</th>
-    <th width="8%">状态</th> 
-    <th width="10%">工具</th> 
+    <th width="8%">调拨产品</th>
+    <th width="15%">状态</th> 
+    <th width="8%">工具</th> 
   </tr>
   {if $allot_list}
   {foreach from=$allot_list item=val}
@@ -26,15 +26,28 @@
     <td>{$val.title}</td>
     <td>{$val.in_storage}</td>
     <td>{$val.add_time}</td>
-    <td>{$val.check}</td>
-    <td>{$val.examine}</td>
+    <td>{if $val.check_name}{$val.check_name}{else}-{/if}</td>
+    <td>{if $val.examine}{$val.examine}{else}-{/if}</td>
     <td>{$val.admin_name}</td>
     <td>
-      <button class="btn_new" onclick="showAllotGoods($val.allot_id)">调拨商品</button>
+      <button class="btn_new" onclick="showAllotGoods({$val.allot_id})">商品</button>
     </td>
-    <td>{$val.status}</td>
+    <td id="td_{$val.allot_id}"  >
+      {if $val.status neq 3}
+      <button id="btn_{$val.allot_id}" onclick="selectStatus({$val.allot_id})" curstatus="{$val.status}" prestatus="{$val.status_name}" show="0">
+      {$val.status_name}
+      </button>
+      {else}
+      {$val.status_name}
+      {/if}
+    </td>
     <td>
-      <button onclick="delAllot({$val.allot_id})" class="btn_new">删除</button>
+      {if $val.status neq 3}
+      <button onclick="alertAllot({$val.allot_id},'c')" class="btn_new">修改</button>
+      <button onclick="alertAllot({$val.allot_id},'d')" class="btn_new">删除</button>
+      {else}
+      -
+      {/if}
     </td>
   </tr>
   {/foreach}

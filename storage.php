@@ -2396,6 +2396,7 @@ elseif ($_REQUEST['act'] == 'update_min_price') {
 elseif($_REQUEST['act'] == 'warehouse_allot'){
     $warehouse_list = get_warehouse('simple');
     $allot_list     = get_allot_list();
+    $status = isset($_REQUEST['status']) ? intval($_REQUEST['status']) : 0;
 
     if($allot_list){
         foreach($allot_list as &$al){
@@ -2405,18 +2406,19 @@ elseif($_REQUEST['act'] == 'warehouse_allot'){
                 }
             }
             switch($al['status']){
-            case 0 : $al['status'] = '未调拨';
+            case 0 : $al['status_name'] = '未调拨';
             break; 
-            case 1 : $al['status'] = '正在审核';
+            case 1 : $al['status_name'] = '正在审核';
             break; 
-            case 2 : $al['status'] = '正在验货';
+            case 2 : $al['status_name'] = '正在验货';
             break; 
-            case 3 : $al['status'] = '已调拨';
+            case 3 : $al['status_name'] = '已调拨';
             break;
             }
         }    
     }
 
+    $smarty->assign('status',$status);
     $smarty->assign('allot_list',$allot_list);
 
     if(isset($_REQUEST['from_sch'])){
@@ -2589,8 +2591,44 @@ elseif($_REQUEST['act'] == 'mod_goods_status'){
 elseif($_REQUEST['act'] == 'show_allot_goods'){
     $allot_id = isset($_REQUEST['allot_id']) ? intval($_REQUEST['allot_id']) : 0;
     if ($allot_id) {
-        $sql_select = 'SELECT goods_sn,goods_name,number,,'
+        $sql_select = 'SELECT a.goods_sn,a.goods_name,a.number,s.production_day FROM '.$GLOBALS['ecs']->table('allot_goods').
+            ' a LEFT JOIN '.$GLOBALS['ecs']->table('stock_goods').
+            ' s ON a.rec_id=s.rec_id '.
+            " WHERE allot_id=$allot_id";
+        $goods_list = $GLOBALS['db']->getAll($sql_select);
+
+        $smarty->assign('allot_goods',$goods_list);
+        $smarty->assign('unedit',true);
+        $res['main'] = $smarty->fetch('allot_goods.htm');
+
+        die($json->encode($res));
     }
+}
+
+elseif($_REQUEST['act'] == 'ch_allot_status'){
+
+    $allot_id   = isset($_REQUEST['allot_id']) ? intval($_REQUEST['allot_id']) : 0;
+    $status     = isset($_REQUEST['status']) ? intval($_REQUEST['status']) : 0;
+    $pre_status = isset($_REQUEST['pre_status']) ? mysql_real_escape_string($_REQUEST['pre_status']) : '';
+    $res        = array();
+
+    $arr_status = array(
+        0 => '未调拨',
+        1 => '正在审核',
+        2 => '正在验货',
+        3 => '已经调拨',
+    );
+
+
+    if($allot_id){
+        $res['td_id'] = "lbl_$allot_id";
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('warehouse_allot').
+            " SET status=$status WHERE allot_id=$allot_id";
+        $res['code'] = $GLOBALS['db']->query($sql_update);
+        $res['content'] = $res['code'] ? $arr_status[$status] : $pre_status;
+    }
+
+    die($json->encode($res));
 }
 
 /**
@@ -3522,8 +3560,8 @@ function get_warehouse($des,$where=''){
 
 /*仓库调拨记录*/
 function get_allot_list(){
-    $where = ' WHERE w.status=0';
-
+    $status = isset($_REQUEST['status']) ? intval($_REQUEST['status']) : 0;
+    $where = " WHERE w.status=$status";
     if(!empty($_REQUEST['add_time'])){
         if(strlen($_REQUEST['admin_time']) < 10){
             $add_time = strtotime(mysql_real_escape_string($_REQUEST['add_time'])); 
@@ -3533,12 +3571,12 @@ function get_allot_list(){
         $where .= " AND w.add_time=$add_time ";
     }
 
-    if(!empty($_REQUEST['warehouse_id'])){
-        $warehouse_id = intval($_REQUEST['warehouse_id']);
-        $whre .= " AND w.warehouse_id=$warehouse_id";
+    if(!empty($_REQUEST['in_storage'])){
+        $in_storage = intval($_REQUEST['in_storage']);
+        $where .= " AND w.in_storage=$in_storage";
     }
 
-    $sql_select = "SELECT w.allot_id,w.add_time,w.in_storage,w.check_name,w.examine,w.title,w.check_time,w.examine_time,a.user_name as admin_name FROM ".
+    $sql_select = "SELECT w.allot_id,w.add_time,w.in_storage,w.check_name,w.examine,w.title,w.check_time,w.examine_time,w.status,a.user_name as admin_name FROM ".
         $GLOBALS['ecs']->table('warehouse_allot').' AS w LEFT JOIN '.
         $GLOBALS['ecs']->table('admin_user').' AS a ON w.admin_id=a.user_id '.$where;
     $result = $GLOBALS['db']->getAll($sql_select);

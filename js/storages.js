@@ -911,7 +911,11 @@ function createAllot() {
 
 /*搜索仓库调拨记录*/
 function schAllot(obj) {
+  var addTime = obj.elements['add_time'].value;
+  var inStorage = obj.elements['in_storage'].value;
+  var allotStatus = obj.elements['status'].value;
 
+  Ajax.call('storage.php?act=warehouse_allot','add_time='+addTime+'&in_storage='+inStorage+'&status='+allotStatus+'&from_sch='+'from_sch',fullSearchResponse,'GET','JSON');
 }
 
 function addAllotGoods(obj) {
@@ -1224,9 +1228,69 @@ function addAllotLogResp(res){
 function showAllotGoods(allotId){
  if(allotId){
    Ajax.call('storage.php?act=show_allot_goods','allot_id='+allotId,showAllotGoodsResp,'GET','JSON');
+ }else{
+   return ;
  }
+}
 
- function showAllotGoodsResp(res){
-   
- }
+function showAllotGoodsResp(res){
+  var msg = [];
+  msg['message'] = res.main;
+  msg['title'] = '调拨商品列表';
+  showMsg(msg);
+}
+
+function selectStatus(allotId){
+  var tdObj = document.getElementById('td_'+allotId);
+  var btnObj = document.getElementById('btn_'+allotId);
+
+  tdObj.innerHTML = document.getElementById('selItemStatusDiv').innerHTML;
+  var subObj      = tdObj.getElementsByTagName('button')[0];
+  var selObj      = tdObj.getElementsByTagName('select')[0];
+  var curstatus   = btnObj.getAttribute('curstatus');
+  selObj.id = 'sel_'+allotId;
+  subObj.value    = allotId;
+
+  for(var i = 0; i < selObj.options.length; i++){
+    if(selObj.options[i].value == curstatus){
+      selObj.options[i].selected = true;
+      selObj.options[i].style.color = 'red';
+      break;
+    }
+  }
+
+  document.getElementById('btnChAllotStatus').value = allotId;
+}
+
+function chAllotLogStatus(obj){
+  if(obj.value){
+    var value = document.getElementById('sel_'+obj.value).value;
+    if(value == 3){
+      var r = confirm('此次调拨所有流程已经完成，确定后将不能再修改，请谨慎！');
+      if(r){
+        Ajax.call('storage.php?act=ch_allot_status','status='+value+'&allot_id='+obj.value,chAllotLogStatusResp,'GET','JSON');
+      }
+    }else{
+      Ajax.call('storage.php?act=ch_allot_status','status='+value+'&allot_id='+obj.value,chAllotLogStatusResp,'GET','JSON');
+    }
+  }
+}
+
+function chAllotLogStatusResp(res){
+  var obj = document.forms['allot_form']; 
+  schAllot(obj);
+}
+
+/*修改，删除仓库调拨记录*/
+function alertAllot(allotId,behave){
+  if(allotId){
+    if(behave == 'd'){
+      var r = confirm('你确定要删除该调拨记录!');
+      if(r){
+        Ajax.call('storage.php?act=alert_allot','allot_id='+allotId,alertAllot,'GET','JSON');
+      }
+    }else{
+      Ajax.call('storage.php?act=alert_allot','allot_id='+allotId,alertAllot,'GET','JSON');
+    }
+  }
 }

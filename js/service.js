@@ -1316,10 +1316,6 @@ function schKnowlage(obj) {
 	}
 }
 
-function inMain(res) {
-	document.getElementById('main').innerHTML = res.main;
-}
-
 /*知识库操作*/
 function knowlageCtr(knowlage_id, behave) {
 	if (knowlage_id != 0) {
