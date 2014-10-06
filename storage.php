@@ -2536,6 +2536,10 @@ elseif($_REQUEST['act'] == 'add_allot_log'){
                 $res['message'] = $res['code'] ? '成功添加调拨记录' : '添加调拨记录失败，请联系技术';
             }
         }
+
+        if($res['code']){
+            update_stock_quantity($goods_list);
+        }
     }else{
         $res['message'] = '凋拨商品不能为空';
     }
@@ -2619,6 +2623,12 @@ elseif($_REQUEST['act'] == 'show_allot_goods'){
             " WHERE allot_id=$allot_id";
         $goods_list = $GLOBALS['db']->getAll($sql_select);
 
+        if($goods_list){
+            foreach($goods_list as &$val){
+                $val['add_time'] = date('Y-m-d',$val['add_time']);
+            }
+        }
+
         $smarty->assign('allot_goods',$goods_list);
         $smarty->assign('unedit',true);
         $res['main'] = $smarty->fetch('allot_goods.htm');
@@ -2669,7 +2679,7 @@ elseif ($_REQUEST['act'] == 'alert_allot'){
 
             $sql_upd = 'UPDATE '.$GLOBALS['ecs']->table('warehouse_allot').
                 " SET status=4 WHERE allot_id=$allot_id";
-            $res['code'] = $GLOBALS['db']->query($sql_del);
+            $res['code'] = $GLOBALS['db']->query($sql_upd);
             $res['message'] = $res['code'] ? '成功删除！' : '删除失败';
 
             /*将商品数量返回库存*/
@@ -2680,8 +2690,8 @@ elseif ($_REQUEST['act'] == 'alert_allot'){
             if($goods_list){
                 foreach($goods_list as &$goods_list){
                     $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
-                        " SET quantity=SUM(quantity)+{$goods_list['number']} ".
-                        " WHERE allot_id=$allot_id AND rec_id={$goods_list['rec_id']}"; 
+                        " SET quantity=quantity+{$goods_list['number']} ".
+                        " WHERE rec_id={$goods_list['rec_id']}"; 
                     $GLOBALS['db']->query($sql_update);
                 }
             }
@@ -3708,3 +3718,14 @@ function get_pdc_day($sql_where=''){
     return $result;
 }
 
+//更新批次商品库存
+function update_stock_quantity($goods_list){
+    if ($goods_list) {
+        foreach($goods_list as &$val){
+            $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
+                " SET quantity=quantity-{$val['goods_num']}".
+                " WHERE rec_id={$val['rec_id']}";
+            $GLOBALS['db']->query($sql_update);
+        }
+    }
+}
