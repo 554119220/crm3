@@ -2688,10 +2688,10 @@ elseif ($_REQUEST['act'] == 'alert_allot'){
             $goods_list = $GLOBALS['db']->getAll($sql_select);
 
             if($goods_list){
-                foreach($goods_list as &$goods_list){
+                foreach($goods_list as &$val){
                     $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
-                        " SET quantity=quantity+{$goods_list['number']} ".
-                        " WHERE rec_id={$goods_list['rec_id']}"; 
+                        " SET quantity=quantity+{$val['number']} ".
+                        " WHERE rec_id={$val['rec_id']}"; 
                     $GLOBALS['db']->query($sql_update);
                 }
             }
