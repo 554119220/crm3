@@ -5072,7 +5072,7 @@ function access_purchase_records ($id)
         'o.shipping_name,o.pay_name,o.final_amount,o.tracking_sn express_number,a.user_name operator,o.receive_time,o.shipping_code, '.
         ' r.role_describe platform FROM '.$GLOBALS['ecs']->table('order_info').' o,'.$GLOBALS['ecs']->table('admin_user').' a, '.
         $GLOBALS['ecs']->table('role').' r WHERE  o.add_admin_id=a.user_id AND '.
-        " r.role_id=o.team AND o.user_id=$id GROUP BY o.order_id";
+        " r.role_id=o.team AND o.user_id=$id GROUP BY o.order_id ORDER BY o.add_time ";
     $order_list = $GLOBALS['db']->getAll($sql_select);
 
     //o.order_status=5 AND o.shipping_status IN (1,2) AND

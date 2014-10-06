@@ -2463,6 +2463,7 @@ elseif($_REQUEST['act'] == 'add_allot_log'){
 
     $allot_base = $allot_info['base_info'];
     $goods_list = $allot_info['goods'];
+    $mod_allot_id     = intval($allot_info['allot_id']);
     extract($allot_base);
 
     if($goods_list){
@@ -2496,29 +2497,50 @@ elseif($_REQUEST['act'] == 'add_allot_log'){
             }
         }
 
-        $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('warehouse_allot').
-            '(admin_id,add_time,in_storage,check_name,title)'.
-            "VALUES($admin_id,{$_SERVER['REQUEST_TIME']},$in_storage,'$check','$title')";
-        $GLOBALS['db']->query($sql_insert);
+        if($mod_allot_id){
+            $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('warehouse_allot').
+                " SET admin_id=$admin_id,add_time=UNIX_TIMESTAMP($add_time),in_storage=$in_storage,check_name='$check',title='$title'".
+                " WHERE allot_id=$mod_allot_id";
+            $GLOBALS['db']->query($sql_update);
 
-        $allot_id = $GLOBALS['db']->insert_id();
-        if($allot_id){
-            $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('allot_goods').
-                '(goods_sn,goods_name,rec_id,number,allot_id)VALUES';
-            foreach($goods_list as &$val){
-                $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['goods_num']},$allot_id),";
+            $sql_del = 'DELETE FROM '.$GLOBALS['ecs']->table('allot_goods').
+                " WHERE allot_id=$mod_allot_id";
+            $result = $GLOBALS['db']->query($sql_del);
+            if($result){
+                $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('allot_goods').
+                    '(goods_sn,goods_name,rec_id,number,allot_id)VALUES';
+                foreach($goods_list as &$val){
+                    $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['goods_num']},$mod_allot_id),";
+                }
+
+                $sql_insert .= substr($sql_values,0,-1).';';
+                $res['code'] = $GLOBALS['db']->query($sql_insert);
+                $res['message'] = $res['code'] ? '成功修改调拨记录' : '修改调拨记录失败，请联系技术人员';
             }
+        }else{
+            $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('warehouse_allot').
+                '(admin_id,add_time,in_storage,check_name,title)'.
+                "VALUES($admin_id,{$_SERVER['REQUEST_TIME']},$in_storage,'$check','$title')";
+            $GLOBALS['db']->query($sql_insert);
 
-            $sql_insert .= substr($sql_values,0,-1).';';
-            $res['code'] = $GLOBALS['db']->query($sql_insert);
-            $res['message'] = $res['code'] ? '成功添加调拨记录' : '添加调拨记录失败，请联系技术';
+            $allot_id = $GLOBALS['db']->insert_id();
+            if($allot_id){
+                $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('allot_goods').
+                    '(goods_sn,goods_name,rec_id,number,allot_id)VALUES';
+                foreach($goods_list as &$val){
+                    $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['goods_num']},$allot_id),";
+                }
+
+                $sql_insert .= substr($sql_values,0,-1).';';
+                $res['code'] = $GLOBALS['db']->query($sql_insert);
+                $res['message'] = $res['code'] ? '成功添加调拨记录' : '添加调拨记录失败，请联系技术';
+            }
         }
     }else{
-        $res['message'] = '调拨商品不能空';
+        $res['message'] = '凋拨商品不能为空';
     }
 
     die($json->encode($res));
-
 }
 
 /*实体店列表*/
@@ -2629,6 +2651,87 @@ elseif($_REQUEST['act'] == 'ch_allot_status'){
     }
 
     die($json->encode($res));
+}
+
+elseif ($_REQUEST['act'] == 'alert_allot'){
+    $behave = isset($_REQUEST['behave']) ? mysql_real_escape_string($_REQUEST['behave']) : '';
+    $allot_id = isset($_REQUEST['allot_id']) ? intval($_REQUEST['allot_id']) : 0;
+
+    if(!empty($behave) && !empty($allot_id)){
+        if($behave == 'd'){
+            $res = array(
+                'req_msg' => true,
+                'timeout' => 2000,
+                'code' => false,
+                'message' => '',
+                'behave' => $behave,
+            );
+
+            $sql_upd = 'UPDATE '.$GLOBALS['ecs']->table('warehouse_allot').
+                " SET status=4 WHERE allot_id=$allot_id";
+            $res['code'] = $GLOBALS['db']->query($sql_del);
+            $res['message'] = $res['code'] ? '成功删除！' : '删除失败';
+
+            /*将商品数量返回库存*/
+            $sql_select = 'SELECT goods_sn,rec_id,number FROM '.$GLOBALS['ecs']->table('allot_goods').
+                " WHERE allot_id=$allot_id";
+            $goods_list = $GLOBALS['db']->getAll($sql_select);
+
+            if($goods_list){
+                foreach($goods_list as &$goods_list){
+                    $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
+                        " SET quantity=SUM(quantity)+{$goods_list['number']} ".
+                        " WHERE allot_id=$allot_id AND rec_id={$goods_list['rec_id']}"; 
+                    $GLOBALS['db']->query($sql_update);
+                }
+            }
+
+            die($json->encode($res));
+        }elseif($behave == 'c'){
+            $sql_select = 'SELECT w.title,w.add_time,w.in_storage,w.check_name,w.status,w.admin_id,u.user_name FROM '.$GLOBALS['ecs']->table('warehouse_allot').
+                ' w LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+                " u ON w.admin_id=u.user_id WHERE w.allot_id=$allot_id AND w.status<>3";
+            $base_info = $GLOBALS['db']->getRow($sql_select);
+
+            $sql_select = 'SELECT a.rec_id,a.goods_sn,a.goods_name,a.number,s.production_day,s.quantity FROM '.$GLOBALS['ecs']->table('allot_goods').
+                ' a LEFT JOIN '.$GLOBALS['ecs']->table('stock_goods').
+                ' s ON a.rec_id=s.rec_id '.
+                " WHERE allot_id=$allot_id";
+            $allot_goods = $GLOBALS['db']->getAll($sql_select);
+
+            if($allot_goods){
+                $goods_total = 0;
+                foreach($allot_goods as &$val){
+                    $rec_id_list[] = $val['rec_id']; 
+                    $goods_total += $val['number'];
+                    $val['production_day'] = date('Y-m-d',$val['production_day']);
+                }
+                $res['rec_id_list'] = $rec_id_list;
+            }
+
+            if($base_info){
+                $smarty->assign('admin_id',$base_info['admin_id']);
+                $smarty->assign('admin_name',$base_info['user_name']);
+                $smarty->assign('title',$base_info['title']);
+                $smarty->assign('in_storage',$base_info['in_storage']);
+                $smarty->assign('add_time',date('Y-m-d',$base_info['add_time']));
+                $smarty->assign('status',$base_info['status']);
+                $smarty->assign('check_name',$base_info['check_name']);
+            }
+
+            $warehouse_list = get_warehouse('simple','');
+
+            $smarty->assign('warehouse',$warehouse_list);
+            $smarty->assign('allot_goods',$allot_goods);
+            $smarty->assign('goods_total',$goods_total);
+            $smarty->assign('allot_id',$allot_id);
+            $smarty->assign('goods_div',$smarty->fetch('allot_goods.htm'));
+
+            $res['behave'] = $behave;
+            $res['main'] = $smarty->fetch('add_allot.htm');
+            die($json->encode($res));
+        }
+    }
 }
 
 /**
@@ -3561,7 +3664,7 @@ function get_warehouse($des,$where=''){
 /*仓库调拨记录*/
 function get_allot_list(){
     $status = isset($_REQUEST['status']) ? intval($_REQUEST['status']) : 0;
-    $where = " WHERE w.status=$status";
+    $where = " WHERE w.status=$status AND w.status<>4 ";
     if(!empty($_REQUEST['add_time'])){
         if(strlen($_REQUEST['admin_time']) < 10){
             $add_time = strtotime(mysql_real_escape_string($_REQUEST['add_time'])); 

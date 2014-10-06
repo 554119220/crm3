@@ -1174,6 +1174,7 @@ function reCalculateStorage() {
 function addAllotLog(){
   var allotForm = document.forms['add_allot_form'];
   var elementsList = allotForm.elements;
+  var allot_id = document.getElementById('modify').value;
   var data = {};
   var allotBaseInfo = {};
   var msg = [];
@@ -1211,6 +1212,7 @@ function addAllotLog(){
 
     data['base_info'] = allotBaseInfo;
     data['goods'] = goods;
+    data['allot_id'] = allot_id;
     Ajax.call('storage.php?act=add_allot_log',data,addAllotLogResp,'GET','JSON');
        
   }else{
@@ -1222,14 +1224,16 @@ function addAllotLog(){
 
 function addAllotLogResp(res){
   showMsg(res);
+  var obj = document.forms['allot_form'];
+  schAllot(obj);
 }
 
 //查看调拨商品
 function showAllotGoods(allotId){
- if(allotId){
-   Ajax.call('storage.php?act=show_allot_goods','allot_id='+allotId,showAllotGoodsResp,'GET','JSON');
- }else{
-   return ;
+  if(allotId){
+    Ajax.call('storage.php?act=show_allot_goods','allot_id='+allotId,showAllotGoodsResp,'GET','JSON');
+  }else{
+    return ;
  }
 }
 
@@ -1287,10 +1291,34 @@ function alertAllot(allotId,behave){
     if(behave == 'd'){
       var r = confirm('你确定要删除该调拨记录!');
       if(r){
-        Ajax.call('storage.php?act=alert_allot','allot_id='+allotId,alertAllot,'GET','JSON');
+        Ajax.call('storage.php?act=alert_allot','allot_id='+allotId+'&behave='+behave,alertAllotResp,'GET','JSON');
       }
     }else{
-      Ajax.call('storage.php?act=alert_allot','allot_id='+allotId,alertAllot,'GET','JSON');
+      Ajax.call('storage.php?act=alert_allot','allot_id='+allotId+'&behave='+behave,alertAllotResp,'GET','JSON');
+    }
+  }
+}
+
+function alertAllotResp(res){
+  if(res.behave == 'd'){
+    showMsg(res);
+    var obj = document.forms['allot_form'];
+    schAllot(obj);
+  }else if(res.behave == 'c'){
+    document.getElementById('resource').innerHTML = res.main;
+    for(var i = 0; i < res.rec_id_list.length; i++){
+      var trObj = document.getElementById('num_'+res.rec_id_list[i]).parentNode.parentNode;
+      trObj.onmouseover = function (){
+        if (this.getElementsByTagName('img')[0]) {
+          this.getElementsByTagName('img')[0].style.display = 'inline';
+        }
+      };
+
+      trObj.onmouseout = function (){
+        if (this.getElementsByTagName('img')[0]){
+          this.getElementsByTagName('img')[0].style.display = 'none';
+        }
+      };
     }
   }
 }
