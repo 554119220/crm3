@@ -2484,12 +2484,19 @@ elseif($_REQUEST['act'] == 'add_allot_log'){
             $goods_quantity = $GLOBALS['db']->getAll($sql_select);
         }
 
+        if($mod_allot_id){
+            $sql_select = 'SELECT rec_id,number FROM '.$GLOBALS['ecs']->table('allot_goods').
+                " WHERE allot_id=$mod_allot_id";
+            $pre_goods_list = $GLOBALS['db']->getAll($sql_select);
+            add_stock_quantity($pre_goods_list);
+        }
+
         foreach ($goods_list as &$glt) {
             foreach ($goods_quantity as $gty) {
                 if($glt['rec_id'] == $gty['rec_id']){
                     $glt['goods_sn'] = $gty['goods_sn'];
 
-                    if ($glt['goods_num'] >= $gty['quantity']) {
+                    if ($glt['number'] >= $gty['quantity']) {
                         $res['message'] = "【{$glt['goods_name']}】调拨数量超过的库存（{$gty['quantity']}）";
                         die($json->encode($res));
                     }
@@ -2510,7 +2517,7 @@ elseif($_REQUEST['act'] == 'add_allot_log'){
                 $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('allot_goods').
                     '(goods_sn,goods_name,rec_id,number,allot_id)VALUES';
                 foreach($goods_list as &$val){
-                    $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['goods_num']},$mod_allot_id),";
+                    $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['number']},$mod_allot_id),";
                 }
 
                 $sql_insert .= substr($sql_values,0,-1).';';
@@ -2528,7 +2535,7 @@ elseif($_REQUEST['act'] == 'add_allot_log'){
                 $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('allot_goods').
                     '(goods_sn,goods_name,rec_id,number,allot_id)VALUES';
                 foreach($goods_list as &$val){
-                    $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['goods_num']},$allot_id),";
+                    $sql_values .= "('{$val['goods_sn']}','{$val['goods_name']}',{$val['rec_id']},{$val['number']},$allot_id),";
                 }
 
                 $sql_insert .= substr($sql_values,0,-1).';';
@@ -2538,7 +2545,7 @@ elseif($_REQUEST['act'] == 'add_allot_log'){
         }
 
         if($res['code']){
-            update_stock_quantity($goods_list);
+            subtract_stock_quantity($goods_list);
         }
     }else{
         $res['message'] = '凋拨商品不能为空';
@@ -2595,7 +2602,7 @@ elseif($_REQUEST['act'] == 'mod_goods_status'){
             " SET status=$status WHERE goods_sn='$goods_sn'";
 
         $res['code']    = $GLOBALS['db']->Query($sql_update);
-        $message = $status == 1 ? ' 还会进货该商品' : '不再货该商品';
+        $message = $status == 1 ? ' 还会进货该商品' : '不再进货该商品';
         $res['message'] = $res['code'] ? "操作成功,$message" : '操作失败,请联系技术部';
 
         if($res['code']){
@@ -2625,7 +2632,7 @@ elseif($_REQUEST['act'] == 'show_allot_goods'){
 
         if($goods_list){
             foreach($goods_list as &$val){
-                $val['add_time'] = date('Y-m-d',$val['add_time']);
+                $val['production_day'] = date('Y-m-d',$val['production_day']);
             }
         }
 
@@ -2687,15 +2694,6 @@ elseif ($_REQUEST['act'] == 'alert_allot'){
                 " WHERE allot_id=$allot_id";
             $goods_list = $GLOBALS['db']->getAll($sql_select);
 
-            if($goods_list){
-                foreach($goods_list as &$val){
-                    $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
-                        " SET quantity=quantity+{$val['number']} ".
-                        " WHERE rec_id={$val['rec_id']}"; 
-                    $GLOBALS['db']->query($sql_update);
-                }
-            }
-
             die($json->encode($res));
         }elseif($behave == 'c'){
             $sql_select = 'SELECT w.title,w.add_time,w.in_storage,w.check_name,w.status,w.admin_id,u.user_name FROM '.$GLOBALS['ecs']->table('warehouse_allot').
@@ -2708,6 +2706,7 @@ elseif ($_REQUEST['act'] == 'alert_allot'){
                 ' s ON a.rec_id=s.rec_id '.
                 " WHERE allot_id=$allot_id";
             $allot_goods = $GLOBALS['db']->getAll($sql_select);
+            add_stock_quantity($allot_goods);
 
             if($allot_goods){
                 $goods_total = 0;
@@ -3694,6 +3693,12 @@ function get_allot_list(){
         $GLOBALS['ecs']->table('admin_user').' AS a ON w.admin_id=a.user_id '.$where;
     $result = $GLOBALS['db']->getAll($sql_select);
 
+    if($result){
+        foreach($result as &$val){
+            $val['add_time'] = date('Y-m-d',$val['add_time']);
+        }
+    }
+
     return $result;
 }
 
@@ -3718,14 +3723,26 @@ function get_pdc_day($sql_where=''){
     return $result;
 }
 
-//更新批次商品库存
-function update_stock_quantity($goods_list){
+/*减少库存*/
+function subtract_stock_quantity($goods_list){
     if ($goods_list) {
         foreach($goods_list as &$val){
             $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
-                " SET quantity=quantity-{$val['goods_num']}".
+                " SET quantity=quantity-{$val['number']}".
                 " WHERE rec_id={$val['rec_id']}";
             $GLOBALS['db']->query($sql_update);
         }
     }
+}
+
+//添商品库存
+function add_stock_quantity($goods_list){
+    if($goods_list){
+        foreach($goods_list as &$val){
+            $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('stock_goods').
+                " SET quantity=quantity+{$val['number']} ".
+                " WHERE rec_id={$val['rec_id']}"; 
+            $GLOBALS['db']->query($sql_update);
+        }
+    }   
 }

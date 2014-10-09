@@ -1578,3 +1578,4 @@ function selectDoneRes(res){
 		document.getElementById('td_'+res.id).innerHTML = res.main;
 	}
 }
+

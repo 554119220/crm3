@@ -3424,6 +3424,39 @@ elseif ($_REQUEST['act'] == 'false_order') {
     return;
 }
 
+elseif($_REQUEST['act'] == 'update_order_form'){
+    $res['main'] = $smarty->fetch('upd_order_platform.htm');
+    die($json->encode($res));
+}
+
+/*修改订单平台*/
+elseif($_REQUEST['act'] == 'update_order_form_done'){
+    $order_sn = isset($_REQUEST['order_sn']) ? mysql_real_escape_string($_REQUEST['order_sn']) : 0;
+    $platfrom = isset($_REQUEST['platform']) ? intval($_REQUEST['platform']) : 0;
+
+    $res = array(
+        'req_msg' => true,
+        'timeout' => 3000,
+        'code'    => false,
+        'message' => ''
+    );
+
+    if(admin_priv('upd_order_platform','',false) || admin_priv('all','',false)){
+        if($order_sn && $platform){
+            $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('ordersyn_info').
+                " SET platform=25 WHERE order_sn='$order_sn' OR platform_order_sn='$order_sn'";
+            $res['code'] = $GLOBALS['db']->query($sql_update);
+            $res['message'] = $res['code'] ? '修改成功' : '修改失败，请确定是否正确填写订单编号';
+        }else{
+            $res['message'] = '修改失败，请确定是否正确填写订单编号';  
+        }    
+    }else{
+        $res['message'] = '修改失败，请确定是否正确填写订单编号';  
+    }
+
+    die($json->encode($res));
+}
+
 /**
  * 订单列表
  */

@@ -104,6 +104,8 @@ elseif ($_REQUEST['act'] == 'records')
         $sql_select = 'SELECT user_name, user_id FROM '.$GLOBALS['ecs']->table('admin_user').
             " WHERE status>0 AND stats>0 AND group_id={$_SESSION['group_id']}";
         $customer_service = $GLOBALS['db']->getAll($sql_select);
+    } elseif(admin_priv('service_role_view','',false)) {
+        $customer_service = get_admin(intval($_SESSION['role_id']));
     }
 
     $smarty->assign('records',$result['records']);
@@ -1041,7 +1043,6 @@ elseif ($_REQUEST['act'] == 'remind_conf')
     die($json->encode($res));
 }
 
-//
 elseif ($_REQUEST['act'] == 'check')
 {
     $sql_select = 'SELECT u.user_id, u.user_name, u.mobile_phone, u.home_phone, u.age_group, u.sex, FROM_UNIXTIME(s.handler, "%Y-%m-%d %H:%i") add_time, FROM_UNIXTIME(s.service_time, "%Y-%m-%d") service_time, u.admin_name, s.logbook FROM '.$GLOBALS['ecs']->table('users').' u, '.$GLOBALS['ecs']->table('service').
@@ -3452,9 +3453,7 @@ function service_records($where = '')
     }
 
     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users').' u, '.
-        $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
-        ' AS c ON s.service_class=c.class_id LEFT JOIN '.$GLOBALS['ecs']->table('service_manner').
-        ' AS m ON s.service_manner=m.manner_id LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+        $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' AS ad ON ad.user_id=s.admin_id '.
         " WHERE u.user_id=s.user_id $where";
 
@@ -3490,11 +3489,9 @@ function service_records($where = '')
         'act'           => $_REQUEST['act'],
     );
 
-    $sql_select = 'SELECT DISTINCT s.user_name,s.admin_name,c.class,m.manner,s.service_id,s.service_status,s.logbook,s.admin_id,'.
-        's.special_feedback,s.handler,s.service_time,s.show_sev,u.role_id FROM '.$GLOBALS['ecs']->table('users').' u, '.
-        $GLOBALS['ecs']->table('service').' AS s LEFT JOIN '.$GLOBALS['ecs']->table('service_class').
-        ' AS c ON s.service_class=c.class_id LEFT JOIN '.$GLOBALS['ecs']->table('service_manner').
-        ' AS m ON s.service_manner=m.manner_id LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+    $sql_select = 'SELECT DISTINCT s.user_name,s.admin_name,s.service_id,s.service_status,s.logbook,s.admin_id,'.
+        's.service_time,s.show_sev,u.role_id FROM '.$GLOBALS['ecs']->table('users').' u, '.
+        $GLOBALS['ecs']->table('service').' AS s  LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' AS ad ON ad.user_id=s.admin_id '.
         " WHERE u.user_id=s.user_id $where ORDER BY s.service_time DESC LIMIT ".
         ($filter['page']-1)*$filter['page_size'].",{$filter['page_size']}";
@@ -3504,7 +3501,6 @@ function service_records($where = '')
     if($records){
         foreach ($records as &$val) {
             $val['service_time'] = date('Y-m-d H:i', $val['service_time']);
-            $val['handler']      = date('Y-m-d H:i', $val['handler']);
         }
     }
 

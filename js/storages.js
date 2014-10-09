@@ -956,7 +956,7 @@ function addAllotGoods(obj) {
 				table.deleteRow(document.getElementById('non_result').rowIndex);
 			}
 
-			goodsInfo.number = obj.elements['goods_num'].value;
+			goodsInfo.number = obj.elements['goods_number'].value;
 			var storageTotal = parseInt(dayOpts[i].text.match(/【库存：(\d+)】/)[1]);
 			var storage = storageTotal - goodsInfo.number;
 			if (storage < 0) {
@@ -968,7 +968,7 @@ function addAllotGoods(obj) {
 				return;
 			}
 			dayOpts[i].text = dayOpts[i].text.replace(/【库存：(\d+)】/, '【库存：' + storage + '】');
-			document.getElementById('goods_num').max = storage;
+			document.getElementById('goods_number').max = storage;
 
 			//累加商品数量
 			if (document.getElementById('rec_id_' + goodsInfo.rec_id)) {
@@ -1009,7 +1009,7 @@ function getPdcDay(goods_sn) {
 function getPdcDayResp(res) {
   inSelect(res);
   //重新计算库存
-  if (document.getElementById('goods_num')) {
+  if (document.getElementById('goods_number')) {
     if (document.getElementById('goods_list_div')) {
       reCalculateStorage();
     } else {
@@ -1110,7 +1110,7 @@ function setMaxValue(obj) {
   for (var i = 0; i < optList.length; i++) {
     if (optList[i].selected) {
       var maxValue = optList[i].text.match(/【库存：(\d+)】/)[1];
-      document.getElementById('goods_num').max = maxValue;
+      document.getElementById('goods_number').max = maxValue;
       break;
     }
   }
@@ -1205,7 +1205,7 @@ function addAllotLog(){
     for(var i = 0; i < inputList.length && inputList[i].type == 'checkbox'; i++){
       goods[i] = {
         "rec_id" : inputList[i].value,
-        "goods_num" : document.getElementById('num_'+inputList[i].value).getAttribute('value'),
+        "number" : document.getElementById('num_'+inputList[i].value).getAttribute('value'),
         "goods_name" : inputList[i].parentNode.parentNode.cells[2].innerHTML,
       };
     }
@@ -1319,6 +1319,20 @@ function alertAllotResp(res){
           this.getElementsByTagName('img')[0].style.display = 'none';
         }
       };
+    }
+  }
+}
+
+/*购买记录查看商品更多信息*/
+function moreGoodsInfo(obj,sta,goodsSn){
+  var imgObj = obj.getElementsByTagName('img');
+  if(sta){
+    for(var i = 0; i < imgObj.length; i++){
+      imgObj[i].style.display = 'inline';
+    }
+  }else {
+    for(var i = 0; i < imgObj.length; i++){
+      imgObj[i].style.display = 'none';
     }
   }
 }
