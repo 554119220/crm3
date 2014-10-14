@@ -1,0 +1,43 @@
+<!doctype htm>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>table_column</title>
+    <style type="text/css" media="screen">
+      th,td{padding:3px 6px;;}
+      th{background:#4f81bd;color:#fff;border-right:#fff;}
+      caption{margin-bottom:3px;}
+      tr:nth-child(even){ background:#f8f8f8}
+    </style>
+  </head>
+  <body>
+    <div style="margin:0px auto;text-align:center">
+      <h3>KJRS CRM 数据字典</h3>
+      {foreach from=$table_list item=tb}
+      <table cellpadding="0" cellspacing="0" border="1" width="80%" style="border-collapse:collapse">
+        <caption style="font-size:34px;">{$tb.TABLE_NAME}</caption> 
+        <tr>
+          <th>字段名</th>
+          <th>数据类型</th>
+          <th>默认值</th>
+          <th>允许非空</th>
+          <th>是否主键</th>
+          <th>自动递增</th>
+          <th>备注</th>
+        </tr>
+        {foreach from=$tb.column item=col}
+        <tr>
+          <td>{$col.COLUMN_NAME}</td>
+          <td>{$col.COLUMN_TYPE}</td>
+          <td>{if $col.COLUMN_DEFALUT}{$col.COLUMN_DEFALUT}{else}&nbsp;{/if}</td>
+          <td>{$col.IS_NULLABLE}</td>
+          <td>{if $col.COLUMN_KEY}{$col.COLUMN_KEY}{else}&nbsp;{/if}</td>
+          <td>{if $col.EXTRA}{$col.EXTRA}{else}&nbsp;{/if}</td>
+          <td>&nbsp;</td>
+        </tr>
+        {/foreach}
+      </table>
+      <br />
+      {/foreach}
+    </div>
+  </body>

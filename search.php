@@ -49,18 +49,25 @@ elseif ($act == 'search')
         'order_sn',
         'card_number',
         'user_id',
-        'goods_name'
+        'platform',
         );
 
     $condition = $search_key[$condition];
+    $order_coidtion = array('tracking_sn','order_sn','platform');
 
     if (strpos($keyword, '-') === false) {
-        if($condition == 'tracking_sn' || $condition == 'order_sn') {
-            $where    = " WHERE $condition='$keyword' ";
-            $user_old = get_user_id('order_info',$where,$keyword);
-            
-            if (!$user_old) {
-                $user_new = get_user_id('ordersyn_info',$where,$keyword);
+        if(in_array($condition,$order_coidtion)) {
+            if('platform' == $condition){
+                $sql_select = 'SELECT user_id FROM '.$GLOBALS['ecs']->table('user_sync').
+                   " WHERE platform_id='$keyword'"; 
+                $user_new = $GLOBALS['db']->getAll($sql_select);
+            }else{
+                $where    = " WHERE $condition='$keyword' ";
+                $user_old = get_user_id('order_info',$where,$keyword);
+
+                if (!$user_old) {
+                    $user_new = get_user_id('ordersyn_info',$where,$keyword);
+                }    
             }
         } else if ($condition == 'card_number') {
             $where    = " WHERE c.$condition=$keyword";

@@ -19,7 +19,7 @@
       <ul>
         <li style="margin-bottom:10px">
         <form action="javascript:search()" name="searchForm" >
-          <select name="condition" class="sch_select">
+          <select name="condition" class="sch_select" style="padding:3px;">
             <option value="0">姓名</option>
             <option value="1">固话</option>
             <option value="2">手机</option>
@@ -30,13 +30,13 @@
             <option value="7">订单编号</option>
             <option value="8">会员卡号</option>
             <option value="9">顾客ID</option>
-            <option value="9">商品名</option>
+            <option value="10">平台ID</option>
           </select>
-          <input type="search" name="search" value="" min="3" size="42px" style="height:32px;margin-right:5px" autofocus onfocus="showKeyword(this)"/>
+          <input type="search" name="search" value="" min="3" size="42px" style="height:32px;margin-right:5px;padding:3px;" autofocus onfocus="showKeyword(this)"/>
           {if $finance eq 'finance'}
           <input type="hidden" value="{$finance}" id="finance" />
           {/if}
-          <input type="submit" class="input_submit" value="查  询" style="padding:7px;"/>
+          <input type="submit" value="查  询" style="padding:7px;font-size:14px;"/>
         </form>
         </li>
         <li>
