@@ -3164,28 +3164,6 @@ elseif($_REQUEST['act'] == 'year_performance'){
     die($json->encode($res));
 }
 
-elseif($_REQUEST['act']=='illegal_control'){
-    $sql_select = 'SELECT o.order_id,o.consignee,o.add_time oadd_time,c.add_time cadd_time,c.contact_value,c.contact_name,a.user_name FROM '.$GLOBALS['ecs']->table('order_info').' o,'.
-        $GLOBALS['ecs']->table('user_contact').' c,'.$GLOBALS['ecs']->table('admin_user').
-        ' a WHERE o.add_time>c.add_time AND o.add_time-c.add_time<=86400 AND c.user_id=o.user_id AND a.user_id=c.add_admin AND o.platform<>1  ORDER BY o.add_time DESC';
-    $illegal_control_list = $GLOBALS['db']->getAll($sql_select);
-
-    if($illegal_control_list){
-       foreach ($illegal_control_list as &$val) {
-           $val['oadd_time'] = date('Y-m-d H:i:s',$val['oadd_time']);
-           $val['cadd_time'] = date('Y-m-d H:i:s',$val['cadd_time']);
-           $d_start    = new DateTime($val['cadd_time']); 
-           $d_end      = new DateTime($val['oadd_time']); 
-           $diff = $d_start->diff($d_end);
-           $val['time_diff'] = $diff->h.' 时'.$diff->i.' 分'.$diff->s.' 秒';
-       } 
-    }
-
-    $smarty->assign('illegal_control_list',$illegal_control_list);
-    $res['main'] = $smarty->fetch('illegal_control.htm');
-    die($json->encode($res));
-}
-
 /*
  * 函数
  */

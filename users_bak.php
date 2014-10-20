@@ -16,7 +16,6 @@
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require(dirname(__FILE__) . '/includes/lib_goods.php');
 require_once(ROOT_PATH . 'includes/lib_order.php');
 require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/user.php');
 date_default_timezone_set('Asia/Shanghai');
@@ -36,380 +35,380 @@ if(isset($_REQUEST['group_id']) && !empty($_REQUEST['group_id'])){
 
 /* 保留搜索关键词 */
 if (isset($_REQUEST['keywords']) || isset($_REQUEST['start_time']) || isset($_REQUEST['end_time'])) {
-    $smarty->assign('kf', $_REQUEST['keyfields']);
-    $smarty->assign('kw', urldecode($_REQUEST['keywords']));
+     $smarty->assign('kf', $_REQUEST['keyfields']);
+     $smarty->assign('kw', urldecode($_REQUEST['keywords']));
 
-    if (!empty($_REQUEST['start_time']) && !empty($_REQUEST['end_time'])) {
-        $smarty->assign('start_time', stamp2date($_REQUEST['start_time'], 'Y-m-d H:i'));
-        $smarty->assign('end_time',   stamp2date($_REQUEST['end_time'], 'Y-m-d H:i'));
-    }
+     if (!empty($_REQUEST['start_time']) && !empty($_REQUEST['end_time'])) {
+          $smarty->assign('start_time', stamp2date($_REQUEST['start_time'], 'Y-m-d H:i'));
+          $smarty->assign('end_time',   stamp2date($_REQUEST['end_time'], 'Y-m-d H:i'));
+     }
 }
 
 /*-- 订单子菜单 --*/
 if ($_REQUEST['act'] == 'menu') {
-    $nav = list_nav();
-    $smarty->assign('nav_2nd', $nav[1][$file]);
-    $smarty->assign('nav_3rd', $nav[2]);
-    $smarty->assign('file_name', $file);
+     $nav = list_nav();
+     $smarty->assign('nav_2nd', $nav[1][$file]);
+     $smarty->assign('nav_3rd', $nav[2]);
+     $smarty->assign('file_name', $file);
 
-    die($smarty->fetch('left.htm'));
+     die($smarty->fetch('left.htm'));
 }
 
 /* 意向顾客列表 */
 if ($_REQUEST['act'] == 'intention') {
-    /* 检查权限 */
-    //admin_priv('intention');
-    $res = array ('switch_tag' => true, 'id' => 4);
+      /* 检查权限 */
+      //admin_priv('intention');
+      $res = array ('switch_tag' => true, 'id' => 4);
 
-    $sql = "SELECT rank_id, rank_name, min_points FROM ".$ecs->table('user_rank')." ORDER BY min_points ASC ";
-    $rs = $db->query($sql);
+      $sql = "SELECT rank_id, rank_name, min_points FROM ".$ecs->table('user_rank')." ORDER BY min_points ASC ";
+      $rs = $db->query($sql);
 
-    $ranks = array();
-    while ($row = $db->FetchRow($rs))
-    {
-        $ranks[$row['rank_id']] = $row['rank_name'];
-    }
+      $ranks = array();
+      while ($row = $db->FetchRow($rs))
+      {
+            $ranks[$row['rank_id']] = $row['rank_name'];
+      }
 
-    if (!isset($_REQUEST['type'])) {
-        $_REQUEST['type'] = '1';
-    } else {
-        $_REQUEST['type'] = urldecode($_REQUEST['type']);
-    }
+      if (!isset($_REQUEST['type'])) {
+            $_REQUEST['type'] = '1';
+      } else {
+           $_REQUEST['type'] = urldecode($_REQUEST['type']);
+      }
 
-    $intention = get_customer_type($_REQUEST['type']);
-    foreach ($intention as $val) {
-        $intente[] = $val['type_name'];
-    }
+      $intention = get_customer_type($_REQUEST['type']);
+      foreach ($intention as $val) {
+            $intente[] = $val['type_name'];
+      }
 
-    $smarty->assign('action',        $_SESSION['action_list']);
-    $smarty->assign('user_ranks',    $ranks);
-    $smarty->assign('action_link',   array('text' => $_LANG['02_users_add'], 'href'=>'users.php?act=add'));
-    $smarty->assign('country_list',  get_regions());
-    $smarty->assign('province_list', get_regions(1,1));
+      $smarty->assign('action',       $_SESSION['action_list']);
+      $smarty->assign('user_ranks',    $ranks);
+      $smarty->assign('action_link',   array('text' => $_LANG['02_users_add'], 'href'=>'users.php?act=add'));
+      $smarty->assign('country_list',  get_regions());
+      $smarty->assign('province_list', get_regions(1,1));
 
-    $user_list = user_list();
+      $user_list = user_list();
 
-    /* 获取顾客来源、购买力、客服 */
-    $smarty->assign('from_where', get_from_where());
-    $smarty->assign('type_list',  get_customer_type());
+      /* 获取顾客来源、购买力、客服 */
+      $smarty->assign('from_where', get_from_where());
+      $smarty->assign('type_list',  get_customer_type());
 
-    $admin_list = get_admin('session');
-    $smarty->assign('admin_list', $admin_list);
-    $smarty->assign('eff_list',   getEffectTypes());
+      $admin_list = get_admin('session');
+      $smarty->assign('admin_list', $admin_list);
+      $smarty->assign('eff_list',   getEffectTypes());
 
-    $smarty->assign('ur_here',       $_LANG['06_intention'].'(包括：'.@implode(',', $intente).')');
-    $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
+      $smarty->assign('ur_here',       $_LANG['06_intention'].'(包括：'.@implode(',', $intente).')');
+      $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
 
-    $smarty->assign('user_list',    $user_list['user_list']);
-    $smarty->assign('page_link',    $user_list['condition']);
-    $smarty->assign('filter',       $user_list['filter']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('page_count',   $user_list['page_count']);
-    $smarty->assign('page_size',    $user_list['page_size']);
-    $smarty->assign('page_start',   $user_list['start']);
-    $smarty->assign('page_end',     $user_list['end']);
-    $smarty->assign('full_page',    1);
-    $smarty->assign('page_set',     $user_list['page_set']);
-    $smarty->assign('page',         $user_list['page']);
-    $smarty->assign('act',          $_REQUEST['act']);
-    $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
-    $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
+      $smarty->assign('user_list',    $user_list['user_list']);
+      $smarty->assign('page_link',    $user_list['condition']);
+      $smarty->assign('filter',       $user_list['filter']);
+      $smarty->assign('record_count', $user_list['record_count']);
+      $smarty->assign('page_count',   $user_list['page_count']);
+      $smarty->assign('page_size',    $user_list['page_size']);
+      $smarty->assign('page_start',   $user_list['start']);
+      $smarty->assign('page_end',     $user_list['end']);
+      $smarty->assign('full_page',    1);
+      $smarty->assign('page_set',     $user_list['page_set']);
+      $smarty->assign('page',         $user_list['page']);
+      $smarty->assign('act',          $_REQUEST['act']);
+      $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
+      $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
 
-    //判断客服的权限，是否显示团队搜索
-    if($_SESSION['action_list'] == 'all') {
-        $smarty->assign('admin_show_team',1);
-        $smarty->assign('role_list', get_role());
-    } else {
-        $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
-            " WHERE user_id={$_SESSION['admin_id']}";
-        $user = $GLOBALS['db']->getRow($sql);
-        if($user['manager'] === '0') {
-            $smarty->assign('role_id',   $user['role_id']);
-            $smarty->assign('show_team', 1);
-        }
-    }
+      //判断客服的权限，是否显示团队搜索
+      if($_SESSION['action_list'] == 'all') {
+          $smarty->assign('admin_show_team',1);
+          $smarty->assign('role_list', get_role());
+      } else {
+          $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
+              " WHERE user_id={$_SESSION['admin_id']}";
+          $user = $GLOBALS['db']->getRow($sql);
+          if($user['manager'] === '0') {
+              $smarty->assign('role_id',   $user['role_id']);
+              $smarty->assign('show_team', 1);
+          }
+      }
 
-    if (admin_priv('user_group_view', '', false) || admin_priv('user_part_view', '', false)) {
-        $smarty->assign('section', 1);
-    }
+     if (admin_priv('user_group_view', '', false) || admin_priv('user_part_view', '', false)) {
+         $smarty->assign('section', 1);
+     }
 
-    assign_query_info();
-    $res['main'] = $smarty->fetch('users_list.htm');
+      assign_query_info();
+      $res['main'] = $smarty->fetch('users_list.htm');
 
-    $res['left'] = sub_menu_list($file);
-    if ($res['left'] === false) unset($res['left']);
+      $res['left'] = sub_menu_list($file);
+      if ($res['left'] === false) unset($res['left']);
 
-    die($json->encode($res));
+      die($json->encode($res));
 }
 
 /* 已购买顾客列表 */
 elseif ($_REQUEST['act'] == 'users_list') {
-    /* 检查权限 */
-    //admin_priv('users_list');
-    $res = array ('switch_tag' => true, 'id' => intval($_REQUEST['tag']));
+     /* 检查权限 */
+     //admin_priv('users_list');
+     $res = array ('switch_tag' => true, 'id' => intval($_REQUEST['tag']));
 
-    if($_SESSION['admin_id'] == 78) {
-        $_REQUEST['type'] = '13';
-    } elseif (!$_REQUEST['type']) {
-        $_REQUEST['type'] = '2';
-    }
+     if($_SESSION['admin_id'] == 78) {
+          $_REQUEST['type'] = '13';
+     } elseif (!$_REQUEST['type']) {
+          $_REQUEST['type'] = '2';
+     }
 
-    $smarty->assign('user_ranks',    $ranks);
-    $smarty->assign('ur_here',       $_LANG['01_users_list']);
-    $smarty->assign('country_list',  get_regions());
-    $smarty->assign('province_list', get_regions(1,1));
+     $smarty->assign('user_ranks',    $ranks);
+     $smarty->assign('ur_here',       $_LANG['01_users_list']);
+     $smarty->assign('country_list',  get_regions());
+     $smarty->assign('province_list', get_regions(1,1));
 
-    $user_list = user_list();
+     $user_list = user_list();
 
-    /* 获取顾客来源、购买力、客服 */
-    $smarty->assign('from_where', get_from_where());
-    $smarty->assign('type_list',  get_customer_type());
-    $smarty->assign('admin_list', get_admin('session'));
-    $smarty->assign('eff_list',   getEffectTypes());
+     /* 获取顾客来源、购买力、客服 */
+     $smarty->assign('from_where', get_from_where());
+     $smarty->assign('type_list',  get_customer_type());
+     $smarty->assign('admin_list', get_admin('session'));
+     $smarty->assign('eff_list',   getEffectTypes());
 
-    if (admin_priv('user_group_view', '', false) || admin_priv('user_part_view', '', false)) {
-        $smarty->assign('section', 1);
-    }
+     if (admin_priv('user_group_view', '', false) || admin_priv('user_part_view', '', false)) {
+         $smarty->assign('section', 1);
+     }
 
-    $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
-    $smarty->assign('user_list',    $user_list['user_list']);
+     $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
+     $smarty->assign('user_list',    $user_list['user_list']);
 
-    // 分页设置
-    $smarty->assign('page_link',    $user_list['condition']);
-    $smarty->assign('filter',       $user_list['filter']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('page_count',   $user_list['page_count']);
-    $smarty->assign('page_size',    $user_list['page_size']);
-    $smarty->assign('page_start',   $user_list['start']);
-    $smarty->assign('page_end',     $user_list['end']);
-    $smarty->assign('full_page',    1);
-    $smarty->assign('page_set',     $user_list['page_set']);
-    $smarty->assign('page',         $user_list['page']);
-    $smarty->assign('act',          $_REQUEST['act']);
-    $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] : 0);
-    $smarty->assign('type',          $_REQUEST['type'] ? $_REQUEST['type'] : 2);
+     // 分页设置
+     $smarty->assign('page_link',    $user_list['condition']);
+     $smarty->assign('filter',       $user_list['filter']);
+     $smarty->assign('record_count', $user_list['record_count']);
+     $smarty->assign('page_count',   $user_list['page_count']);
+     $smarty->assign('page_size',    $user_list['page_size']);
+     $smarty->assign('page_start',   $user_list['start']);
+     $smarty->assign('page_end',     $user_list['end']);
+     $smarty->assign('full_page',    1);
+     $smarty->assign('page_set',     $user_list['page_set']);
+     $smarty->assign('page',         $user_list['page']);
+     $smarty->assign('act',          $_REQUEST['act']);
+     $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] : 0);
+     $smarty->assign('type',          $_REQUEST['type'] ? $_REQUEST['type'] : 2);
 
-    $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
-    $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
+     $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
+     $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
 
-    //判断客服的权限，是否显示团队搜索
-    if($_SESSION['action_list'] == 'all') {
-        $smarty->assign('admin_show_team',1);
-        $smarty->assign('role_list', get_role());
-    } else {
-        $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
-            " WHERE user_id={$_SESSION['admin_id']}";
-        $user = $GLOBALS['db']->getRow($sql);
-        if($user['manager'] === '0') {
-            $smarty->assign('role_id',$user['role_id']);
-            $smarty->assign('show_team',1);
-        }
-    }
+     //判断客服的权限，是否显示团队搜索
+     if($_SESSION['action_list'] == 'all') {
+          $smarty->assign('admin_show_team',1);
+          $smarty->assign('role_list', get_role());
+     } else {
+          $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
+               " WHERE user_id={$_SESSION['admin_id']}";
+          $user = $GLOBALS['db']->getRow($sql);
+          if($user['manager'] === '0') {
+               $smarty->assign('role_id',$user['role_id']);
+               $smarty->assign('show_team',1);
+          }
+     }
 
-    if (isset($_REQUEST['a'])) {
-        $smarty->assign('content', 'users_list');
+     if (isset($_REQUEST['a'])) {
+         $smarty->assign('content', 'users_list');
 
-        $res['main'] = $smarty->fetch('list_tpl.htm');
-        $res['page'] = $smarty->fetch('page.htm');   
+         $res['main'] = $smarty->fetch('list_tpl.htm');
+         $res['page'] = $smarty->fetch('page.htm');   
 
-        $res['a'] = $_REQUEST['a'];
-    } else {
-        $res['main'] = $smarty->fetch('users_list.htm');
-    }
+         $res['a'] = $_REQUEST['a'];
+     } else {
+         $res['main'] = $smarty->fetch('users_list.htm');
+     }
 
 
-    $res['left'] = sub_menu_list($file);
-    if ($res['left'] === false) unset($res['left']);
+     $res['left'] = sub_menu_list($file);
+     if ($res['left'] === false) unset($res['left']);
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 顾客分类显示 */
 elseif ($_REQUEST['act'] == 'users_list_group')
 {
-    /* 检查权限 */
-    admin_priv('users_list_group');
-    $res = array (
-        'switch_tag' => true,
-        'id' => !isset($_REQUEST['tag']) ? 0 : intval($_REQUEST['tag'])
-    );
+     /* 检查权限 */
+     admin_priv('users_list_group');
+     $res = array (
+          'switch_tag' => true,
+          'id' => !isset($_REQUEST['tag']) ? 0 : intval($_REQUEST['tag'])
+     );
 
-    if (!$_REQUEST['type'])
-    {
-        $_REQUEST['type'] = '2, 3, 4, 5, 11';
-    }
+     if (!$_REQUEST['type'])
+     {
+          $_REQUEST['type'] = '2, 3, 4, 5, 11';
+     }
 
-    $smarty->assign('user_ranks',   $ranks);
-    $smarty->assign('ur_here',      $_LANG['01_users_list']);
-    $smarty->assign('country_list',  get_regions());
-    $smarty->assign('province_list', get_regions(1,1));
+     $smarty->assign('user_ranks',   $ranks);
+     $smarty->assign('ur_here',      $_LANG['01_users_list']);
+     $smarty->assign('country_list',  get_regions());
+     $smarty->assign('province_list', get_regions(1,1));
 
-    $user_list = user_list();
+     $user_list = user_list();
 
-    /* 获取顾客来源、购买力、客服 */
-    $smarty->assign('from_where', get_from_where());
-    $smarty->assign('type_list',  get_customer_type());
-    $smarty->assign('admin_list', get_admin('session'));
-    $smarty->assign('eff_list',   getEffectTypes());
+     /* 获取顾客来源、购买力、客服 */
+     $smarty->assign('from_where', get_from_where());
+     $smarty->assign('type_list',  get_customer_type());
+     $smarty->assign('admin_list', get_admin('session'));
+     $smarty->assign('eff_list',   getEffectTypes());
 
-    $smarty->assign('section', admin_priv('section', '', false));
+     $smarty->assign('section', admin_priv('section', '', false));
 
-    $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
-    $smarty->assign('user_list',    $user_list['user_list']);
+     $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
+     $smarty->assign('user_list',    $user_list['user_list']);
 
-    // 分页设置
-    $smarty->assign('page_link',    $user_list['condition']);
-    $smarty->assign('filter',       $user_list['filter']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('page_count',   $user_list['page_count']);
-    $smarty->assign('page_size',    $user_list['page_size']);
-    $smarty->assign('page_start',   $user_list['start']);
-    $smarty->assign('page_end',     $user_list['end']);
-    $smarty->assign('full_page',    1);
-    $smarty->assign('page_set',     $user_list['page_set']);
-    $smarty->assign('page',         $user_list['page']);
-    $smarty->assign('act',          $_REQUEST['act']);
-    $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
+     // 分页设置
+     $smarty->assign('page_link',    $user_list['condition']);
+     $smarty->assign('filter',       $user_list['filter']);
+     $smarty->assign('record_count', $user_list['record_count']);
+     $smarty->assign('page_count',   $user_list['page_count']);
+     $smarty->assign('page_size',    $user_list['page_size']);
+     $smarty->assign('page_start',   $user_list['start']);
+     $smarty->assign('page_end',     $user_list['end']);
+     $smarty->assign('full_page',    1);
+     $smarty->assign('page_set',     $user_list['page_set']);
+     $smarty->assign('page',         $user_list['page']);
+     $smarty->assign('act',          $_REQUEST['act']);
+     $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
 
-    $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
+     $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
 
-    //判断客服的权限，是否显示团队搜索
-    if($_SESSION['action_list'] == 'all')
-    {
-        $smarty->assign('admin_show_team',1);
-        $smarty->assign('role_list', get_role());
-    }
-    else
-    {
-        $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
-            " WHERE user_id={$_SESSION['admin_id']}";
-        $user = $GLOBALS['db']->getRow($sql);
-        if($user['manager'] === '0')
-        {
-            $smarty->assign('role_id',$user['role_id']);
-            $smarty->assign('show_team',1);
-        }
-    }
+     //判断客服的权限，是否显示团队搜索
+     if($_SESSION['action_list'] == 'all')
+     {
+          $smarty->assign('admin_show_team',1);
+          $smarty->assign('role_list', get_role());
+     }
+     else
+     {
+          $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
+               " WHERE user_id={$_SESSION['admin_id']}";
+          $user = $GLOBALS['db']->getRow($sql);
+          if($user['manager'] === '0')
+          {
+               $smarty->assign('role_id',$user['role_id']);
+               $smarty->assign('show_team',1);
+          }
+     }
 
-    $res['main'] = $smarty->fetch('users_list_group.htm');
+     $res['main'] = $smarty->fetch('users_list_group.htm');
 
-    $res['left'] = sub_menu_list($file);
-    if ($res['left'] === false) unset($res['left']);
+     $res['left'] = sub_menu_list($file);
+     if ($res['left'] === false) unset($res['left']);
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 顾客自定义分类 */
 elseif ($_REQUEST['act'] == 'user_cat_list')
 {
-    /* 检查权限 */
-    if (!admin_priv('users_list', '', false)) {
-        $res = array (
-            'req_msg'=>true,
-            'timeout'=>2000,
-            'message'=>'对不起，该账号暂时无法访问此页面！',
-        );
+     /* 检查权限 */
+     if (!admin_priv('users_list', '', false)) {
+         $res = array (
+             'req_msg'=>true,
+             'timeout'=>2000,
+             'message'=>'对不起，该账号暂时无法访问此页面！',
+         );
 
-        die($json->encode($res));
-    }
+         die($json->encode($res));
+     }
 
-    $res = array ('switch_tag' => true, 'id' => $_REQUEST['tag'] ? $_REQUEST['tag'] : 0);
+     $res = array ('switch_tag' => true, 'id' => $_REQUEST['tag'] ? $_REQUEST['tag'] : 0);
 
-    if($_SESSION['admin_id'] == 78){
-        $_REQUEST['type'] = '13';
-    } elseif (!$_REQUEST['type']){
-        $_REQUEST['type'] = '2, 3, 4, 5, 11';
-    }
+     if($_SESSION['admin_id'] == 78){
+	     $_REQUEST['type'] = '13';
+     } elseif (!$_REQUEST['type']){
+	     $_REQUEST['type'] = '2, 3, 4, 5, 11';
+     }
 
-    $smarty->assign('user_ranks',   $ranks);
-    $smarty->assign('ur_here',      $_LANG['01_users_list']);
-    $smarty->assign('country_list',  get_regions());
-    $smarty->assign('province_list', get_regions(1,1));
+     $smarty->assign('user_ranks',   $ranks);
+     $smarty->assign('ur_here',      $_LANG['01_users_list']);
+     $smarty->assign('country_list',  get_regions());
+     $smarty->assign('province_list', get_regions(1,1));
 
-    $user_list = user_list();
+     $user_list = user_list();
 
-    /* 获取顾客来源、购买力、客服 */
-    $smarty->assign('from_where', get_from_where());
-    $smarty->assign('type_list',  get_customer_type());
-    $smarty->assign('admin_list', get_admin('session'));
-    $smarty->assign('eff_list',   getEffectTypes());
+     /* 获取顾客来源、购买力、客服 */
+     $smarty->assign('from_where', get_from_where());
+     $smarty->assign('type_list',  get_customer_type());
+     $smarty->assign('admin_list', get_admin('session'));
+     $smarty->assign('eff_list',   getEffectTypes());
 
-    $smarty->assign('section', admin_priv('section', '', false));
+     $smarty->assign('section', admin_priv('section', '', false));
 
-    $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
-    $smarty->assign('user_list',    $user_list['user_list']);
+     $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
+     $smarty->assign('user_list',    $user_list['user_list']);
 
-    $smarty->assign('cat_list', user_cat_list(1));
+     $smarty->assign('cat_list', user_cat_list(1));
 
-    // 分页设置
-    $smarty->assign('page_link',    $user_list['condition']);
-    $smarty->assign('filter',       $user_list['filter']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('page_count',   $user_list['page_count']);
-    $smarty->assign('page_size',    $user_list['page_size']);
-    $smarty->assign('page_start',   $user_list['start']);
-    $smarty->assign('page_end',     $user_list['end']);
-    $smarty->assign('full_page',    1);
-    $smarty->assign('page_set',     $user_list['page_set']);
-    $smarty->assign('page',         $user_list['page']);
-    $smarty->assign('act',          $_REQUEST['act']);
-    $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
-    $smarty->assign('cat_tag',      $_REQUEST['cat_tag'] ? $_REQUEST['cat_tag'] :0);
+     // 分页设置
+     $smarty->assign('page_link',    $user_list['condition']);
+     $smarty->assign('filter',       $user_list['filter']);
+     $smarty->assign('record_count', $user_list['record_count']);
+     $smarty->assign('page_count',   $user_list['page_count']);
+     $smarty->assign('page_size',    $user_list['page_size']);
+     $smarty->assign('page_start',   $user_list['start']);
+     $smarty->assign('page_end',     $user_list['end']);
+     $smarty->assign('full_page',    1);
+     $smarty->assign('page_set',     $user_list['page_set']);
+     $smarty->assign('page',         $user_list['page']);
+     $smarty->assign('act',          $_REQUEST['act']);
+     $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
+     $smarty->assign('cat_tag',      $_REQUEST['cat_tag'] ? $_REQUEST['cat_tag'] :0);
 
-    $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
-    $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
+     $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
+     $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
 
-    //判断客服的权限，是否显示团队搜索
-    if($_SESSION['action_list'] == 'all')
-    {
-        $smarty->assign('admin_show_team',1);
-        $smarty->assign('role_list', get_role());
-    }
-    else
-    {
-        $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
-            " WHERE user_id={$_SESSION['admin_id']}";
-        $user = $GLOBALS['db']->getRow($sql);
-        if($user['manager'] === '0')
-        {
-            $smarty->assign('role_id',$user['role_id']);
-            $smarty->assign('show_team',1);
-        }
-    }
+     //判断客服的权限，是否显示团队搜索
+     if($_SESSION['action_list'] == 'all')
+     {
+          $smarty->assign('admin_show_team',1);
+          $smarty->assign('role_list', get_role());
+     }
+     else
+     {
+          $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
+               " WHERE user_id={$_SESSION['admin_id']}";
+          $user = $GLOBALS['db']->getRow($sql);
+          if($user['manager'] === '0')
+          {
+               $smarty->assign('role_id',$user['role_id']);
+               $smarty->assign('show_team',1);
+          }
+     }
 
-    $res['main'] = $smarty->fetch('user_cat_list.htm');
+     $res['main'] = $smarty->fetch('user_cat_list.htm');
 
-    $res['left'] = sub_menu_list($file);
-    if ($res['left'] === false) unset($res['left']);
+     $res['left'] = sub_menu_list($file);
+     if ($res['left'] === false) unset($res['left']);
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 更改顾客分类 */
 elseif ($_REQUEST['act'] == 'change_cat')
 {
-    $cat_list = user_cat_list(1);
-    if (empty($cat_list)){
-        $res['req_msg']    = true;
-        $res['message']    = '请先添加分类！';
-        $res['title']      = '顾客分类';
-        $res['btncontent'] = '放弃分类该顾客';
+     $cat_list = user_cat_list(1);
+     if (empty($cat_list)){
+          $res['req_msg']    = true;
+          $res['message']    = '请先添加分类！';
+          $res['title']      = '顾客分类';
+          $res['btncontent'] = '放弃分类该顾客';
 
-        die($json->encode($res));
-    }
+          die($json->encode($res));
+     }
 
-    $smarty->assign('cat_list', $cat_list);
-    $smarty->assign('user_id', $_REQUEST['user_id']);
+     $smarty->assign('cat_list', $cat_list);
+     $smarty->assign('user_id', $_REQUEST['user_id']);
 
-    $res['message'] = $smarty->fetch('change_cat.htm');
-    $res['req_msg'] = true;
-    $res['swt']  = true;
-    $res['form_id'] = 'change_cat';
-    $res['type'] = 'submit';
+     $res['message'] = $smarty->fetch('change_cat.htm');
+     $res['req_msg'] = true;
+     $res['swt']  = true;
+     $res['form_id'] = 'change_cat';
+     $res['type'] = 'submit';
 
-    $res['title'] = '自定义顾客分类';
+     $res['title'] = '自定义顾客分类';
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 修改数据 */
@@ -449,105 +448,105 @@ elseif ($_REQUEST['act'] == 'update_cat')
 /* 添加顾客分类 */
 elseif ($_REQUEST['act'] == 'add_user_cat')
 {
-    if (!admin_priv('add_user_cat', '', false)){
-        $res['req_msg'] = true;
-        $res['timeout'] = 2000;
-        $res['message'] = '当前帐号无法创建新分类！';
-        die($json->encode($res));
-    }
+     if (!admin_priv('add_user_cat', '', false)){
+          $res['req_msg'] = true;
+          $res['timeout'] = 2000;
+          $res['message'] = '当前帐号无法创建新分类！';
+          die($json->encode($res));
+     }
 
-    $smarty->assign('cat_list', user_cat_list());
+     $smarty->assign('cat_list', user_cat_list());
 
-    $res['main'] = $smarty->fetch('add_user_cat.htm');
-    die($json->encode($res));
+     $res['main'] = $smarty->fetch('add_user_cat.htm');
+     die($json->encode($res));
 }
 
 /* 保存分类到数据库 */
 elseif ($_REQUEST['act'] == 'insert_user_cat')
 {
-    $res['req_msg'] = true;
-    $res['timeout'] = 2000;
-    $res['code'] = 0;
-    if (!admin_priv('add_user_cat', '', false)){
-        $res['message'] = '当前帐号无法创建新分类！';
-        die($json->encode($res));
-    }
+     $res['req_msg'] = true;
+     $res['timeout'] = 2000;
+     $res['code'] = 0;
+     if (!admin_priv('add_user_cat', '', false)){
+          $res['message'] = '当前帐号无法创建新分类！';
+          die($json->encode($res));
+     }
 
-    $cat = addslashes_deep($_REQUEST);
-    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('user_cat').
-        " WHERE cat_name='{$cat['cat_name']}' AND admin_id={$_SESSION['admin_id']}";
-    $is_exist = $GLOBALS['db']->getOne($sql_select);
-    if ($is_exist){
-        $res['message'] = '您提交的顾客分类名称已经存在！';
-        die($json->encode($res));
-    }
+     $cat = addslashes_deep($_REQUEST);
+     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('user_cat').
+          " WHERE cat_name='{$cat['cat_name']}' AND admin_id={$_SESSION['admin_id']}";
+     $is_exist = $GLOBALS['db']->getOne($sql_select);
+     if ($is_exist){
+          $res['message'] = '您提交的顾客分类名称已经存在！';
+          die($json->encode($res));
+     }
 
-    $sql_select = 'SELECT cat_tag FROM '.$GLOBALS['ecs']->table('user_cat').
-        " WHERE admin_id='{$_SESSION['admin_id']}' AND available=1 ORDER BY cat_tag DESC";
-    $cat_tag = $GLOBALS['db']->getOne($sql_select) +1;
+     $sql_select = 'SELECT cat_tag FROM '.$GLOBALS['ecs']->table('user_cat').
+          " WHERE admin_id='{$_SESSION['admin_id']}' AND available=1 ORDER BY cat_tag DESC";
+     $cat_tag = $GLOBALS['db']->getOne($sql_select) +1;
 
-    $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('user_cat').'(cat_name,cat_desc,cat_tag,admin_id)VALUES('.
-        "'{$cat['cat_name']}','{$cat['cat_desc']}',$cat_tag,{$_SESSION['admin_id']})";
-    $GLOBALS['db']->query($sql_insert);
-    if ($cat['cat_id'] = $GLOBALS['db']->insert_id()){
-        $cat['cat_tag'] = $cat_tag;
-        $cat['req_msg'] = true;
-        $cat['timeout'] = 2000;
-        $cat['message'] = '添加成功';
-        $cat['code'] = 1;
-        die($json->encode($cat));
-    }
+     $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('user_cat').'(cat_name,cat_desc,cat_tag,admin_id)VALUES('.
+          "'{$cat['cat_name']}','{$cat['cat_desc']}',$cat_tag,{$_SESSION['admin_id']})";
+     $GLOBALS['db']->query($sql_insert);
+     if ($cat['cat_id'] = $GLOBALS['db']->insert_id()){
+          $cat['cat_tag'] = $cat_tag;
+          $cat['req_msg'] = true;
+          $cat['timeout'] = 2000;
+          $cat['message'] = '添加成功';
+          $cat['code'] = 1;
+          die($json->encode($cat));
+     }
 }
 
 /* 第一回访 */
 elseif ($_REQUEST['act'] == 'first_trace')
 {
-    if(!admin_priv('first_trace', '', false)){
-        $res['req_msg'] = true;
-        $res['timeout'] = 2000;
-        $res['message'] = '当前帐号无访问权限！';
+     if(!admin_priv('first_trace', '', false)){
+          $res['req_msg'] = true;
+          $res['timeout'] = 2000;
+          $res['message'] = '当前帐号无访问权限！';
 
-        die($json->encode($res));
-    }
+          die($json->encode($res));
+     }
 
-    $res = array ('switch_tag' => true, 'id' => 2);
-    if (isset($_REQUEST['admin_id']) && intval($_REQUEST['admin_id'])) {
-        $admin_id = intval($_REQUEST['admin_id']);
-    }
+     $res = array ('switch_tag' => true, 'id' => 2);
+     if (isset($_REQUEST['admin_id']) && intval($_REQUEST['admin_id'])) {
+         $admin_id = intval($_REQUEST['admin_id']);
+     }
 
-    $days_three = time() -3*24*3600; // 三天前
-    //$days_five  = $three_days -2*24*3600; // 五天前
+     $days_three = time() -3*24*3600; // 三天前
+     //$days_five  = $three_days -2*24*3600; // 五天前
 
-    $sql = 'SELECT i.user_id,i.consignee,i.mobile,i.tel,i.receive_time,o.goods_name, '.
-        ' i.receive_time+g.take_days*o.goods_number take_time,i.order_id,i.add_time,a.user_name add_admin, '.
-        "IF(u.service_time>$days_three,u.service_time,'-') recently FROM ".$GLOBALS['ecs']->table('order_info').
-        ' i,'.$GLOBALS['ecs']->table('admin_user').' a,'.$GLOBALS['ecs']->table('order_goods').' o,'.
-        $GLOBALS['ecs']->table('goods').' g,'. $GLOBALS['ecs']->table('users').
-        ' u WHERE i.add_admin_id=a.user_id AND i.user_id=u.user_id AND o.goods_id=g.goods_id AND i.order_id=o.order_id';
+     $sql = 'SELECT i.user_id,i.consignee,i.mobile,i.tel,i.receive_time,o.goods_name, '.
+          ' i.receive_time+g.take_days*o.goods_number take_time,i.order_id,i.add_time,a.user_name add_admin, '.
+          "IF(u.service_time>$days_three,u.service_time,'-') recently FROM ".$GLOBALS['ecs']->table('order_info').
+          ' i,'.$GLOBALS['ecs']->table('admin_user').' a,'.$GLOBALS['ecs']->table('order_goods').' o,'.
+          $GLOBALS['ecs']->table('goods').' g,'. $GLOBALS['ecs']->table('users').
+          ' u WHERE i.add_admin_id=a.user_id AND i.user_id=u.user_id AND o.goods_id=g.goods_id AND i.order_id=o.order_id';
 
-    if (!admin_priv('all', '', false)) {
-        $sql .= " AND u.admin_id={$_SESSION['admin_id']} ";
-    } elseif ($admin_id) {
-        $sql .= " AND u.admin_id=$admin_id ";
-    }
+     if (!admin_priv('all', '', false)) {
+          $sql .= " AND u.admin_id={$_SESSION['admin_id']} ";
+     } elseif ($admin_id) {
+          $sql .= " AND u.admin_id=$admin_id ";
+     }
 
-    // 最近三天确认收货的顾客
-    $res_three = $GLOBALS['db']->getAll($sql." AND i.receive_time>$days_three GROUP BY i.order_id ORDER BY u.service_time ASC");
+     // 最近三天确认收货的顾客
+     $res_three = $GLOBALS['db']->getAll($sql." AND i.receive_time>$days_three GROUP BY i.order_id ORDER BY u.service_time ASC");
 
-    foreach ($res_three as &$val)
-    {
-        $val['take_timetable'] = $val['goods_name'].date('Y-m-d',$val['take_time']);
-        $val['receive_time']   = date('Y-m-d',$val['receive_time']);
-        $val['add_time']       = date('Y-m-d', $val['add_time']);
+     foreach ($res_three as &$val)
+     {
+          $val['take_timetable'] = $val['goods_name'].date('Y-m-d',$val['take_time']);
+          $val['receive_time']   = date('Y-m-d',$val['receive_time']);
+          $val['add_time']       = date('Y-m-d', $val['add_time']);
 
-        if ($val['recently'] != '-')
-        {
-            $val['recently'] = date('Y-m-d', $val['recently']);
-        }
-    }
+          if ($val['recently'] != '-')
+          {
+               $val['recently'] = date('Y-m-d', $val['recently']);
+          }
+     }
 
-    // 最近五天确认收货的顾客
-    //$res_five = $GLOBALS['db']->getAll($sql." AND i.receive_time>$days_five");
+     // 最近五天确认收货的顾客
+     //$res_five = $GLOBALS['db']->getAll($sql." AND i.receive_time>$days_five");
 
      /*foreach ($res_three as &$val)
      {
@@ -559,420 +558,411 @@ elseif ($_REQUEST['act'] == 'first_trace')
      }
       */
 
-    $smarty->assign('user_list', $res_three);
-    $smarty->assign('full_page', 1);
+     $smarty->assign('user_list', $res_three);
+     $smarty->assign('full_page', 1);
 
-    assign_query_info();
-    $res['main'] = $smarty->fetch('first_trace.htm');
+     assign_query_info();
+     $res['main'] = $smarty->fetch('first_trace.htm');
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 预约服务 */
 elseif ($_REQUEST['act'] == 'check')
 {
-    $res = array ('switch_tag' => true, 'id' => 3);
+     $res = array ('switch_tag' => true, 'id' => 3);
 
-    $smarty->assign('user_ranks',   $ranks);
-    $smarty->assign('ur_here',      $_LANG['02_serve_check']);
+     $smarty->assign('user_ranks',   $ranks);
+     $smarty->assign('ur_here',      $_LANG['02_serve_check']);
 
-    $sql = 'SELECT u.user_id, u.user_name, u.mobile_phone, u.home_phone, u.age_group, u.sex, '.
-        's.handler,s.service_time,u.admin_name,s.logbook FROM '.$GLOBALS['ecs']->table('users').
-        ' u, '.$GLOBALS['ecs']->table('service').' s WHERE u.user_id=s.user_id AND s.handler<>0 ';
-    $sql .= " AND u.admin_id={$_SESSION['admin_id']} ";
+     $sql = 'SELECT u.user_id, u.user_name, u.mobile_phone, u.home_phone, u.age_group, u.sex, '.
+          's.handler,s.service_time,u.admin_name,s.logbook FROM '.$GLOBALS['ecs']->table('users').
+          ' u, '.$GLOBALS['ecs']->table('service').' s WHERE u.user_id=s.user_id AND s.handler<>0 ';
+     $sql .= " AND u.admin_id={$_SESSION['admin_id']} ";
 
-    $now_time = time();
-    $sql .= " AND s.service_time=u.service_time AND s.handler>$now_time ORDER BY s.handler DESC";
-    $user_list = $GLOBALS['db']->getAll($sql);
-    foreach ($user_list as &$val)
-    {
-        $val['handler']      = date('Y-m-d H:i', $val['handler']);
-        $val['service_time'] = date('Y-m-d', $val['service_time']);
-    }
+     $now_time = time();
+     $sql .= " AND s.service_time=u.service_time AND s.handler>$now_time ORDER BY s.handler DESC";
+     $user_list = $GLOBALS['db']->getAll($sql);
+     foreach ($user_list as &$val)
+     {
+          $val['handler']      = date('Y-m-d H:i', $val['handler']);
+          $val['service_time'] = date('Y-m-d', $val['service_time']);
+     }
 
-    $smarty->assign('user_list',    $user_list);
-    $smarty->assign('action',       $_SESSION['action_list']);
-    $smarty->assign('full_page',    1);
-    $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
+     $smarty->assign('user_list',    $user_list);
+     $smarty->assign('action',       $_SESSION['action_list']);
+     $smarty->assign('full_page',    1);
+     $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
 
-    assign_query_info();
-    $res['main'] = $smarty->fetch('check_list.htm');
-    die($json->encode($res));
+     assign_query_info();
+     $res['main'] = $smarty->fetch('check_list.htm');
+     die($json->encode($res));
 }
 
 /* 重复购买的顾客 */
 elseif ($_REQUEST['act'] == 'repeat')
 {
-    /* 检查权限 */
-    admin_priv('users_list');
-    $res = array ('switch_tag' => true, 'id' => 5);
+     /* 检查权限 */
+     admin_priv('users_list');
+     $res = array ('switch_tag' => true, 'id' => 5);
 
-    $smarty->assign('user_ranks',   $ranks);
-    $smarty->assign('country_list',  get_regions());
-    $smarty->assign('province_list', get_regions(1,1));
+     $smarty->assign('user_ranks',   $ranks);
+     $smarty->assign('country_list',  get_regions());
+     $smarty->assign('province_list', get_regions(1,1));
 
-    if (!isset($_REQUEST['number_purchased'])){
-        $_REQUEST['number_purchased'] = 2;
-    }
+     if (!isset($_REQUEST['number_purchased'])){
+          $_REQUEST['number_purchased'] = 2;
+     }
 
-    $user_list = user_list();
+     $user_list = user_list();
 
-    /* 获取顾客来源、购买力、客服 */
-    $smarty->assign('from_where', get_from_where());
-    $smarty->assign('type_list',  get_customer_type());
-    $smarty->assign('admin_list', get_admin('session'));
-    $smarty->assign('eff_list',   getEffectTypes());
+     /* 获取顾客来源、购买力、客服 */
+     $smarty->assign('from_where', get_from_where());
+     $smarty->assign('type_list',  get_customer_type());
+     $smarty->assign('admin_list', get_admin('session'));
+     $smarty->assign('eff_list',   getEffectTypes());
 
-    $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
-    $smarty->assign('user_list',    $user_list['user_list']);
+     $smarty->assign('is_intention', $_REQUEST['act']);  // 意向顾客查询字段，为分页提供区分支持
+     $smarty->assign('user_list',    $user_list['user_list']);
 
-    // 分页设置
-    $smarty->assign('page_link',    $user_list['condition']);
-    $smarty->assign('filter',       $user_list['filter']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('page_count',   $user_list['page_count']);
-    $smarty->assign('page_size',    $user_list['page_size']);
-    $smarty->assign('page_start',   $user_list['start']);
-    $smarty->assign('page_end',     $user_list['end']);
-    $smarty->assign('full_page',    1);
-    $smarty->assign('page_set',     $user_list['page_set']);
-    $smarty->assign('page',         $user_list['page']);
-    $smarty->assign('act',          $_REQUEST['act']);
-    $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
+     // 分页设置
+     $smarty->assign('page_link',    $user_list['condition']);
+     $smarty->assign('filter',       $user_list['filter']);
+     $smarty->assign('record_count', $user_list['record_count']);
+     $smarty->assign('page_count',   $user_list['page_count']);
+     $smarty->assign('page_size',    $user_list['page_size']);
+     $smarty->assign('page_start',   $user_list['start']);
+     $smarty->assign('page_end',     $user_list['end']);
+     $smarty->assign('full_page',    1);
+     $smarty->assign('page_set',     $user_list['page_set']);
+     $smarty->assign('page',         $user_list['page']);
+     $smarty->assign('act',          $_REQUEST['act']);
+     $smarty->assign('tag',          $_REQUEST['tag'] ? $_REQUEST['tag'] :0);
 
-    $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
-    $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
+     $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
+     $smarty->assign('sort_user_id', '<img src="images/sort_desc.gif">');
 
-    //判断客服的权限，是否显示团队搜索
-    if($_SESSION['action_list'] == 'all')
-    {
-        $smarty->assign('admin_show_team',1);
-        $smarty->assign('role_list', get_role());
-    }
-    else
-    {
-        $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
-            " WHERE user_id={$_SESSION['admin_id']}";
-        $user = $GLOBALS['db']->getRow($sql);
-        if($user['manager'] === '0')
-        {
-            $smarty->assign('role_id',$user['role_id']);
-            $smarty->assign('show_team',1);
-        }
-    }
+     //判断客服的权限，是否显示团队搜索
+     if($_SESSION['action_list'] == 'all')
+     {
+          $smarty->assign('admin_show_team',1);
+          $smarty->assign('role_list', get_role());
+     }
+     else
+     {
+          $sql = 'SELECT manager,role_id FROM '.$GLOBALS['ecs']->table('admin_user').
+               " WHERE user_id={$_SESSION['admin_id']}";
+          $user = $GLOBALS['db']->getRow($sql);
+          if($user['manager'] === '0')
+          {
+               $smarty->assign('role_id',$user['role_id']);
+               $smarty->assign('show_team',1);
+          }
+     }
 
-    $res['main'] = $smarty->fetch('repeat_list.htm');
+     $res['main'] = $smarty->fetch('repeat_list.htm');
 
-    $res['left'] = sub_menu_list($file);
-    if ($res['left'] === false) unset($res['left']);
+     $res['left'] = sub_menu_list($file);
+     if ($res['left'] === false) unset($res['left']);
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 顾客详细信息 */
 elseif ($_REQUEST['act'] == 'user_detail') {
-    $user_id = intval($_REQUEST['id']);
-    $res['id'] = $user_id;
-    $res['response_action'] = 'detail';
+     $user_id = intval($_REQUEST['id']);
+     $res['id'] = $user_id;
+     $res['response_action'] = 'detail';
 
-    $order_list   = access_purchase_records($user_id); // 获取顾客购买记录（订单记录）
-    $service_list = get_user_services($user_id);       // 获取顾客受服务记录
-    $addr_list    = get_addr_list($user_id);           // 顾客地址列表
-    $contact_list = get_contact_list($user_id);        // 顾客联系方式列表
-    $user_info    = get_user_info($user_id);           // 获取顾客基本资料
+     $order_list   = access_purchase_records($user_id); // 获取顾客购买记录（订单记录）
+     $service_list = get_user_services($user_id);       // 获取顾客受服务记录
+     $addr_list    = get_addr_list($user_id);           // 顾客地址列表
+     $contact_list = get_contact_list($user_id);        // 顾客联系方式列表
+     $user_info    = get_user_info($user_id);           // 获取顾客基本资料
 
-    $mem = new Memcache;
-    $mem->connect('127.0.0.1',11211);
+     $mem = new Memcache;
+     $mem->connect('127.0.0.1',11211);
 
-    if(!$mem->get("freeze_{$_SESSION['admin_id']}")){
-        $contact_list = get_contact_list($user_id);        // 顾客联系方式列表
-    }
+     if(!$mem->get("freeze_{$_SESSION['admin_id']}")){
+         $contact_list = get_contact_list($user_id);        // 顾客联系方式列表
+     }
 
-    //$return_list = get_return_list($user_id); // 获取顾客的退货记录
-    $user_friends = get_user_friends($user_id);
+     //$return_list = get_return_list($user_id); // 获取顾客的退货记录
+     $user_friends = get_user_friends($user_id);
 
-    $case = get_before_case();         //既往病例
+     $case = get_before_case();         //既往病例
 
-    //获取家长成员
-    if($user_info['family_id'] != 0)
-    {
-        $sql_select = 'SELECT u.user_id,u.user_name,u.mobile_phone,u.home_phone,g.grade_name,g.grade_id,f.family_name,m.input_time,m.real_parent FROM '.$GLOBALS['ecs']->table('user_family_member')
-            .' AS m LEFT JOIN '.$GLOBALS['ecs']->table('users')
-            .' AS u ON u.user_id=m.user_id LEFT JOIN '
-            .$GLOBALS['ecs']->table('user_family_grade')
-            .' AS g ON m.grade_id=g.grade_id LEFT JOIN '
-            .$GLOBALS['ecs']->table('user_family').' AS f ON u.family_id=f.family_id '
-            .'WHERE m.family_id='.$user_info['family_id'].' AND m.status=0 AND g.type=0';
+     //获取家长成员
+     if($user_info['family_id'] != 0)
+     {
+         $sql_select = 'SELECT u.user_id,u.user_name,u.mobile_phone,u.home_phone,g.grade_name,g.grade_id,f.family_name,m.input_time,m.real_parent FROM '.$GLOBALS['ecs']->table('user_family_member')
+             .' AS m LEFT JOIN '.$GLOBALS['ecs']->table('users')
+             .' AS u ON u.user_id=m.user_id LEFT JOIN '
+             .$GLOBALS['ecs']->table('user_family_grade')
+             .' AS g ON m.grade_id=g.grade_id LEFT JOIN '
+             .$GLOBALS['ecs']->table('user_family').' AS f ON u.family_id=f.family_id '
+             .'WHERE m.family_id='.$user_info['family_id'].' AND m.status=0 AND g.type=0';
 
-        $family_users = $GLOBALS['db']->getAll($sql_select);
+         $family_users = $GLOBALS['db']->getAll($sql_select);
 
-        $family = array('family_name'=>$family_users[0]['family_name'],'family_total'=>count($family_users));
+         $family = array('family_name'=>$family_users[0]['family_name'],'family_total'=>count($family_users));
 
-        $smarty->assign('family',$family);
+         $smarty->assign('family',$family);
 
-        for($i = 0; $i < count($family_users); $i++)
-        {
-            $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('other_examination_test').
-                " WHERE user_id={$family_users[$i]['user_id']}";
-            $family_users[$i]['healthy_file'] = $GLOBALS['db']->getOne($sql_select);
-            $family_users[$i]['input_time'] = date('Y-m-d',$family_users[$i]['input_time']); 
-        }
+         for($i = 0; $i < count($family_users); $i++)
+         {
+             $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('other_examination_test').
+                 " WHERE user_id={$family_users[$i]['user_id']}";
+             $family_users[$i]['healthy_file'] = $GLOBALS['db']->getOne($sql_select);
+             $family_users[$i]['input_time'] = date('Y-m-d',$family_users[$i]['input_time']); 
+         }
 
-        $smarty->assign('family_users',$family_users);
-    }
+         $smarty->assign('family_users',$family_users);
+     }
 
-    //获取支付类型
-    $surplus_payment = array();
-    $sql = "SELECT pay_id, pay_name FROM ".$GLOBALS['ecs']->table('payment').
-        " WHERE enabled = 1 AND pay_code != 'cod' ORDER BY pay_id";
-    $result = $GLOBALS['db']->getAll($sql);
-    $surplus_payment = $result;
+     //获取支付类型
+     $surplus_payment = array();
+     $sql = "SELECT pay_id, pay_name FROM ".$GLOBALS['ecs']->table('payment').
+         " WHERE enabled = 1 AND pay_code != 'cod' ORDER BY pay_id";
+     $result = $GLOBALS['db']->getAll($sql);
+     $surplus_payment = $result;
 
-    /* 会员充值和提现申请记录 */
-    include_once(ROOT_PATH . 'includes/lib_clips.php');
+     /* 会员充值和提现申请记录 */
+     include_once(ROOT_PATH . 'includes/lib_clips.php');
 
-    $filter['page'] = empty($_REQUEST['page']) || (intval($_REQUEST['page'])<=0) ? 1 : intval($_REQUEST['page']);
-    if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0) {
-        $filter['page_size'] = intval($_REQUEST['page_size']);
-    } else {
-        $filter['page_size'] = 20; 
-    }
+     $filter['page'] = empty($_REQUEST['page']) || (intval($_REQUEST['page'])<=0) ? 1 : intval($_REQUEST['page']);
+     if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0) {
+         $filter['page_size'] = intval($_REQUEST['page_size']);
+     } else {
+         $filter['page_size'] = 20; 
+     }
 
-    /* 获取记录条数 */
-    $sql = "SELECT COUNT(*) FROM ".$ecs->table('user_account')." WHERE user_id='$user_id'"
-        ." AND process_type ".db_create_in(array(SURPLUS_SAVE, SURPLUS_RETURN));
-    $record_count = $db->getOne($sql);
+     /* 获取记录条数 */
+     $sql = "SELECT COUNT(*) FROM ".$ecs->table('user_account')." WHERE user_id='$user_id'"
+         ." AND process_type ".db_create_in(array(SURPLUS_SAVE, SURPLUS_RETURN));
+     $record_count = $db->getOne($sql);
 
-    $filter['record_count'] = $record_count;
-    $filter['page_count']   = $filter['record_count']>0 ? ceil($filter['record_count']/$filter['page_size']) : 1;
+     $filter['record_count'] = $record_count;
+     $filter['page_count']   = $filter['record_count']>0 ? ceil($filter['record_count']/$filter['page_size']) : 1;
 
-    // 设置分页
-    $page_set = array (1,2,3,4,5,6,7);
-    if ($filter['page'] > 4) {
-        foreach ($page_set as &$val) {
-            $val += $filter['page'] -4;
-        }
-    }
+     // 设置分页
+     $page_set = array (1,2,3,4,5,6,7);
+     if ($filter['page'] > 4) {
+         foreach ($page_set as &$val) {
+             $val += $filter['page'] -4;
+         }
+     }
 
-    if (end($page_set) > $filter['page_count']) {
-        $page_set = array ();
-        for ($i = 7; $i >= 0; $i--) {
-            if ($filter['page_count'] - $i > 0) {
-                $page_set[] = $filter['page_count'] - $i;
-            }
-        }
-    }
+     if (end($page_set) > $filter['page_count']) {
+         $page_set = array ();
+         for ($i = 7; $i >= 0; $i--) {
+             if ($filter['page_count'] - $i > 0) {
+                 $page_set[] = $filter['page_count'] - $i;
+             }
+         }
+     }
 
-    $filter = array (
-        'filter'        => $filter,
-        'page_count'    => $filter['page_count'],
-        'record_count'  => $filter['record_count'],
-        'page_size'     => $filter['page_size'],
-        'page'          => $filter['page'],
-        'page_set'      => $page_set,
-        'condition'     => $condition,
-        'start'         => ($filter['page'] - 1)*$filter['page_size'] +1,
-        'end'           => $filter['page']*$filter['page_size'],
-        'act'           => 'user_detail',
-    );
+     $filter = array (
+         'filter'        => $filter,
+         'page_count'    => $filter['page_count'],
+         'record_count'  => $filter['record_count'],
+         'page_size'     => $filter['page_size'],
+         'page'          => $filter['page'],
+         'page_set'      => $page_set,
+         'condition'     => $condition,
+         'start'         => ($filter['page'] - 1)*$filter['page_size'] +1,
+         'end'           => $filter['page']*$filter['page_size'],
+         'act'           => 'user_detail',
+     );
 
-    //获取剩余余额
-    $surplus_amount = get_user_surplus($user_id);
-    $sql = "SELECT SUM(user_money) FROM ".$GLOBALS['ecs']->table('account_log')." WHERE user_id='$user_id'";
+     //获取剩余余额
+     $surplus_amount = get_user_surplus($user_id);
+     $sql = "SELECT SUM(user_money) FROM ".$GLOBALS['ecs']->table('account_log')." WHERE user_id='$user_id'";
 
-    if (empty($surplus_amount)) {
-        $surplus_amount = 0;
-    }
+     if (empty($surplus_amount)) {
+         $surplus_amount = 0;
+     }
 
-    //获取会员帐号明细
-    $account_log = array();    //申请记录
-    $account_detail = array(); //账号明细
+     //获取会员帐号明细
+     $account_log = array();    //申请记录
+     $account_detail = array(); //账号明细
 
-    $sql_select = "SELECT * FROM ".$ecs->table('account_log')." WHERE user_id='$user_id'".' ORDER BY log_id DESC LIMIT '
-        .($filter['start']-1)*$filter['page_size'].",{$filter['page_size']}";
-    $account_detail = $GLOBALS['db']->getAll($sql_select);
+     $sql_select = "SELECT * FROM ".$ecs->table('account_log')." WHERE user_id='$user_id'".' ORDER BY log_id DESC LIMIT '
+         .($filter['start']-1)*$filter['page_size'].",{$filter['page_size']}";
+     $account_detail = $GLOBALS['db']->getAll($sql_select);
 
-    foreach($account_detail AS &$val) {
-        $val['change_time']      = date('Y-m-d H:i:s',$val['change_time']);
-        $val['admin_note']       = nl2br(htmlspecialchars($val['admin_note']));
-        $val['short_admin_note'] = ($val['admin_note'] > '') ? sub_str($val['admin_note'], 30) : 'N/A';
-        $val['pay_status']       = ($val['is_paid'] == 0) ? $GLOBALS['_LANG']['un_confirm'] : $GLOBALS['_LANG']['is_confirm'];
-        $val['amount']           = price_format(abs($val['amount']), false);
-        $val['user_money']       = price_format(abs($val['user_money']), false);
+     foreach($account_detail AS &$val) {
+         $val['change_time']      = date('Y-m-d H:i:s',$val['change_time']);
+         $val['admin_note']       = nl2br(htmlspecialchars($val['admin_note']));
+         $val['short_admin_note'] = ($val['admin_note'] > '') ? sub_str($val['admin_note'], 30) : 'N/A';
+         $val['pay_status']       = ($val['is_paid'] == 0) ? $GLOBALS['_LANG']['un_confirm'] : $GLOBALS['_LANG']['is_confirm'];
+         $val['amount']           = price_format(abs($val['amount']), false);
+         $val['user_money']       = price_format(abs($val['user_money']), false);
 
-        if ($val['process_type'] == 0) {
-            $val['type'] = $GLOBALS['_LANG']['surplus_type_0'];
-        } else {
+         if ($val['process_type'] == 0) {
+             $val['type'] = $GLOBALS['_LANG']['surplus_type_0'];
+         } else {
             $val['type'] = $GLOBALS['_LANG']['surplus_type_1'];
-        }
-    }
+         }
+     }
 
-    $sql_select = "SELECT * FROM ".$GLOBALS['ecs']->table('user_account')." WHERE user_id=$user_id LIMIT ".
-        ($filter['start']-1) * $filter['page_size'].",{$filter['page_size']}";
+     $sql_select = "SELECT * FROM ".$GLOBALS['ecs']->table('user_account')." WHERE user_id=$user_id LIMIT ".
+         ($filter['start']-1) * $filter['page_size'].",{$filter['page_size']}";
 
-    $account_log = $GLOBALS['db']->getAll($sql_select);
+     $account_log = $GLOBALS['db']->getAll($sql_select);
 
-    lange_account($account_log);
+     lange_account($account_log);
 
-    //体检项目
-    $sql_select = 'SELECT * FROM '.$GLOBALS['ecs']->table('examination');
-    $smarty->assign('examination',$GLOBALS['db']->getAll($sql_select));
+     //体检项目
+     $sql_select = 'SELECT * FROM '.$GLOBALS['ecs']->table('examination');
+     $smarty->assign('examination',$GLOBALS['db']->getAll($sql_select));
 
-    //模板赋值
-    $smarty->assign('count_log',      $record_count);
-    $smarty->assign('account_detail', $account_detail);
-    $smarty->assign('surplus_amount', price_format($surplus_amount, false));
-    $smarty->assign('lang',           $_LANG);
-    $smarty->assign('account_log',    $account_log);
-    $smarty->assign('action',         'account_log');
-    $smarty->assign('filter',         $filter);
+     //模板赋值
+     $smarty->assign('count_log',      $record_count);
+     $smarty->assign('account_detail', $account_detail);
+     $smarty->assign('surplus_amount', price_format($surplus_amount, false));
+     $smarty->assign('lang',           $_LANG);
+     $smarty->assign('account_log',    $account_log);
+     $smarty->assign('action',         'account_log');
+     $smarty->assign('filter',         $filter);
 
-    $sql_select = 'SELECT * FROM '.$GLOBALS['ecs']->table('user_rank').' WHERE role_id=(SELECT role_id FROM '.
-        $GLOBALS['ecs']->table('users')." WHERE user_id=$user_id) OR role_id = 0";
-    $smarty->assign('user_rank',$GLOBALS['db']->getAll($sql_select));
+     $sql_select = 'SELECT * FROM '.$GLOBALS['ecs']->table('user_rank').' WHERE role_id=(SELECT role_id FROM '.
+         $GLOBALS['ecs']->table('users')." WHERE user_id=$user_id) OR role_id = 0";
+     $smarty->assign('user_rank',$GLOBALS['db']->getAll($sql_select));
 
-    // 订单类型
-    $sql_select = 'SELECT type_id,type_name FROM '.$GLOBALS['ecs']->table('order_type');
-    // 验证是否是组长
-    if (admin_priv('employee_order', '', false)) {
-        $sql_select .= ' WHERE available=1 ORDER BY sort DESC';
-    } else {
-        $sql_select .= ' WHERE available=1 AND type_id<100 ORDER BY sort DESC';
-    }
+     // 订单类型
+     $sql_select = 'SELECT type_id,type_name FROM '.$GLOBALS['ecs']->table('order_type').' WHERE available=1 ORDER BY sort DESC';
+     $order_type = $GLOBALS['db']->getAll($sql_select);
+     $smarty->assign('order_type', $order_type);
 
-    $order_type = $GLOBALS['db']->getAll($sql_select);
-    $smarty->assign('order_type', $order_type);
+     $healthy_file = get_healthy($user_id);
+     $isexistHF    = $healthy_file['baseInfo']['total'];
 
-    $healthy_file = get_healthy($user_id);
-    $isexistHF    = $healthy_file['baseInfo']['total'];
+     $smarty->assign('healthy_file', $healthy_file);
+     $smarty->assign('case_list',    $case['case_list']);  //idsease
+     $smarty->assign('before_case',  $case['before_case']);  //idsease
+     $smarty->assign('isexistHF',    $isexistHF);
 
-    $smarty->assign('healthy_file', $healthy_file);
-    $smarty->assign('case_list',    $case['case_list']);  //idsease
-    $smarty->assign('before_case',  $case['before_case']);  //idsease
-    $smarty->assign('isexistHF',    $isexistHF);
+     $smarty->assign('disease',        get_disease());              // diseases
+     $smarty->assign('characters',     get_characters());           // characters
+     $smarty->assign('payment',        payment_list());             // payment
+     $smarty->assign('shipping',       shipping_list(3));           // shipping
+     $smarty->assign('service_class',  get_service_class());        // servcie class
+     $smarty->assign('service_manner', get_service_manner());       // sercie manner
+     $smarty->assign('integral_log',   get_integral_log($user_id)); // integral log
 
-    $smarty->assign('disease',        get_disease());              // diseases
-    $smarty->assign('characters',     get_characters());           // characters
-    $smarty->assign('payment',        payment_list());             // payment
-    $smarty->assign('shipping',       shipping_list(3));           // shipping
-    $smarty->assign('service_class',  get_service_class());        // servcie class
-    $smarty->assign('service_manner', get_service_manner());       // sercie manner
-    $smarty->assign('integral_log',   get_integral_log($user_id)); // integral log
+     $smarty->assign('admin_list',     get_admin_tmp_list(1));
+     $smarty->assign('platform_list',  get_role_list(1));
 
-    $smarty->assign('admin_list',     get_admin_tmp_list(1));
-    $smarty->assign('platform_list',  get_role_list(1));
+     $smarty->assign('province_list',  get_regions(1, 1));
+     $smarty->assign('city_list',      get_regions(2, $user_info['province_id']));
+     $smarty->assign('district_list',  get_regions(3, $user_info['city_id']));
 
-    $smarty->assign('province_list',  get_regions(1, 1));
-    $smarty->assign('city_list',      get_regions(2, $user_info['province_id']));
-    $smarty->assign('district_list',  get_regions(3, $user_info['city_id']));
+     $smarty->assign('order_source',   order_source_list());
 
-    $smarty->assign('order_source',   order_source_list());
+     $smarty->assign('user',            $user_info);    // 顾客信息
+     $smarty->assign('order_list',      $order_list);   // 购买记录
+     $smarty->assign('service',         $service_list); // 服务记录
+     $smarty->assign('return',          $return_list);  // 退货记录
+     $smarty->assign('user_friends',    $user_friends);
+     $smarty->assign('surplus_payment', $surplus_payment); // 充值提现支付方式
 
-    $smarty->assign('user',            $user_info);    // 顾客信息
-    $smarty->assign('order_list',      $order_list);   // 购买记录
-    $smarty->assign('service',         $service_list); // 服务记录
-    $smarty->assign('return',          $return_list);  // 退货记录
-    $smarty->assign('user_friends',    $user_friends);
-    $smarty->assign('surplus_payment', $surplus_payment); // 充值提现支付方式
+     $smarty->assign('contact_list', $contact_list);
+     $smarty->assign('addr_list',    $addr_list);
 
-    $smarty->assign('contact_list', $contact_list);
-    $smarty->assign('addr_list',    $addr_list);
+     $smarty->assign('role_id', $_SESSION['role_id']?$_SESSION['role_id']:0);
+     // 营销方式优选
+     //$smarty->assign('marketing_list',    marketing_list());
 
-    $smarty->assign('role_id', $_SESSION['role_id']?$_SESSION['role_id']:0);
-    // 营销方式优选
-    //$smarty->assign('marketing_list',    marketing_list());
+     // 顾客喜欢的联系方式
+     //$smarty->assign('marketing_checked_list', marketing_checked_list($user_id, 'marketing_name'));
 
-    // 顾客喜欢的联系方式
-    //$smarty->assign('marketing_checked_list', marketing_checked_list($user_id, 'marketing_name'));
+     $healthy_lifestyle = $smarty->fetch('healthy_file_part.htm');
+     $smarty->assign('healthy_lifestyle',$healthy_lifestyle);
+     $smarty->assign('service_time', date('Y-m-d H:i'));
+     $res['info'] = $smarty->fetch('users_detail.htm');
 
-    $healthy_lifestyle = $smarty->fetch('healthy_file_part.htm');
-    $smarty->assign('healthy_lifestyle',$healthy_lifestyle);
-    $smarty->assign('service_time', date('Y-m-d H:i'));
-
-
-    $res['info'] = $smarty->fetch('users_detail.htm');
-
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 添加顾客 */
 elseif($_REQUEST['act'] == 'add_users')
 {
-    /* 检查权限 */
-    $user = array(
-        'rank_points' => $_CFG['register_points'],
-        'pay_points'  => $_CFG['register_points'],
-        'sex'         => 0,
-        'credit_line' => 0
-    );
+     /* 检查权限 */
+     $user = array(
+          'rank_points' => $_CFG['register_points'],
+          'pay_points'  => $_CFG['register_points'],
+          'sex'         => 0,
+          'credit_line' => 0
+     );
 
-    // 取出注册扩展字段
-    $sql = 'SELECT * FROM '.$ecs->table('reg_fields').
-        ' WHERE type<2 AND display=1 AND id<>6 ORDER BY dis_order, id';
-    $extend_info_list = $db->getAll($sql);
+     // 取出注册扩展字段
+     $sql = 'SELECT * FROM '.$ecs->table('reg_fields').
+          ' WHERE type<2 AND display=1 AND id<>6 ORDER BY dis_order, id';
+     $extend_info_list = $db->getAll($sql);
 
-    //是否是添加家庭成员
-    if(isset($_REQUEST['family_id']))
-    {
-        $family_id = intval($_REQUEST['family_id']);
-        $user_id = intval($_REQUEST['user_id']);
-        if($family_id == 0)
-        {
-            $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('user_family_member')
-                .'(user_id,family_id,add_time)VALUES('
-                ."$user_id,$user_id,".time().')';
-            $result = $GLOBALS['db']->query($sql_insert);
-        }
-        $smarty->assign('family_id',$user_id);
-    }
+     //是否是添加家庭成员
+     if(isset($_REQUEST['family_id']))
+     {
+         $family_id = intval($_REQUEST['family_id']);
+         $user_id = intval($_REQUEST['user_id']);
+         if($family_id == 0)
+         {
+             $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('user_family_member')
+                 .'(user_id,family_id,add_time)VALUES('
+                 ."$user_id,$user_id,".time().')';
+             $result = $GLOBALS['db']->query($sql_insert);
+         }
+         $smarty->assign('family_id',$user_id);
+     }
 
-    // 给模板赋值
-    $smarty->assign('extend_info_list', $extend_info_list);
-    $smarty->assign('ur_here',          $_LANG['04_users_add']);
-    $smarty->assign('action_link',      array('text' => $_LANG['01_users_list'], 'href'=>'users.php?act=list'));
-    $smarty->assign('form_action',      'insert');
-    $smarty->assign('start_index',      0);
-    $smarty->assign('user',             $user);
-    $smarty->assign('special_ranks',    get_rank_list(true));
+     // 给模板赋值
+     $smarty->assign('extend_info_list', $extend_info_list);
+     $smarty->assign('ur_here',          $_LANG['04_users_add']);
+     $smarty->assign('action_link',      array('text' => $_LANG['01_users_list'], 'href'=>'users.php?act=list'));
+     $smarty->assign('form_action',      'insert');
+     $smarty->assign('start_index',      0);
+     $smarty->assign('user',             $user);
+     $smarty->assign('special_ranks',    get_rank_list(true));
 
-    $smarty->assign('country_list', get_regions());
-    $smarty->assign('province_list', get_regions(1,1));
+     $smarty->assign('country_list', get_regions());
+     $smarty->assign('province_list', get_regions(1,1));
 
-    //获取顾客类型
-    $smarty->assign('customer_type', get_customer_type());
+     //获取顾客类型
+     $smarty->assign('customer_type', get_customer_type());
 
-    //获取顾客来源
-    $smarty->assign('from_where', get_from_where());
+     //获取顾客来源
+     $smarty->assign('from_where', get_from_where());
 
-    //获取顾客经济来源
-    $smarty->assign('income', get_income());
+     //获取顾客经济来源
+     $smarty->assign('income', get_income());
 
-    //获取疾病列表
-    $smarty->assign('disease', get_disease());
+     //获取疾病列表
+     $smarty->assign('disease', get_disease());
 
-    // 添加顾客的客服所属部门
-    $smarty->assign('role_id', $_SESSION['role_id']);
+     // 添加顾客的客服所属部门
+     $smarty->assign('role_id', $_SESSION['role_id']);
 
-    // 获取性格列表
-    $sql = 'SELECT character_id, characters FROM '.$ecs->table('character').' ORDER BY sort ASC';
-    $smarty->assign('character', $db->getAll($sql));
+     // 获取性格列表
+     $sql = 'SELECT character_id, characters FROM '.$ecs->table('character').' ORDER BY sort ASC';
+     $smarty->assign('character', $db->getAll($sql));
 
-    // 获取顾客分类
-    $sql = 'SELECT eff_id, eff_name FROM '.$ecs->table('effects').
-        ' WHERE available=1 ORDER BY sort ASC';
-    $smarty->assign('effects', $db->getAll($sql));
+     // 获取顾客分类
+     $sql = 'SELECT eff_id, eff_name FROM '.$ecs->table('effects').
+          ' WHERE available=1 ORDER BY sort ASC';
+     $smarty->assign('effects', $db->getAll($sql));
 
-    // 获取销售平台列表
-    $smarty->assign('role_list', get_role_list(1));
+     // 获取销售平台列表
+     $smarty->assign('role_list', get_role_list(1));
 
-    $smarty->assign('row_number',       2);
-    assign_query_info();
-    $smarty->assign('ur_here', $_LANG['02_users_add']);
-    //$smarty->display('user_info.htm');
+     $smarty->assign('row_number',       2);
+     assign_query_info();
+     $smarty->assign('ur_here', $_LANG['02_users_add']);
+     //$smarty->display('user_info.htm');
 
-    $res['main']=$smarty->fetch('add_custom.htm');
+     $res['main']=$smarty->fetch('add_custom.htm');
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 添加客户 */
@@ -1015,255 +1005,255 @@ elseif($_REQUEST['act'] == 'add_custom') {
 /* 修改顾客信息 */
 elseif ($_REQUEST['act'] == 'edit')
 {
-    $res['response_action'] = 'edit_user';
-    $id = intval($_REQUEST['id']); // 顾客ID
-    $request = addslashes_deep($_REQUEST);
+     $res['response_action'] = 'edit_user';
+     $id = intval($_REQUEST['id']); // 顾客ID
+     $request = addslashes_deep($_REQUEST);
 
-    if (!in_array($request['info'], array ('district','address','marketing')))
-    {
-        $sql_select = "SELECT add_time,{$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$id";
-        $user_info = $GLOBALS['db']->getRow($sql_select);
-        if ($user_info['add_time'] < time() -3*24*3600 && !empty($user_info[$request['info']]) && in_array($request['info'], array ('home_phone', 'mobile_phone','qq','aliww')))
-        {
-            $res['code']    = 2;
-            $res['req_msg'] = true;
-            $res['timeout'] = 2000;
-            $res['message'] = '该顾客资料已不允许修改';
+     if (!in_array($request['info'], array ('district','address','marketing')))
+     {
+          $sql_select = "SELECT add_time,{$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$id";
+          $user_info = $GLOBALS['db']->getRow($sql_select);
+          if ($user_info['add_time'] < time() -3*24*3600 && !empty($user_info[$request['info']]) && in_array($request['info'], array ('home_phone', 'mobile_phone','qq','aliww')))
+          {
+               $res['code']    = 2;
+               $res['req_msg'] = true;
+               $res['timeout'] = 2000;
+               $res['message'] = '该顾客资料已不允许修改';
 
-            die($json->encode($res));
-        }
-    }
+               die($json->encode($res));
+          }
+     }
 
-    // 修改地址信息
-    if ($_REQUEST['info'] == 'district')
-    {
-        $smarty->assign('province_list', get_regions(1,1));
-    }
+     // 修改地址信息
+     if ($_REQUEST['info'] == 'district')
+     {
+          $smarty->assign('province_list', get_regions(1,1));
+     }
 
-    // 修改详细地址
-    if ($_REQUEST['info'] == 'address')
-    {
-        $sql_select = 'SELECT address FROM '.$GLOBALS['ecs']->table('user_address')." WHERE user_id=$id";
-        $val = $GLOBALS['db']->getOne($sql_select);
-    }
+     // 修改详细地址
+     if ($_REQUEST['info'] == 'address')
+     {
+          $sql_select = 'SELECT address FROM '.$GLOBALS['ecs']->table('user_address')." WHERE user_id=$id";
+          $val = $GLOBALS['db']->getOne($sql_select);
+     }
 
-    if ($_REQUEST['type'] == 'text' && $_REQUEST['info'] != 'address') {
-        $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$id";
-        $val = $GLOBALS['db']->getOne($sql_select);
+     if ($_REQUEST['type'] == 'text' && $_REQUEST['info'] != 'address') {
+          $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$id";
+          $val = $GLOBALS['db']->getOne($sql_select);
 
-        if (!isset($val)) {
-            $val = '';
-        }
-    }
+          if (!isset($val)) {
+               $val = '';
+          }
+     }
 
-    if ($_REQUEST['type'] == 'select' && $_REQUEST['info'] != 'district')
-    {
-        $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$id";
-        $val = $GLOBALS['db']->getOne($sql_select);
+     if ($_REQUEST['type'] == 'select' && $_REQUEST['info'] != 'district')
+     {
+          $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$id";
+          $val = $GLOBALS['db']->getOne($sql_select);
 
-        switch ($_REQUEST['info'])
-        {
-        case 'role_id' :
-            $list = list_role_common(); 
-            break;
-        case 'eff_id' :
-            $list = list_effects_common();
-            break;
-        case 'customer_type' :
-            $list = list_customer_type();
-            break;
-        case 'from_where' :
-            $list = list_from_where();
-        }
+          switch ($_REQUEST['info'])
+          {
+               case 'role_id' :
+                    $list = list_role_common(); 
+                    break;
+               case 'eff_id' :
+                    $list = list_effects_common();
+                    break;
+               case 'customer_type' :
+                    $list = list_customer_type();
+                    break;
+               case 'from_where' :
+                    $list = list_from_where();
+          }
 
-        $smarty->assign('list', $list);
-    }
+          $smarty->assign('list', $list);
+     }
 
-    if ($_REQUEST['type'] == 'checkbox') {
-        if ($_REQUEST['info'] == 'marketing') {
-            $val = marketing_list();
-            $smarty->assign('marketing_checked_list', marketing_checked_list($id, 'marketing_id'));
-        }
-    }
+     if ($_REQUEST['type'] == 'checkbox') {
+         if ($_REQUEST['info'] == 'marketing') {
+             $val = marketing_list();
+             $smarty->assign('marketing_checked_list', marketing_checked_list($id, 'marketing_id'));
+         }
+     }
 
-    $res['info'] = $_REQUEST['info'];
-    $res['id']   = $id;
-    $res['act']  = 'edit';
-    $res['type'] = $_REQUEST['type'];
+     $res['info'] = $_REQUEST['info'];
+     $res['id']   = $id;
+     $res['act']  = 'edit';
+     $res['type'] = $_REQUEST['type'];
 
-    $smarty->assign('type',  $_REQUEST['type']);
-    $smarty->assign('field', $_REQUEST['info']);
-    $smarty->assign('value', $val);
-    $res['main'] = $smarty->fetch('detail.htm');
+     $smarty->assign('type',  $_REQUEST['type']);
+     $smarty->assign('field', $_REQUEST['info']);
+     $smarty->assign('value', $val);
+     $res['main'] = $smarty->fetch('detail.htm');
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 /* 保存顾客信息 */
 elseif ($_REQUEST['act'] == 'save')
 {
-    $user_id = intval($_REQUEST['id']); // 订单ID
+     $user_id = intval($_REQUEST['id']); // 订单ID
 
-    // 转义所有数据 包括数组的key
-    $request = addslashes_deep($_REQUEST);
-    $request['type'] = strtolower($request['type']);
+     // 转义所有数据 包括数组的key
+     $request = addslashes_deep($_REQUEST);
+     $request['type'] = strtolower($request['type']);
 
-    $res['id']      = $user_id;
-    $res['info']    = $request['info'];
-    $res['type']    = $request['type'];
-    $res['req_msg'] = true;
-    $res['message'] = '顾客信息修改成功！';
-    $res['timeout'] = 2000;
+     $res['id']      = $user_id;
+     $res['info']    = $request['info'];
+     $res['type']    = $request['type'];
+     $res['req_msg'] = true;
+     $res['message'] = '顾客信息修改成功！';
+     $res['timeout'] = 2000;
 
-    if ($res['info'] == 'address' && empty($request['value'])){
-        $res['message'] = '顾客地址不能为空！';
-        die($json->encode($res));
-    }
+     if ($res['info'] == 'address' && empty($request['value'])){
+         $res['message'] = '顾客地址不能为空！';
+         die($json->encode($res));
+     }
 
-    // 修改疾病与性格
-    if (in_array($_REQUEST['info'], array('disease', 'characters')))
-    {
-        $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users').
-            " WHERE user_id=$user_id";
-        $val_exist = $GLOBALS['db']->getOne($sql_select);
-        $exist = strpos(':'.$val_exist.':', ':'.$request['value'].':');
-        if ($exist !== false)
-        {
-            $val_exist = str_replace(":{$request['value']}", '', $val_exist);
-        }
-        else 
-        {
-            $val_exist .= ':'.$request['value'];
-        }
+     // 修改疾病与性格
+     if (in_array($_REQUEST['info'], array('disease', 'characters')))
+     {
+          $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users').
+               " WHERE user_id=$user_id";
+          $val_exist = $GLOBALS['db']->getOne($sql_select);
+          $exist = strpos(':'.$val_exist.':', ':'.$request['value'].':');
+          if ($exist !== false)
+          {
+               $val_exist = str_replace(":{$request['value']}", '', $val_exist);
+          }
+          else 
+          {
+               $val_exist .= ':'.$request['value'];
+          }
 
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users').
-            " SET {$request['info']}='$val_exist' WHERE user_id=$user_id";
-        $GLOBALS['db']->query($sql_update);
-    }
+          $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users').
+               " SET {$request['info']}='$val_exist' WHERE user_id=$user_id";
+          $GLOBALS['db']->query($sql_update);
+     }
 
-    // 验证联系方式是否已存在
-    if ('text' == $request['type'] && !in_array($_REQUEST['info'], array('district','user_name','address'))) {
-        $sql_select = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('users')." WHERE {$request['info']}='{$request['value']}'";
-        $is_exist = $GLOBALS['db']->getOne($sql_select);
-        if ($is_exist) {
-            $msg = array ('req_msg'=>true,'timeout'=>2000,'message'=>'已有相同信息存在，请认真核对！');
-            die($json->encode($msg));
-        }
-    }
+     // 验证联系方式是否已存在
+     if ('text' == $request['type'] && !in_array($_REQUEST['info'], array('district','user_name','address'))) {
+         $sql_select = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('users')." WHERE {$request['info']}='{$request['value']}'";
+         $is_exist = $GLOBALS['db']->getOne($sql_select);
+         if ($is_exist) {
+             $msg = array ('req_msg'=>true,'timeout'=>2000,'message'=>'已有相同信息存在，请认真核对！');
+             die($json->encode($msg));
+         }
+     }
 
-    // 修改信息
-    if (in_array($request['type'], array('text','select','radio')) && !in_array($_REQUEST['info'], array('district','address')))
-    {
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET {$request['info']}='{$request['value']}' WHERE user_id=$user_id";
-        if ($GLOBALS['db']->query($sql_update))
-        {
-            $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$user_id";
-            $res['main'] = $GLOBALS['db']->getOne($sql_select);
+     // 修改信息
+     if (in_array($request['type'], array('text','select','radio')) && !in_array($_REQUEST['info'], array('district','address')))
+     {
+         $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET {$request['info']}='{$request['value']}' WHERE user_id=$user_id";
+         if ($GLOBALS['db']->query($sql_update))
+         {
+             $sql_select = "SELECT {$request['info']} FROM ".$GLOBALS['ecs']->table('users')." WHERE user_id=$user_id";
+             $res['main'] = $GLOBALS['db']->getOne($sql_select);
 
-            switch ($request['info'])
-            {
-            case 'eff_id' : $sql_select = 'SELECT eff_name FROM '.
-                $GLOBALS['ecs']->table('effects')." WHERE eff_id={$res['main']}";
-                $res['main'] = $GLOBALS['db']->getOne($sql_select);
-                break;
-            case 'role_id' : $sql_select = 'SELECT role_name FROM '.
-                $GLOBALS['ecs']->table('role')." WHERE role_id={$res['main']}";
-                $res['main'] = $GLOBALS['db']->getOne($sql_select);
-                break;
-            case 'sex' : $res['main'] = $res['main'] ? $res['main'] == 1 ? '男' : '女' : '不详';
-                break;
-            case 'from_where' :
-                $sql_select = 'SELECT `from` FROM '.
-                    $GLOBALS['ecs']->table('from_where')." WHERE from_id={$res['main']}";
-                $res['main'] = $GLOBALS['db']->getOne($sql_select);
-                break;
-            }
-        }
-        else 
-        {
-            $res['message'] = '修改失败！';
-        }
-    }
+             switch ($request['info'])
+             {
+             case 'eff_id' : $sql_select = 'SELECT eff_name FROM '.
+                 $GLOBALS['ecs']->table('effects')." WHERE eff_id={$res['main']}";
+                 $res['main'] = $GLOBALS['db']->getOne($sql_select);
+                 break;
+             case 'role_id' : $sql_select = 'SELECT role_name FROM '.
+                 $GLOBALS['ecs']->table('role')." WHERE role_id={$res['main']}";
+                 $res['main'] = $GLOBALS['db']->getOne($sql_select);
+                 break;
+             case 'sex' : $res['main'] = $res['main'] ? $res['main'] == 1 ? '男' : '女' : '不详';
+                 break;
+             case 'from_where' :
+                 $sql_select = 'SELECT `from` FROM '.
+                     $GLOBALS['ecs']->table('from_where')." WHERE from_id={$res['main']}";
+                 $res['main'] = $GLOBALS['db']->getOne($sql_select);
+                 break;
+             }
+         }
+         else 
+         {
+             $res['message'] = '修改失败！';
+         }
+     }
 
-    // 保存地址信息
-    if ($_REQUEST['info'] == 'district')
-    {
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('user_address').
-            " SET province={$request['province']},city={$request['city']},".
-            " district={$request['district']} WHERE user_id=$user_id";
-        if ($GLOBALS['db']->query($sql_update))
-        {
-            $sql_select = 'SELECT p.region_name province,c.region_name city,d.region_name district FROM '.
-                $GLOBALS['ecs']->table('user_address').' u LEFT JOIN '.$GLOBALS['ecs']->table('region').
-                ' p ON u.province=p.region_id LEFT JOIN '.$GLOBALS['ecs']->table('region').
-                ' c ON u.city=c.region_id LEFT JOIN '.$GLOBALS['ecs']->table('region').
-                ' d ON d.region_id=u.district'." WHERE u.user_id=$user_id";
-            $region = $GLOBALS['db']->getAll($sql_select);
+     // 保存地址信息
+     if ($_REQUEST['info'] == 'district')
+     {
+          $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('user_address').
+               " SET province={$request['province']},city={$request['city']},".
+               " district={$request['district']} WHERE user_id=$user_id";
+          if ($GLOBALS['db']->query($sql_update))
+          {
+               $sql_select = 'SELECT p.region_name province,c.region_name city,d.region_name district FROM '.
+                    $GLOBALS['ecs']->table('user_address').' u LEFT JOIN '.$GLOBALS['ecs']->table('region').
+                    ' p ON u.province=p.region_id LEFT JOIN '.$GLOBALS['ecs']->table('region').
+                    ' c ON u.city=c.region_id LEFT JOIN '.$GLOBALS['ecs']->table('region').
+                    ' d ON d.region_id=u.district'." WHERE u.user_id=$user_id";
+               $region = $GLOBALS['db']->getAll($sql_select);
 
-            $res['main'] = implode('', $region[0]);
-        }
-    }
+               $res['main'] = implode('', $region[0]);
+          }
+     }
 
-    // 保存详细地址信息
-    if ($_REQUEST['info'] == 'address')
-    {
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('user_address').
-            " SET address='{$request['value']}' WHERE user_id=$user_id";
-        $GLOBALS['db']->query($sql_update);
+     // 保存详细地址信息
+     if ($_REQUEST['info'] == 'address')
+     {
+          $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('user_address').
+               " SET address='{$request['value']}' WHERE user_id=$user_id";
+          $GLOBALS['db']->query($sql_update);
 
-        $sql_select = 'SELECT address FROM '.$GLOBALS['ecs']->table('user_address').
-            " WHERE user_id=$user_id";
-        $res['main'] = $GLOBALS['db']->getOne($sql_select);
-    }
+          $sql_select = 'SELECT address FROM '.$GLOBALS['ecs']->table('user_address').
+               " WHERE user_id=$user_id";
+          $res['main'] = $GLOBALS['db']->getOne($sql_select);
+     }
 
-    // 保存顾客愿意使用的联系方式
-    if ($_REQUEST['info'] == 'marketing') {
-        $marketing_list = $json->decode($_REQUEST['value']);
-        if (!empty($marketing_list)) {
-            // 先确定哪些选项是已经存在的
-            $sql_select = 'SELECT marketing_id FROM '.$GLOBALS['ecs']->table('user_marketing')." WHERE user_id=$user_id";
-            $tmp_marketing = $GLOBALS['db']->getCol($sql_select);
+     // 保存顾客愿意使用的联系方式
+     if ($_REQUEST['info'] == 'marketing') {
+         $marketing_list = $json->decode($_REQUEST['value']);
+         if (!empty($marketing_list)) {
+             // 先确定哪些选项是已经存在的
+             $sql_select = 'SELECT marketing_id FROM '.$GLOBALS['ecs']->table('user_marketing')." WHERE user_id=$user_id";
+             $tmp_marketing = $GLOBALS['db']->getCol($sql_select);
 
-            $delete_marketing_list = array_diff($tmp_marketing, $marketing_list); // 要删除的优先联系方式
-            $marketing_list        = array_diff($marketing_list, $tmp_marketing); // 要添加的优先联系方式
+             $delete_marketing_list = array_diff($tmp_marketing, $marketing_list); // 要删除的优先联系方式
+             $marketing_list        = array_diff($marketing_list, $tmp_marketing); // 要添加的优先联系方式
 
-            $change = 0;
-            $failure_msg = array(
-                '0'=> '修改优先联系方式成功！',
-                '1'=> '添加新联系方式失败，请查看是否需要再次修改！',
-                '2'=> '删除新联系方式失败，请查看是否需要再次修改！',
-                '3'=> '添加和删除方式都失败了，请稍后再试！',
-            );
-            if (!empty($marketing_list) && !new_marketing($marketing_list, $user_id)) {
-                $change++;
-            }
+             $change = 0;
+             $failure_msg = array(
+                 '0'=> '修改优先联系方式成功！',
+                 '1'=> '添加新联系方式失败，请查看是否需要再次修改！',
+                 '2'=> '删除新联系方式失败，请查看是否需要再次修改！',
+                 '3'=> '添加和删除方式都失败了，请稍后再试！',
+             );
+             if (!empty($marketing_list) && !new_marketing($marketing_list, $user_id)) {
+                 $change++;
+             }
 
-            if (!empty($delete_marketing_list) && !new_marketing($delete_marketing_list, $user_id, 'del')) {
-                $change += 2;
-            }
+             if (!empty($delete_marketing_list) && !new_marketing($delete_marketing_list, $user_id, 'del')) {
+                 $change += 2;
+             }
 
-            $sql_select = 'SELECT marketing_name FROM '.$GLOBALS['ecs']->table('marketing').' m LEFT JOIN '.
-                $GLOBALS['ecs']->table('user_marketing')." u ON u.marketing_id=m.marketing_id WHERE u.user_id=$user_id";
-            $now_marketing = $GLOBALS['db']->getCol($sql_select);
+             $sql_select = 'SELECT marketing_name FROM '.$GLOBALS['ecs']->table('marketing').' m LEFT JOIN '.
+                 $GLOBALS['ecs']->table('user_marketing')." u ON u.marketing_id=m.marketing_id WHERE u.user_id=$user_id";
+             $now_marketing = $GLOBALS['db']->getCol($sql_select);
 
-            $res['main'] = implode('、', $now_marketing);
-            $res['message'] = $failure_msg[$change];
-        } else {
-            $sql_delete = 'DELETE FROM '.$GLOBALS['ecs']->table('user_marketing')." WHERE user_id=$user_id";
-            if ($GLOBALS['db']->query($sql_delete)) {
-                $res['main'] = '';
-                $res['type'] = 'checkbox';
-            }
-        }
+             $res['main'] = implode('、', $now_marketing);
+             $res['message'] = $failure_msg[$change];
+         } else {
+             $sql_delete = 'DELETE FROM '.$GLOBALS['ecs']->table('user_marketing')." WHERE user_id=$user_id";
+             if ($GLOBALS['db']->query($sql_delete)) {
+                 $res['main'] = '';
+                 $res['type'] = 'checkbox';
+             }
+         }
 
-        $res['type'] = 'checkbox';
-    }
+         $res['type'] = 'checkbox';
+     }
 
-    // 记录客服操作
-    record_operate($sql_update, 'ordersyn_info');
+     // 记录客服操作
+     record_operate($sql_update, 'ordersyn_info');
 
-    // 需要修改的数据是否是顾客出生日期
-    if (isset($request['lunar'])) {// && $request['lunar'] == 2) {
+     // 需要修改的数据是否是顾客出生日期
+     if (isset($request['lunar'])) {// && $request['lunar'] == 2) {
 
          /* 阳历转为阴历
          require_once 'includes/cls_lunar.php';
@@ -1276,100 +1266,100 @@ elseif ($_REQUEST['act'] == 'save')
          $request['value'] = "$lunar_date[0]-$lunar_date[4]-$lunar_date[5]";
           */
 
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET calendar={$request['lunar']} WHERE user_id=$user_id";
-        $GLOBALS['db']->query($sql_update);
-        $res['main'] .= $request['lunar'] == 1 ? '【阴历】' : '【阳历】';
-    }
+         $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET calendar={$request['lunar']} WHERE user_id=$user_id";
+         $GLOBALS['db']->query($sql_update);
+         $res['main'] .= $request['lunar'] == 1 ? '【阴历】' : '【阳历】';
+     }
 
-    die($json->encode($res));
+     die($json->encode($res));
 }
 
 // 添加包邮卡
 elseif ($_REQUEST['act'] == 'add_freecard')
 {
-    $user_id = intval($_GET['user_id']);
-    $user_name = mysql_real_escape_string(trim($_GET['user_name']));
-    $admin_id = $_SESSION['admin_id'];
+     $user_id = intval($_GET['user_id']);
+     $user_name = mysql_real_escape_string(trim($_GET['user_name']));
+     $admin_id = $_SESSION['admin_id'];
 
-    /* START 包邮卡编号生成 */
-    //获取$admin_id所属平台
-    $sql = 'SELECT r.role_describe FROM ' .$GLOBALS['ecs']->table('admin_user').' a, '
-        .$GLOBALS['ecs']->table('role'). " r WHERE a.role_id=r.role_id AND a.user_id=$admin_id";
-    $admin = $GLOBALS['db']->getOne($sql);
-    $mon = date(m);
-    $str_rand = "012356789";
-    $rand = "";
-    $num = 7 - strlen($user_id);
-    for($i=0;$i<$num;$i++){
-        $rand .= substr($str_rand,rand(0,8),1);
-    }
-    $freecard_num = str_replace(' ','',$admin.$mon).' '.chunk_split($rand.'0'.$user_id,"4"," ");
-    //    $freecard_str = str_replace(' ','',$freecard_num);
-    //    $freecard_num = chunk_split($freecard_str,"4"," ");
-    /* END 包邮卡编号生成 */
+     /* START 包邮卡编号生成 */
+     //获取$admin_id所属平台
+     $sql = 'SELECT r.role_describe FROM ' .$GLOBALS['ecs']->table('admin_user').' a, '
+          .$GLOBALS['ecs']->table('role'). " r WHERE a.role_id=r.role_id AND a.user_id=$admin_id";
+     $admin = $GLOBALS['db']->getOne($sql);
+     $mon = date(m);
+     $str_rand = "012356789";
+     $rand = "";
+     $num = 7 - strlen($user_id);
+     for($i=0;$i<$num;$i++){
+          $rand .= substr($str_rand,rand(0,8),1);
+     }
+     $freecard_num = str_replace(' ','',$admin.$mon).' '.chunk_split($rand.'0'.$user_id,"4"," ");
+     //    $freecard_str = str_replace(' ','',$freecard_num);
+     //    $freecard_num = chunk_split($freecard_str,"4"," ");
+     /* END 包邮卡编号生成 */
 
-    $smarty->assign('freecard_num',$freecard_num);
-    $smarty->assign('user_id',$user_id);
-    $smarty->assign('user_name',$user_name);
-    //     $smarty->assign('free_type',$free_type);
-    $smarty->assign('free_platform',$free_platform);
+     $smarty->assign('freecard_num',$freecard_num);
+     $smarty->assign('user_id',$user_id);
+     $smarty->assign('user_name',$user_name);
+     //     $smarty->assign('free_type',$free_type);
+     $smarty->assign('free_platform',$free_platform);
 
-    //编辑包邮卡信息初始化页面
-    if($_REQUEST['handle'] == 'edit')
-    {
-        $smarty->assign('show',1);
-        $sql = 'SELECT free_limit,effective_date,free_type,free_platform,free_remarks FROM ' .$GLOBALS['ecs']->table('free_postal_card'). ' WHERE user_id = '.$user_id;
-        $res = $GLOBALS['db']->query($sql);
+     //编辑包邮卡信息初始化页面
+     if($_REQUEST['handle'] == 'edit')
+     {
+          $smarty->assign('show',1);
+          $sql = 'SELECT free_limit,effective_date,free_type,free_platform,free_remarks FROM ' .$GLOBALS['ecs']->table('free_postal_card'). ' WHERE user_id = '.$user_id;
+          $res = $GLOBALS['db']->query($sql);
 
-        $free = mysql_fetch_assoc($res);
-        $smarty->assign('free',$free);
-        die($smarty->fetch('free_postal_card.htm')); 
-    }
+          $free = mysql_fetch_assoc($res);
+          $smarty->assign('free',$free);
+          die($smarty->fetch('free_postal_card.htm')); 
+     }
 
-    //添加包邮卡信息初始化页面
-    else{
-        $smarty->assign('show',0);
-        die($smarty->fetch('free_postal_card.htm'));         
-    }        
+     //添加包邮卡信息初始化页面
+     else{
+          $smarty->assign('show',0);
+          die($smarty->fetch('free_postal_card.htm'));         
+     }        
 }
 
 //把包邮卡信息插入数据库中
 elseif ($_REQUEST['act'] == 'insert_free')
 {
-    $relat_info = array
-        (
-            'user_id'   => $_POST['user_id'],
-            'freecard_num'   => str_replace(' ','',$_POST['freecard_num']),
-            'free_limit'    => $_POST['free_limit'],
-            'effective_date'     => $_POST['effective_date'],
-            'free_type'   => $_POST['free_type'],
-            'free_platform' => $_POST['free_platform'],
-            'free_remarks'   => $_POST['free_remarks'],
-        ); 
-    $fields = array_keys($relat_info);
-    $values = array_values($relat_info);
-    //更新包邮卡信息到数据库
-    if($_REQUEST['update'] == 'update'){
-        $count = count($fields);
-        for($i=0;$i<$count;$i++){
-            $insert .= $fields[$i]."='".$values[$i]."',";
-        }
-        $insert=rtrim($insert,',');
-        $sql = 'UPDATE '.$GLOBALS['ecs']->table('free_postal_card').' SET '.$insert.' WHERE user_id= '.$_POST['user_id'];
-        $GLOBALS['db']->query($sql);
-        die("更新成功！！");
-    }
-    //插入包邮卡信息到数据库
-    else{  
-        $sql = 'SELECT freecard_id FROM '.$GLOBALS['ecs']->table('free_postal_card'). ' WHERE user_id = '.$_POST['user_id'];
-        $res = $GLOBALS['db']->query($sql);
-        if(mysql_fetch_assoc($res)){ die('顾客包邮卡已经添加了！！'); }
-        else{         
-            $sql = 'INSERT INTO '.$GLOBALS['ecs']->table('free_postal_card').'('.implode(',',$fields).')VALUES(\''.implode('\',\'',$values).'\')';
-            $GLOBALS['db']->query($sql); 
-            die("顾客包邮卡添加成功！！"); 
-        }
-    }   
+     $relat_info = array
+          (
+               'user_id'   => $_POST['user_id'],
+               'freecard_num'   => str_replace(' ','',$_POST['freecard_num']),
+               'free_limit'    => $_POST['free_limit'],
+               'effective_date'     => $_POST['effective_date'],
+               'free_type'   => $_POST['free_type'],
+               'free_platform' => $_POST['free_platform'],
+               'free_remarks'   => $_POST['free_remarks'],
+          ); 
+     $fields = array_keys($relat_info);
+     $values = array_values($relat_info);
+     //更新包邮卡信息到数据库
+     if($_REQUEST['update'] == 'update'){
+          $count = count($fields);
+          for($i=0;$i<$count;$i++){
+               $insert .= $fields[$i]."='".$values[$i]."',";
+          }
+          $insert=rtrim($insert,',');
+          $sql = 'UPDATE '.$GLOBALS['ecs']->table('free_postal_card').' SET '.$insert.' WHERE user_id= '.$_POST['user_id'];
+          $GLOBALS['db']->query($sql);
+          die("更新成功！！");
+     }
+     //插入包邮卡信息到数据库
+     else{  
+          $sql = 'SELECT freecard_id FROM '.$GLOBALS['ecs']->table('free_postal_card'). ' WHERE user_id = '.$_POST['user_id'];
+          $res = $GLOBALS['db']->query($sql);
+          if(mysql_fetch_assoc($res)){ die('顾客包邮卡已经添加了！！'); }
+          else{         
+               $sql = 'INSERT INTO '.$GLOBALS['ecs']->table('free_postal_card').'('.implode(',',$fields).')VALUES(\''.implode('\',\'',$values).'\')';
+               $GLOBALS['db']->query($sql); 
+               die("顾客包邮卡添加成功！！"); 
+          }
+     }   
 }
 
 //高级转移顾客
@@ -1387,9 +1377,12 @@ elseif ($_REQUEST['act'] == 'advance_batch')
     $condition = '';
     $where = ' where 1 ';
     $filter['page'] = empty($_REQUEST['page']) || (intval($_REQUEST['page'])<=0) ? 1 : intval($_REQUEST['page']);
-    if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0) {
+    if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0)
+    {
         $filter['page_size'] = intval($_REQUEST['page_size']);
-    } else {
+    }
+    else
+    {
         $filter['page_size'] = 20; 
     }
 
@@ -1514,29 +1507,29 @@ elseif ($_REQUEST['act'] == 'advance_batch')
 elseif ($_REQUEST['act'] == 'query')
 {
 
-    $user_list = user_list();
+     $user_list = user_list();
 
-    $smarty->assign('user_list',    $user_list['user_list']);
-    $smarty->assign('filter',       $user_list['filter']);
-    $smarty->assign('action',       $_SESSION['action_list']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('page_count',   $user_list['page_count']);
+     $smarty->assign('user_list',    $user_list['user_list']);
+     $smarty->assign('filter',       $user_list['filter']);
+     $smarty->assign('action',       $_SESSION['action_list']);
+     $smarty->assign('record_count', $user_list['record_count']);
+     $smarty->assign('page_count',   $user_list['page_count']);
 
-    $sort_flag  = sort_flag($user_list['filter']);
-    $smarty->assign($sort_flag['tag'], $sort_flag['img']);
+     $sort_flag  = sort_flag($user_list['filter']);
+     $smarty->assign($sort_flag['tag'], $sort_flag['img']);
 
-    /* 会员部处理重新分配顾客 */
-    if ($_SESSION['role_id'] == 9)
-    {
-        $smarty->assign('effects', getEffectTypes());
-    }
+     /* 会员部处理重新分配顾客 */
+     if ($_SESSION['role_id'] == 9)
+     {
+          $smarty->assign('effects', getEffectTypes());
+     }
 
-    //显示一个月内转移的顾客
-    if($user_list['filter']['transfer_time']){
-        $smarty->assign('transfer',1);
-    }
+     //显示一个月内转移的顾客
+     if($user_list['filter']['transfer_time']){
+          $smarty->assign('transfer',1);
+     }
 
-    make_json_result($smarty->fetch('users_list.htm'), '', array('filter' => $user_list['filter'], 'page_count' => $user_list['page_count']));
+     make_json_result($smarty->fetch('users_list.htm'), '', array('filter' => $user_list['filter'], 'page_count' => $user_list['page_count']));
 }
 
 /*------------------------------------------------------ */
@@ -1544,266 +1537,266 @@ elseif ($_REQUEST['act'] == 'query')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'add')
 {
-    /* 检查权限 */
-    admin_priv('users_add');
+     /* 检查权限 */
+     admin_priv('users_add');
 
-    $user = array(
-        'rank_points' => $_CFG['register_points'],
-        'pay_points'  => $_CFG['register_points'],
-        'sex'         => 0,
-        'credit_line' => 0
-    );
+     $user = array(
+          'rank_points' => $_CFG['register_points'],
+          'pay_points'  => $_CFG['register_points'],
+          'sex'         => 0,
+          'credit_line' => 0
+     );
 
-    /* 取出注册扩展字段 */
-    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' WHERE type < 2 AND display = 1 AND id != 6 ORDER BY dis_order, id';
-    $extend_info_list = $db->getAll($sql);
-    $smarty->assign('extend_info_list', $extend_info_list);
-    $smarty->assign('ur_here',          $_LANG['04_users_add']);
-    $smarty->assign('action_link',      array('text' => $_LANG['01_users_list'], 'href'=>'users.php?act=list'));
-    $smarty->assign('form_action',      'insert');
-    $smarty->assign('start_index',      0);
-    $smarty->assign('user',             $user);
-    $smarty->assign('special_ranks',    get_rank_list(true));
+     /* 取出注册扩展字段 */
+     $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' WHERE type < 2 AND display = 1 AND id != 6 ORDER BY dis_order, id';
+     $extend_info_list = $db->getAll($sql);
+     $smarty->assign('extend_info_list', $extend_info_list);
+     $smarty->assign('ur_here',          $_LANG['04_users_add']);
+     $smarty->assign('action_link',      array('text' => $_LANG['01_users_list'], 'href'=>'users.php?act=list'));
+     $smarty->assign('form_action',      'insert');
+     $smarty->assign('start_index',      0);
+     $smarty->assign('user',             $user);
+     $smarty->assign('special_ranks',    get_rank_list(true));
 
-    $smarty->assign('country_list', get_regions());
-    $smarty->assign('province_list', get_regions(1,1));
+     $smarty->assign('country_list', get_regions());
+     $smarty->assign('province_list', get_regions(1,1));
 
-    //获取顾客类型
-    $smarty->assign('customer_type', get_customer_type());
+     //获取顾客类型
+     $smarty->assign('customer_type', get_customer_type());
 
-    //获取顾客来源
-    $smarty->assign('from_where', get_from_where());
+     //获取顾客来源
+     $smarty->assign('from_where', get_from_where());
 
-    //获取顾客经济来源
-    $smarty->assign('income', get_income());
+     //获取顾客经济来源
+     $smarty->assign('income', get_income());
 
-    //获取疾病列表
-    $smarty->assign('disease', get_disease());
+     //获取疾病列表
+     $smarty->assign('disease', get_disease());
 
-    // 获取性格列表
-    $sql = 'SELECT character_id, characters FROM '.$ecs->table('character').' ORDER BY sort ASC';
-    $smarty->assign('character', $db->getAll($sql));
+     // 获取性格列表
+     $sql = 'SELECT character_id, characters FROM '.$ecs->table('character').' ORDER BY sort ASC';
+     $smarty->assign('character', $db->getAll($sql));
 
-    /* 获取顾客分类 */
-    $sql = 'SELECT eff_id, eff_name FROM '.$ecs->table('effects').' WHERE available=1 ORDER BY sort ASC';
-    $smarty->assign('effects', $db->getAll($sql));
+     /* 获取顾客分类 */
+     $sql = 'SELECT eff_id, eff_name FROM '.$ecs->table('effects').' WHERE available=1 ORDER BY sort ASC';
+     $smarty->assign('effects', $db->getAll($sql));
 
-    /* 获取销售平台列表 */
-    $smarty->assign('role_list', get_role_list(1));
+     /* 获取销售平台列表 */
+     $smarty->assign('role_list', get_role_list(1));
 
-    $smarty->assign('row_number',       2);
-    assign_query_info();
-    $smarty->assign('ur_here', $_LANG['02_users_add']);
+     $smarty->assign('row_number',       2);
+     assign_query_info();
+     $smarty->assign('ur_here', $_LANG['02_users_add']);
 
-    $smarty->display('user_info.htm');
+     $smarty->display('user_info.htm');
 }
 
 /*------------------------------------------------------ */
 //-- 添加会员帐号
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'insert') {
-    /* 检查权限 */
-    //admin_priv('users_add');
-    $res['response_action'] = $_REQUEST['act'];
+     /* 检查权限 */
+     //admin_priv('users_add');
+     $res['response_action'] = $_REQUEST['act'];
 
-    $res['code']    = 0;
-    $res['req_msg'] = 'true';
-    $res['timeout'] = 2000;
+     $res['code']    = 0;
+     $res['req_msg'] = 'true';
+     $res['timeout'] = 2000;
 
-    $area_code    = mysql_real_escape_string(trim($_POST['area_code']));
-    $home_phone   = mysql_real_escape_string(trim($_POST['home_phone']));
-    $mobile_phone = mysql_real_escape_string(trim($_POST['mobile_phone']));
+     $area_code    = mysql_real_escape_string(trim($_POST['area_code']));
+     $home_phone   = mysql_real_escape_string(trim($_POST['home_phone']));
+     $mobile_phone = mysql_real_escape_string(trim($_POST['mobile_phone']));
 
-    if (!empty($area_code))
-        $home_phone = $area_code.'-'.$home_phone;
+     if (!empty($area_code))
+          $home_phone = $area_code.'-'.$home_phone;
 
-    if ($_POST['home_phone'] && $_POST['mobile_phone'])
-        $repeat_where = " home_phone='$home_phone' OR mobile_phone=$mobile_phone" ;
-    elseif($_POST['home_phone'])
-        $repeat_where = " home_phone='$home_phone' ";
-    elseif($_POST['mobile_phone'])
-        $repeat_where = " mobile_phone='$mobile_phone'";
+     if ($_POST['home_phone'] && $_POST['mobile_phone'])
+          $repeat_where = " home_phone='$home_phone' OR mobile_phone=$mobile_phone" ;
+     elseif($_POST['home_phone'])
+          $repeat_where = " home_phone='$home_phone' ";
+     elseif($_POST['mobile_phone'])
+          $repeat_where = " mobile_phone='$mobile_phone'";
 
-    $sql = 'SELECT COUNT(*) FROM '.$ecs->table('users')." WHERE $repeat_where";
-    if ($repeat_where && $db->getOne($sql)) {
-        $res['message'] = '该顾客已存在！';
-        die($json->encode($res));
-    }
+     $sql = 'SELECT COUNT(*) FROM '.$ecs->table('users')." WHERE $repeat_where";
+     if ($repeat_where && $db->getOne($sql)) {
+          $res['message'] = '该顾客已存在！';
+          die($json->encode($res));
+     }
 
-    // 顾客基本信息
-    $sex = empty($_POST['sex']) ? 0 : intval($_POST['sex']);
-    $sex = in_array($sex, array(0, 1, 2)) ? $sex : 0;
-    $userinfo = array (
-        'user_name'     => mysql_real_escape_string(trim($_POST['username'])),     // 顾客姓名
-        'eff_id'        => intval($_POST['eff_id']),                               // 功效分类
-        'sex'           => $sex,                                                   // 性别
-        'birthday'      => trim($_POST['birthday']),                               // 出生日期
-        'age_group'     => mysql_real_escape_string(trim($_POST['age_group'])),    // 年龄段
-        'from_where'    => intval($_POST['from_where']),                           // 顾客来源
-        'customer_type' => intval($_POST['customer_type']),                        // 顾客类型
-        'mobile_phone'  => mysql_real_escape_string(trim($_POST['mobile_phone'])), // 手机号码
-        'id_card'       => mysql_real_escape_string(trim($_POST['id_card'])),      // 身份证号码
-        'member_cid'    => mysql_real_escape_string(trim($_POST['member_cid'])),   // 会员卡号
-        'qq'            => mysql_real_escape_string($_POST['qq']),                 // 腾讯QQ
-        'aliww'         => mysql_real_escape_string($_POST['aliww']),              // 阿里旺旺
-        'habby'         => mysql_real_escape_string($_POST['habby']),              // 兴趣爱好
-        'email'         => mysql_real_escape_string($_POST['email']),              // 电子邮箱
-        'occupat'       => mysql_real_escape_string($_POST['occupat']),            // 顾客职业
-        'income'        => mysql_real_escape_string($_POST['income']),             // 经济来源
+     // 顾客基本信息
+     $sex = empty($_POST['sex']) ? 0 : intval($_POST['sex']);
+     $sex = in_array($sex, array(0, 1, 2)) ? $sex : 0;
+     $userinfo = array (
+          'user_name'     => mysql_real_escape_string(trim($_POST['username'])),     // 顾客姓名
+          'eff_id'        => intval($_POST['eff_id']),                               // 功效分类
+          'sex'           => $sex,                                                   // 性别
+          'birthday'      => trim($_POST['birthday']),                               // 出生日期
+          'age_group'     => mysql_real_escape_string(trim($_POST['age_group'])),    // 年龄段
+          'from_where'    => intval($_POST['from_where']),                           // 顾客来源
+          'customer_type' => intval($_POST['customer_type']),                        // 顾客类型
+          'mobile_phone'  => mysql_real_escape_string(trim($_POST['mobile_phone'])), // 手机号码
+          'id_card'       => mysql_real_escape_string(trim($_POST['id_card'])),      // 身份证号码
+          'member_cid'    => mysql_real_escape_string(trim($_POST['member_cid'])),   // 会员卡号
+          'qq'            => mysql_real_escape_string($_POST['qq']),                 // 腾讯QQ
+          'aliww'         => mysql_real_escape_string($_POST['aliww']),              // 阿里旺旺
+          'habby'         => mysql_real_escape_string($_POST['habby']),              // 兴趣爱好
+          'email'         => mysql_real_escape_string($_POST['email']),              // 电子邮箱
+          'occupat'       => mysql_real_escape_string($_POST['occupat']),            // 顾客职业
+          'income'        => mysql_real_escape_string($_POST['income']),             // 经济来源
 
-        'disease'    => isset($_POST['disease'])   &&is_array($_POST['disease'])?implode(',',$_POST['disease']):'',               // 疾病
-        'characters' => isset($_POST['characters'])&&is_array($_POST['characters'])?','.implode(',',$_POST['characters']).',':'', // 性格
+          'disease'    => isset($_POST['disease'])   &&is_array($_POST['disease'])?implode(',',$_POST['disease']):'',               // 疾病
+          'characters' => isset($_POST['characters'])&&is_array($_POST['characters'])?','.implode(',',$_POST['characters']).',':'', // 性格
 
-        'disease_2'   => mysql_real_escape_string($_POST['disease_2']),   // 其他疾病
-        'remarks'     => mysql_real_escape_string($_POST['remarks']),     // 备注
-        'admin_id'    => $_SESSION['admin_id'],                           // 顾客归属
-        'first_admin' => $_SESSION['admin_id'],                           // 添加顾客客服
-        'add_time'    => time(),                                          // 添加时间
-        'snail'       => mysql_real_escape_string($_POST['snail']),       // 平邮地址
-        'team'        => intval($_POST['team']),                          // 所属团队
-        'admin_name'  => $_SESSION['admin_name'],                         // 客服姓名
-        'lang'        => intval($_POST['lang']),                          // 常用语言
-        'parent_id'   => intval($_POST['parent_id']),                     // 推荐人
-        'role_id'     => intval($_POST['role_id']) ? intval($_POST['role_id']) : $_SESSION['role_id'],
-    );
+          'disease_2'   => mysql_real_escape_string($_POST['disease_2']),   // 其他疾病
+          'remarks'     => mysql_real_escape_string($_POST['remarks']),     // 备注
+          'admin_id'    => $_SESSION['admin_id'],                           // 顾客归属
+          'first_admin' => $_SESSION['admin_id'],                           // 添加顾客客服
+          'add_time'    => time(),                                          // 添加时间
+          'snail'       => mysql_real_escape_string($_POST['snail']),       // 平邮地址
+          'team'        => intval($_POST['team']),                          // 所属团队
+          'admin_name'  => $_SESSION['admin_name'],                         // 客服姓名
+          'lang'        => intval($_POST['lang']),                          // 常用语言
+          'parent_id'   => intval($_POST['parent_id']),                     // 推荐人
+          'role_id'     => intval($_POST['role_id']) ? intval($_POST['role_id']) : $_SESSION['role_id'],
+     );
 
-    $userinfo['email']      = empty($userinfo['email']) ? empty($userinfo['qq']) ? '' : $userinfo['qq'].'@qq.com' :$userinfo['email'];
-    $userinfo['home_phone'] = empty($_REQUEST['area_code']) ? $_REQUEST['home_phone'] : $_REQUEST['area_code'].'-'.$_REQUEST['home_phone'];
+     $userinfo['email']      = empty($userinfo['email']) ? empty($userinfo['qq']) ? '' : $userinfo['qq'].'@qq.com' :$userinfo['email'];
+     $userinfo['home_phone'] = empty($_REQUEST['area_code']) ? $_REQUEST['home_phone'] : $_REQUEST['area_code'].'-'.$_REQUEST['home_phone'];
 
-    $userinfo['email']      = mysql_real_escape_string($userinfo['email']);
-    $userinfo['home_phone'] = mysql_real_escape_string($userinfo['home_phone']);
+     $userinfo['email']      = mysql_real_escape_string($userinfo['email']);
+     $userinfo['home_phone'] = mysql_real_escape_string($userinfo['home_phone']);
 
-    $ex_where = array();
-    if ($userinfo['home_phone']) {
-        $ex_where[] = "contact_name='tel' AND contact_value='{$userinfo['home_phone']}'";
-    }
+     $ex_where = array();
+     if ($userinfo['home_phone']) {
+         $ex_where[] = "contact_name='tel' AND contact_value='{$userinfo['home_phone']}'";
+     }
 
-    if ($userinfo['mobile_phone']) {
-        $ex_where[] = "contact_name='mobile' AND contact_value='{$userinfo['mobile_phone']}'";
-    }
+     if ($userinfo['mobile_phone']) {
+         $ex_where[] = "contact_name='mobile' AND contact_value='{$userinfo['mobile_phone']}'";
+     }
 
-    if ($userinfo['qq']) {
-        $ex_where[] = "contact_name='qq' AND contact_value='{$userinfo['qq']}'";
-    }
+     if ($userinfo['qq']) {
+         $ex_where[] = "contact_name='qq' AND contact_value='{$userinfo['qq']}'";
+     }
 
-    if ($userinfo['aliww']) {
-        $ex_where[] = "contact_name='aliww' AND contact_value='{$userinfo['aliww']}'";
-    }
+     if ($userinfo['aliww']) {
+         $ex_where[] = "contact_name='aliww' AND contact_value='{$userinfo['aliww']}'";
+     }
 
-    $ex_where = implode(') OR (', $ex_where);
-    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('user_contact')." WHERE ($ex_where)";
-    if ($GLOBALS['db']->getOne($sql_select)) {
-        $res['message'] = '该顾客已存在啦！';
-        die($json->encode($res));
-    }
+     $ex_where = implode(') OR (', $ex_where);
+     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('user_contact')." WHERE ($ex_where)";
+     if ($GLOBALS['db']->getOne($sql_select)) {
+          $res['message'] = '该顾客已存在啦！';
+          die($json->encode($res));
+     }
 
-    if ($_POST['calendar'] == 1) {
-        $userinfo['birthday'] = $userinfo['birthday'];
-    } else {
-        require(dirname(__FILE__) . '/includes/lunar.php');
-        $lunar = new Lunar();
-        $userinfo['birthday'] = date('Y-m-d', $lunar->S2L($userinfo['birthday']));
-    }
+     if ($_POST['calendar'] == 1) {
+          $userinfo['birthday'] = $userinfo['birthday'];
+     } else {
+          require(dirname(__FILE__) . '/includes/lunar.php');
+          $lunar = new Lunar();
+          $userinfo['birthday'] = date('Y-m-d', $lunar->S2L($userinfo['birthday']));
+     }
 
-    // 顾客地址信息
-    $addr = array(
-        'country'   => intval($_POST['country']),  // 国家
-        'province'  => intval($_POST['province']), // 省份
-        'city'      => intval($_POST['city']),     // 城市
-        'address'   => mysql_real_escape_string($_POST['address']),  // 详细地址
-        'zipcode'   => intval($_POST['zipcode'])   // 邮编
-    );
+     // 顾客地址信息
+     $addr = array(
+          'country'   => intval($_POST['country']),  // 国家
+          'province'  => intval($_POST['province']), // 省份
+          'city'      => intval($_POST['city']),     // 城市
+          'address'   => mysql_real_escape_string($_POST['address']),  // 详细地址
+          'zipcode'   => intval($_POST['zipcode'])   // 邮编
+     );
 
-    if (!empty($_POST['district'])) {
-        $addr['district'] = intval($_POST['district']); // 区县
-    }
+     if (!empty($_POST['district'])) {
+          $addr['district'] = intval($_POST['district']); // 区县
+     }
 
-    if($_SESSION['role_id'] == 2) {
-        $userinfo['dm'] = 1;
-        $userinfo['mag_no'] = 1;
-    }
+     if($_SESSION['role_id'] == 2) {
+          $userinfo['dm'] = 1;
+          $userinfo['mag_no'] = 1;
+     }
 
-    $users =& init_users();
+     $users =& init_users();
 
-    $user_id = $users->add_user($userinfo, $addr);
+     $user_id = $users->add_user($userinfo, $addr);
 
-    if (!$user_id) {
-        /* 插入会员数据失败 */
-        if ($users->error == ERR_INVALID_USERNAME) {
-            $msg = $_LANG['username_invalid'];
-        } elseif ($users->error == ERR_NULL_PHONE) {
-            $msg = $_LANG['null_phone'];
-        } elseif ($users->error == ERR_INVALID_AREA) {
-            $msg = $_LANG['invalid_area'];
-        } elseif ($users->error == ERR_NULL_ADDR) {
-            $msg = $_LANG['null_addr'];
-        } else {
-            //die('Error:'.$users->error_msg());
-        }
+     if (!$user_id) {
+          /* 插入会员数据失败 */
+          if ($users->error == ERR_INVALID_USERNAME) {
+               $msg = $_LANG['username_invalid'];
+          } elseif ($users->error == ERR_NULL_PHONE) {
+               $msg = $_LANG['null_phone'];
+          } elseif ($users->error == ERR_INVALID_AREA) {
+               $msg = $_LANG['invalid_area'];
+          } elseif ($users->error == ERR_NULL_ADDR) {
+               $msg = $_LANG['null_addr'];
+          } else {
+               //die('Error:'.$users->error_msg());
+          }
 
-        $res['message'] = $msg;
-        die($json->encode($res));
-    }
+          $res['message'] = $msg;
+          die($json->encode($res));
+     }
 
-    if (empty($addr['zipcode'])) unset($addr['zipcode']);
+     if (empty($addr['zipcode'])) unset($addr['zipcode']);
 
-    $addr['user_id'] = $user_id;
-    $fields = array_keys($addr);
-    $values = array_values($addr);
-    $sql = 'INSERT INTO '.$ecs->table('user_address').'('.implode(',',$fields).')VALUES(\''.implode('\',\'',$values).'\')';
-    $db->query($sql);
+     $addr['user_id'] = $user_id;
+     $fields = array_keys($addr);
+     $values = array_values($addr);
+     $sql = 'INSERT INTO '.$ecs->table('user_address').'('.implode(',',$fields).')VALUES(\''.implode('\',\'',$values).'\')';
+     $db->query($sql);
 
-    $sql = 'UPDATE '.$ecs->table('users').' u, '.$ecs->table('user_address').' a '
-        .' SET u.address_id=a.address_id WHERE u.user_id=a.user_id AND u.user_id='.$user_id;
-    $db->query($sql);
+     $sql = 'UPDATE '.$ecs->table('users').' u, '.$ecs->table('user_address').' a '
+          .' SET u.address_id=a.address_id WHERE u.user_id=a.user_id AND u.user_id='.$user_id;
+     $db->query($sql);
 
-    $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('user_contact').'(user_id,contact_name,contact_value,is_default) SELECT '.
-        "%d,'%s','%s',%d FROM dual WHERE NOT EXISTS (SELECT * FROM ".$GLOBALS['ecs']->table('user_contact').
-        " WHERE contact_name='%s' AND contact_value='%s')";
+     $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('user_contact').'(user_id,contact_name,contact_value,is_default) SELECT '.
+         "%d,'%s','%s',%d FROM dual WHERE NOT EXISTS (SELECT * FROM ".$GLOBALS['ecs']->table('user_contact').
+         " WHERE contact_name='%s' AND contact_value='%s')";
 
-    // 固话
-    $sql_insert_assign = sprintf($sql_insert, $user_id, 'tel', $userinfo['home_phone'], 1, 'tel', $userinfo['home_phone']);
-    $db->query($sql_insert_assign);
+     // 固话
+     $sql_insert_assign = sprintf($sql_insert, $user_id, 'tel', $userinfo['home_phone'], 1, 'tel', $userinfo['home_phone']);
+     $db->query($sql_insert_assign);
 
-    // 手机号码
-    $sql_insert_assign = sprintf($sql_insert, $user_id, 'mobile', $userinfo['mobile_phone'], 1, 'mobile', $userinfo['mobile_phone']);
-    $db->query($sql_insert_assign);
+     // 手机号码
+     $sql_insert_assign = sprintf($sql_insert, $user_id, 'mobile', $userinfo['mobile_phone'], 1, 'mobile', $userinfo['mobile_phone']);
+     $db->query($sql_insert_assign);
 
-    // QQ
-    $sql_insert_assign = sprintf($sql_insert, $user_id, 'qq', $userinfo['qq'], 1, 'qq', $userinfo['qq']);
-    $db->query($sql_insert_assign);
+     // QQ
+     $sql_insert_assign = sprintf($sql_insert, $user_id, 'qq', $userinfo['qq'], 1, 'qq', $userinfo['qq']);
+     $db->query($sql_insert_assign);
 
-    // aliww
-    $sql_insert_assign = sprintf($sql_insert, $user_id, 'aliww', $userinfo['aliww'], 1, 'aliww', $userinfo['aliww']);
-    $db->query($sql_insert_assign);
+     // aliww
+     $sql_insert_assign = sprintf($sql_insert, $user_id, 'aliww', $userinfo['aliww'], 1, 'aliww', $userinfo['aliww']);
+     $db->query($sql_insert_assign);
 
-    /* 推荐顾客赠送积分 */
-    if (!empty($userinfo['parent_id'])) {
-        include_once './includes/cls_integral.php';
-        $integ = new integral($ecs->table('integral'), $db);
-        $integral = $integ->countIntegral($userinfo['role_id'], 1);
-        $validity = strtotime(date('Ym', time())+intval($integral['validity']));
+     /* 推荐顾客赠送积分 */
+     if (!empty($userinfo['parent_id'])) {
+          include_once './includes/cls_integral.php';
+          $integ = new integral($ecs->table('integral'), $db);
+          $integral = $integ->countIntegral($userinfo['role_id'], 1);
+          $validity = strtotime(date('Ym', time())+intval($integral['validity']));
 
-        if ($integral['integral_way'] == 1) {
-            $sql = 'INSERT INTO '.$ecs->table('user_integral').
-                '(integral_id,exchange_points,source,source_id,receive_time,validity,user_id,admin_id)'.
-                "VALUES('{$integral['integral_id']}','{$integral['scale']}','users','$user_id',".
-                " UNIX_TIMESTAMP(),$validity,'{$userinfo['parent_id']}',{$_SESSION['admin_id']})";
-            $db->query($sql);
-        }
-    }
+          if ($integral['integral_way'] == 1) {
+               $sql = 'INSERT INTO '.$ecs->table('user_integral').
+                    '(integral_id,exchange_points,source,source_id,receive_time,validity,user_id,admin_id)'.
+                    "VALUES('{$integral['integral_id']}','{$integral['scale']}','users','$user_id',".
+                    " UNIX_TIMESTAMP(),$validity,'{$userinfo['parent_id']}',{$_SESSION['admin_id']})";
+               $db->query($sql);
+          }
+     }
 
-    /* 记录管理员操作 */
-    admin_log($_POST['username'], 'add', 'users');
-    $uname = implode('', $_REQUEST['uname']);
-    if (!empty($uname))
-    {
-        insertSocial();
-    }
+     /* 记录管理员操作 */
+     admin_log($_POST['username'], 'add', 'users');
+     $uname = implode('', $_REQUEST['uname']);
+     if (!empty($uname))
+     {
+          insertSocial();
+     }
 
-    $res['code']    = 1;
-    $res['message'] = '顾客添加成功！';
-    die($json->encode($res));
+     $res['code']    = 1;
+     $res['message'] = '顾客添加成功！';
+     die($json->encode($res));
 }
 
 /*------------------------------------------------------ */
@@ -1811,91 +1804,91 @@ elseif ($_REQUEST['act'] == 'insert') {
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'file')
 {
-    //由于需要设置部分字段的次数，所以需要修改条件中的数字
-    //该SQL需要进行深度修改
-    $nowtime = time();
-    $sql = 'SELECT user_id,sex,user_name,id_card,mobile_phone,home_phone,address,region, remarks FROM '.$GLOBALS['ecs']->table('files').' WHERE nullnum=0 AND noman<10 AND cannot<10 AND ok<>1 AND admin_id='.$_SESSION['admin_id']." AND add_time<$nowtime ORDER BY add_time ASC";
-    $user = $db->getRow($sql);
+     //由于需要设置部分字段的次数，所以需要修改条件中的数字
+     //该SQL需要进行深度修改
+     $nowtime = time();
+     $sql = 'SELECT user_id,sex,user_name,id_card,mobile_phone,home_phone,address,region, remarks FROM '.$GLOBALS['ecs']->table('files').' WHERE nullnum=0 AND noman<10 AND cannot<10 AND ok<>1 AND admin_id='.$_SESSION['admin_id']." AND add_time<$nowtime ORDER BY add_time ASC";
+     $user = $db->getRow($sql);
 
-    $smarty->assign('userinfo', $user);
+     $smarty->assign('userinfo', $user);
 
-    $smarty->display('users_file.htm');
+     $smarty->display('users_file.htm');
 }
 elseif ($_REQUEST['act'] == 'checkfiles')
 {
-    if (array_key_exists('nullnum', $_POST))
-    {
-        //空号
-        $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET nullnum=1 WHERE user_id='.$_POST['user_id'];
-        if($db->query($sql))
-        {
-            header('location:?act=file');
-        }
-    }
-    elseif(array_key_exists('noman', $_POST))
-    {
-        //无人接听
-        $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET noman=noman+1, add_time=UNIX_TIMESTAMP() WHERE user_id='.$_POST['user_id'];
-        if($db->query($sql))
-        {
-            header('location:?act=file');
-        }
-    }
-    elseif (array_key_exists('cannot', $_POST))
-    {
-        //打不通
-        $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET cannot=cannot+1, add_time=UNIX_TIMESTAMP() WHERE user_id='.$_POST['user_id'];
-        if($db->query($sql))
-        {
-            header('location:?act=file');
-        }
-    }
-    elseif (array_key_exists('night', $_POST))
-    {
-        //晚上再打
-        $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET night=night+1, add_time=UNIX_TIMESTAMP() WHERE user_id='.$_POST['user_id'];
-        if($db->query($sql))
-        {
-            header('location:?act=file');
-        }
-    }
-    elseif (array_key_exists('ok', $_POST))
-    {
-        //有效
-        $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET ok=1 WHERE user_id='.$_POST['user_id'];
-        if($db->query($sql))
-        {
-            $user = $_POST;
+     if (array_key_exists('nullnum', $_POST))
+     {
+          //空号
+          $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET nullnum=1 WHERE user_id='.$_POST['user_id'];
+          if($db->query($sql))
+          {
+               header('location:?act=file');
+          }
+     }
+     elseif(array_key_exists('noman', $_POST))
+     {
+          //无人接听
+          $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET noman=noman+1, add_time=UNIX_TIMESTAMP() WHERE user_id='.$_POST['user_id'];
+          if($db->query($sql))
+          {
+               header('location:?act=file');
+          }
+     }
+     elseif (array_key_exists('cannot', $_POST))
+     {
+          //打不通
+          $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET cannot=cannot+1, add_time=UNIX_TIMESTAMP() WHERE user_id='.$_POST['user_id'];
+          if($db->query($sql))
+          {
+               header('location:?act=file');
+          }
+     }
+     elseif (array_key_exists('night', $_POST))
+     {
+          //晚上再打
+          $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET night=night+1, add_time=UNIX_TIMESTAMP() WHERE user_id='.$_POST['user_id'];
+          if($db->query($sql))
+          {
+               header('location:?act=file');
+          }
+     }
+     elseif (array_key_exists('ok', $_POST))
+     {
+          //有效
+          $sql = 'UPDATE '.$GLOBALS['ecs']->table('files').' SET ok=1 WHERE user_id='.$_POST['user_id'];
+          if($db->query($sql))
+          {
+               $user = $_POST;
 
-            $sql = 'SELECT * FROM '.$ecs->table('customer_type');
-            $smarty->assign('customer_type', $db->getAll($sql));
+               $sql = 'SELECT * FROM '.$ecs->table('customer_type');
+               $smarty->assign('customer_type', $db->getAll($sql));
 
-            //获取顾客来源
-            $sql = 'SELECT * FROM '.$ecs->table('from_where').' ORDER BY sort ASC';
-            $smarty->assign('from_where', $db->getAll($sql));
+               //获取顾客来源
+               $sql = 'SELECT * FROM '.$ecs->table('from_where').' ORDER BY sort ASC';
+               $smarty->assign('from_where', $db->getAll($sql));
 
-            //获取顾客经济来源
-            $sql = 'SELECT * FROM '.$ecs->table('income');
-            $smarty->assign('income', $db->getAll($sql));
+               //获取顾客经济来源
+               $sql = 'SELECT * FROM '.$ecs->table('income');
+               $smarty->assign('income', $db->getAll($sql));
 
-            //获取疾病列表
-            $sql = 'SELECT * FROM '.$ecs->table('disease');
-            $smarty->assign('disease', $db->getAll($sql));
+               //获取疾病列表
+               $sql = 'SELECT * FROM '.$ecs->table('disease');
+               $smarty->assign('disease', $db->getAll($sql));
 
-            assign_query_info();
-            $smarty->assign('ur_here',          $_LANG['users_edit']);
-            $smarty->assign('action_link',      array('text' => $_LANG['03_users_list'], 'href'=>'users.php?act=list&' . list_link_postfix()));
-            $smarty->assign('user',             $user);
-            $smarty->assign('form_action',      'insert');
-            $smarty->assign('special_ranks',    get_rank_list(true));
-            $smarty->assign('country_list',     get_regions());
-            $smarty->assign('province_list',    get_regions(1, 1));
-            $smarty->assign('city_list',        get_regions(2, $user_region['province']));
-            $smarty->assign('district_list',    get_regions(3, $user_region['city']));
-            $smarty->assign('user_region',      $user_region);
-            $smarty->display('user_info.htm');
-        }
-    }
+               assign_query_info();
+               $smarty->assign('ur_here',          $_LANG['users_edit']);
+               $smarty->assign('action_link',      array('text' => $_LANG['03_users_list'], 'href'=>'users.php?act=list&' . list_link_postfix()));
+               $smarty->assign('user',             $user);
+               $smarty->assign('form_action',      'insert');
+               $smarty->assign('special_ranks',    get_rank_list(true));
+               $smarty->assign('country_list',     get_regions());
+               $smarty->assign('province_list',    get_regions(1, 1));
+               $smarty->assign('city_list',        get_regions(2, $user_region['province']));
+               $smarty->assign('district_list',    get_regions(3, $user_region['city']));
+               $smarty->assign('user_region',      $user_region);
+               $smarty->display('user_info.htm');
+          }
+     }
 }
 
 /*------------------------------------------------------ */
@@ -1904,101 +1897,101 @@ elseif ($_REQUEST['act'] == 'checkfiles')
 
 elseif ($_REQUEST['act'] == 'update')
 {
-    /* 检查权限 */
-    admin_priv('users_edit');
-    $sex = empty($_POST['sex']) ? 0 : intval($_POST['sex']);
-    $sex = in_array($sex, array(0, 1, 2)) ? $sex : 0;
-    $userinfo = array(
-        'user_id'       => $_POST['user_id'],
-        'user_name'     => trim($_POST['username']),
-        'eff_id'        => intval($_POST['eff_id']),
-        'sex'           => $sex,
-        'age_group'     => $_POST['age_group'],
-        'from_where'    => $_POST['from_where'],
-        'customer_type' => $_POST['customer_type'],
-        'mobile_phone'  => trim($_POST['mobile_phone']),
-        'id_card'       => trim($_POST['id_card']),
-        'member_cid'    => trim($_POST['member_cid']),
-        'qq'            => trim($_POST['qq']),
-        'aliww'         => trim($_POST['aliww']),
-        'habby'         => trim($_POST['habby']),
-        'email'         => trim($_POST['email']),
-        'occupat'       => trim($_POST['occupat']),
-        'income'        => $_POST['income'],
-        'disease'       => isset($_POST['disease']) && is_array($_POST['disease']) ? implode(',', $_POST['disease']) : '',
-        'characters'    => isset($_POST['characters']) && is_array($_POST['characters']) ? ','.implode(',', $_POST['characters']).',' : '',
-        'disease_2'     => trim($_POST['disease_2']),
-        'remarks'       => trim($_POST['remarks']),
-        //'parent_id'   => $_POST['recommender'],  // 推荐人信息
-        'edit_time'     => time(),
-        'snail'         => trim($_POST['snail']),
-        'team'          => intval($_POST['team']),
-        'admin_name'    => $_SESSION['admin_name'],
-        'lang'          => intval($_POST['lang']), // 常用语言
-        'parent_id'     => intval($_POST['parent_id']),
-        'role_id'       => intval($_POST['role_id'])
-    );
+     /* 检查权限 */
+     admin_priv('users_edit');
+     $sex = empty($_POST['sex']) ? 0 : intval($_POST['sex']);
+     $sex = in_array($sex, array(0, 1, 2)) ? $sex : 0;
+     $userinfo = array(
+          'user_id'       => $_POST['user_id'],
+          'user_name'     => trim($_POST['username']),
+          'eff_id'        => intval($_POST['eff_id']),
+          'sex'           => $sex,
+          'age_group'     => $_POST['age_group'],
+          'from_where'    => $_POST['from_where'],
+          'customer_type' => $_POST['customer_type'],
+          'mobile_phone'  => trim($_POST['mobile_phone']),
+          'id_card'       => trim($_POST['id_card']),
+          'member_cid'    => trim($_POST['member_cid']),
+          'qq'            => trim($_POST['qq']),
+          'aliww'         => trim($_POST['aliww']),
+          'habby'         => trim($_POST['habby']),
+          'email'         => trim($_POST['email']),
+          'occupat'       => trim($_POST['occupat']),
+          'income'        => $_POST['income'],
+          'disease'       => isset($_POST['disease']) && is_array($_POST['disease']) ? implode(',', $_POST['disease']) : '',
+          'characters'    => isset($_POST['characters']) && is_array($_POST['characters']) ? ','.implode(',', $_POST['characters']).',' : '',
+          'disease_2'     => trim($_POST['disease_2']),
+          'remarks'       => trim($_POST['remarks']),
+          //'parent_id'   => $_POST['recommender'],  // 推荐人信息
+          'edit_time'     => time(),
+          'snail'         => trim($_POST['snail']),
+          'team'          => intval($_POST['team']),
+          'admin_name'    => $_SESSION['admin_name'],
+          'lang'          => intval($_POST['lang']), // 常用语言
+          'parent_id'     => intval($_POST['parent_id']),
+          'role_id'       => intval($_POST['role_id'])
+     );
 
-    if ($_POST['calendar'] == 1)
-    {
-        $userinfo['birthday'] = trim($_POST['birthday']);
-    }
-    else 
-    {
-        require(dirname(__FILE__) . '/includes/lunar.php');
-        $lunar = new Lunar();
-        $userinfo['birthday'] = date('Y-m-d', $lunar->S2L(trim($_POST['birthday'])));
-    }
-    $userinfo['email'] = empty($userinfo['email']) ? empty($userinfo['qq']) ? '' : $userinfo['qq'].'@qq.com' :$userinfo['email']; 
+     if ($_POST['calendar'] == 1)
+     {
+          $userinfo['birthday'] = trim($_POST['birthday']);
+     }
+     else 
+     {
+          require(dirname(__FILE__) . '/includes/lunar.php');
+          $lunar = new Lunar();
+          $userinfo['birthday'] = date('Y-m-d', $lunar->S2L(trim($_POST['birthday'])));
+     }
+     $userinfo['email'] = empty($userinfo['email']) ? empty($userinfo['qq']) ? '' : $userinfo['qq'].'@qq.com' :$userinfo['email']; 
 
-    if (empty($_POST['area_code']))
-    {
-        $userinfo['home_phone'] = $_POST['home_phone'];
-    }
-    else
-    {
-        $userinfo['home_phone'] = $_POST['area_code'].'-'.$_POST['home_phone'];
-    }
+     if (empty($_POST['area_code']))
+     {
+          $userinfo['home_phone'] = $_POST['home_phone'];
+     }
+     else
+     {
+          $userinfo['home_phone'] = $_POST['area_code'].'-'.$_POST['home_phone'];
+     }
 
-    $addr = array(
-        'user_id'   => $_POST['user_id'],
-        'country'   => $_POST['country'],
-        'province'  => $_POST['province'],
-        'city'      => $_POST['city'],
-        'district'  => $_POST['district'],
-        'address'   => $_POST['address'],
-        'zipcode'   => $_POST['zipcode']
-    );
+     $addr = array(
+          'user_id'   => $_POST['user_id'],
+          'country'   => $_POST['country'],
+          'province'  => $_POST['province'],
+          'city'      => $_POST['city'],
+          'district'  => $_POST['district'],
+          'address'   => $_POST['address'],
+          'zipcode'   => $_POST['zipcode']
+     );
 
-    $users  =& init_users();
-    if($users->edit_user($userinfo, $addr))
-    {
-        foreach ($addr as $key=>$val)
-        {
-            if($key != 'user_id' || !empty($val))
-                $addr2db[] = $key."='$val'";
-        }
+     $users  =& init_users();
+     if($users->edit_user($userinfo, $addr))
+     {
+          foreach ($addr as $key=>$val)
+          {
+               if($key != 'user_id' || !empty($val))
+                    $addr2db[] = $key."='$val'";
+          }
 
-        $addr2db = implode(',', $addr2db);
-        $sql = 'UPDATE '.$ecs->table('user_address')." SET $addr2db WHERE user_id=$addr[user_id]";
-        $db->query($sql);
-    }
-    else
-    {
-        if ($users->error == ERR_EMAIL_EXISTS)
-        {
-            $msg = $_LANG['email_exists'];
-        }
-        else
-        {
-            $msg = $_LANG['edit_user_failed'];
-        }
-        sys_msg($msg, 1);
-    }
+          $addr2db = implode(',', $addr2db);
+          $sql = 'UPDATE '.$ecs->table('user_address')." SET $addr2db WHERE user_id=$addr[user_id]";
+          $db->query($sql);
+     }
+     else
+     {
+          if ($users->error == ERR_EMAIL_EXISTS)
+          {
+               $msg = $_LANG['email_exists'];
+          }
+          else
+          {
+               $msg = $_LANG['edit_user_failed'];
+          }
+          sys_msg($msg, 1);
+     }
 
-    /* 更新用户扩展字段的数据 */
-    //$sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' WHERE type = 0 AND display = 1 ORDER BY dis_order, id';   //读出所有扩展字段的id
-    //$fields_arr = $db->getAll($sql);
+     /* 更新用户扩展字段的数据 */
+     //$sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' WHERE type = 0 AND display = 1 ORDER BY dis_order, id';   //读出所有扩展字段的id
+     //$fields_arr = $db->getAll($sql);
       /*$user_id_arr = $users->get_profile_by_name($username);
       $user_id = $user_id_arr['user_id'];
 
@@ -2023,7 +2016,7 @@ elseif ($_REQUEST['act'] == 'update')
       }
        */
 
-    /* 更新会员的其它信息 */
+     /* 更新会员的其它信息 */
       /*$other =  array();
       $other['credit_line'] = $credit_line;
       $other['user_rank'] = $rank;
@@ -2036,23 +2029,23 @@ elseif ($_REQUEST['act'] == 'update')
 
       $db->autoExecute($ecs->table('users'), $other, 'UPDATE', "user_name = '$username'");
        */
-    /* 记录管理员操作 */
-    admin_log($username, 'edit', 'users');
+     /* 记录管理员操作 */
+     admin_log($username, 'edit', 'users');
 
-    /* 更新顾客社会关系 */
-    $uname = implode('', $_REQUEST['uname']);
-    if (!empty($uname))
-    {
-        updateSocial();
-    }
+     /* 更新顾客社会关系 */
+     $uname = implode('', $_REQUEST['uname']);
+     if (!empty($uname))
+     {
+          updateSocial();
+     }
 
-    /* 提示信息 */
-    $links[0]['text']    = $_LANG['goto_list'];
-    $links[0]['href']    = 'users.php?act=list&' . list_link_postfix();
-    $links[1]['text']    = $_LANG['go_back'];
-    $links[1]['href']    = 'javascript:history.back()';
+     /* 提示信息 */
+     $links[0]['text']    = $_LANG['goto_list'];
+     $links[0]['href']    = 'users.php?act=list&' . list_link_postfix();
+     $links[1]['text']    = $_LANG['go_back'];
+     $links[1]['href']    = 'javascript:history.back()';
 
-    sys_msg($_LANG['update_success'], 0, $links);
+     sys_msg($_LANG['update_success'], 0, $links);
 
 }
 
@@ -2062,16 +2055,16 @@ elseif ($_REQUEST['act'] == 'update')
 
 elseif($_REQUEST['act'] == 'del_rela')
 {
-    $sql = 'DELETE FROM '.$GLOBALS['ecs']->table('user_relation').
-        " WHERE user_id={$_REQUEST['user_id']} AND rela_id={$_REQUEST['rela_id']}";
-    if (1)//$GLOBALS['db']->query($sql))
-    {
-        echo 1;
-    } else {
-        echo 0;
-    }
+     $sql = 'DELETE FROM '.$GLOBALS['ecs']->table('user_relation').
+          " WHERE user_id={$_REQUEST['user_id']} AND rela_id={$_REQUEST['rela_id']}";
+     if (1)//$GLOBALS['db']->query($sql))
+     {
+          echo 1;
+     } else {
+          echo 0;
+     }
 
-    exit;
+     exit;
 }
 /*------------------------------------------------------ */
 //-- 批量删除会员帐号
@@ -2079,75 +2072,75 @@ elseif($_REQUEST['act'] == 'del_rela')
 
 elseif ($_REQUEST['act'] == 'batch_remove')
 {
-    /* 检查权限 */
-    admin_priv('users_drop');
+     /* 检查权限 */
+     admin_priv('users_drop');
 
-    if (isset($_POST['checkboxes']))
-    {
-        $sql = 'UPDATE '.$ecs->table('users').' SET admin_id=-1 WHERE user_id '.
-            db_create_in($_POST['checkboxes']);
-        $db->query($sql);
-        //$sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id " . db_create_in($_POST['checkboxes']);
+     if (isset($_POST['checkboxes']))
+     {
+          $sql = 'UPDATE '.$ecs->table('users').' SET admin_id=-1 WHERE user_id '.
+               db_create_in($_POST['checkboxes']);
+          $db->query($sql);
+          //$sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id " . db_create_in($_POST['checkboxes']);
         /*
         $col = $db->getCol($sql);
         $usernames = implode(',',addslashes_deep($col));
         $count = count($col);
          */
-        /* 通过插件来删除用户 */
-        //$users =& init_users();
-        //$users->remove_user($col);
+          /* 通过插件来删除用户 */
+          //$users =& init_users();
+          //$users->remove_user($col);
 
-        admin_log($usernames, 'batch_remove', 'users');
+          admin_log($usernames, 'batch_remove', 'users');
 
-        $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
-        sys_msg(sprintf($_LANG['batch_remove_success'], $count), 0, $lnk);
-    }
-    else
-    {
-        $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
-        sys_msg($_LANG['no_select_user'], 0, $lnk);
-    }
+          $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
+          sys_msg(sprintf($_LANG['batch_remove_success'], $count), 0, $lnk);
+     }
+     else
+     {
+          $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
+          sys_msg($_LANG['no_select_user'], 0, $lnk);
+     }
 }
 
 /* 编辑用户名 */
 elseif ($_REQUEST['act'] == 'edit_username')
 {
-    /* 检查权限 */
-    check_authz_json('users_manage');
+     /* 检查权限 */
+     check_authz_json('users_manage');
 
-    $username = empty($_REQUEST['val']) ? '' : json_str_iconv(trim($_REQUEST['val']));
-    $id = empty($_REQUEST['id']) ? 0 : intval($_REQUEST['id']);
+     $username = empty($_REQUEST['val']) ? '' : json_str_iconv(trim($_REQUEST['val']));
+     $id = empty($_REQUEST['id']) ? 0 : intval($_REQUEST['id']);
 
-    if ($id == 0)
-    {
-        make_json_error('NO USER ID');
-        return;
-    }
+     if ($id == 0)
+     {
+          make_json_error('NO USER ID');
+          return;
+     }
 
-    if ($username == '')
-    {
-        make_json_error($GLOBALS['_LANG']['username_empty']);
-        return;
-    }
+     if ($username == '')
+     {
+          make_json_error($GLOBALS['_LANG']['username_empty']);
+          return;
+     }
 
-    $users =& init_users();
+     $users =& init_users();
 
-    if ($users->edit_user($id, $username))
-    {
-        if ($_CFG['integrate_code'] != 'ecshop')
-        {
-            /* 更新商城会员表 */
-            $db->query('UPDATE ' .$ecs->table('users'). " SET user_name = '$username' WHERE user_id = '$id'");
-        }
+     if ($users->edit_user($id, $username))
+     {
+          if ($_CFG['integrate_code'] != 'ecshop')
+          {
+               /* 更新商城会员表 */
+               $db->query('UPDATE ' .$ecs->table('users'). " SET user_name = '$username' WHERE user_id = '$id'");
+          }
 
-        admin_log(addslashes($username), 'edit', 'users');
-        make_json_result(stripcslashes($username));
-    }
-    else
-    {
-        $msg = ($users->error == ERR_USERNAME_EXISTS) ? $GLOBALS['_LANG']['username_exists'] : $GLOBALS['_LANG']['edit_user_failed'];
-        make_json_error($msg);
-    }
+          admin_log(addslashes($username), 'edit', 'users');
+          make_json_result(stripcslashes($username));
+     }
+     else
+     {
+          $msg = ($users->error == ERR_USERNAME_EXISTS) ? $GLOBALS['_LANG']['username_exists'] : $GLOBALS['_LANG']['edit_user_failed'];
+          make_json_error($msg);
+     }
 }
 
 /*------------------------------------------------------ */
@@ -2155,36 +2148,36 @@ elseif ($_REQUEST['act'] == 'edit_username')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'edit_email')
 {
-    /* 检查权限 */
-    check_authz_json('users_manage');
+     /* 检查权限 */
+     check_authz_json('users_manage');
 
-    $id = empty($_REQUEST['id']) ? 0 : intval($_REQUEST['id']);
-    $email = empty($_REQUEST['val']) ? '' : json_str_iconv(trim($_REQUEST['val']));
+     $id = empty($_REQUEST['id']) ? 0 : intval($_REQUEST['id']);
+     $email = empty($_REQUEST['val']) ? '' : json_str_iconv(trim($_REQUEST['val']));
 
-    $users =& init_users();
+     $users =& init_users();
 
-    $sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id = '$id'";
-    $username = $db->getOne($sql);
+     $sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id = '$id'";
+     $username = $db->getOne($sql);
 
 
-    if (is_email($email))
-    {
-        if ($users->edit_user(array('username'=>$username, 'email'=>$email)))
-        {
-            admin_log(addslashes($username), 'edit', 'users');
+     if (is_email($email))
+     {
+          if ($users->edit_user(array('username'=>$username, 'email'=>$email)))
+          {
+               admin_log(addslashes($username), 'edit', 'users');
 
-            make_json_result(stripcslashes($email));
-        }
-        else
-        {
-            $msg = ($users->error == ERR_EMAIL_EXISTS) ? $GLOBALS['_LANG']['email_exists'] : $GLOBALS['_LANG']['edit_user_failed'];
-            make_json_error($msg);
-        }
-    }
-    else
-    {
-        make_json_error($GLOBALS['_LANG']['invalid_email']);
-    }
+               make_json_result(stripcslashes($email));
+          }
+          else
+          {
+               $msg = ($users->error == ERR_EMAIL_EXISTS) ? $GLOBALS['_LANG']['email_exists'] : $GLOBALS['_LANG']['edit_user_failed'];
+               make_json_error($msg);
+          }
+     }
+     else
+     {
+          make_json_error($GLOBALS['_LANG']['invalid_email']);
+     }
 }
 
 /*------------------------------------------------------ */
@@ -2193,24 +2186,24 @@ elseif ($_REQUEST['act'] == 'edit_email')
 
 elseif ($_REQUEST['act'] == 'remove')
 {
-    /* 检查权限 */
-    admin_priv('users_drop');
-    $sql = 'UPDATE '.$ecs->table('users')." SET admin_id=-1 WHERE user_id=$_GET[id]";
-    $db->query($sql);
+     /* 检查权限 */
+     admin_priv('users_drop');
+     $sql = 'UPDATE '.$ecs->table('users')." SET admin_id=-1 WHERE user_id=$_GET[id]";
+     $db->query($sql);
 
 
-    //$sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id = '" . $_GET['id'] . "'";
-    //$username = $db->getOne($sql);
-    /* 通过插件来删除用户 */
-    //$users =& init_users();
-    //$users->remove_user($username); //已经删除用户所有数据
+     //$sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id = '" . $_GET['id'] . "'";
+     //$username = $db->getOne($sql);
+     /* 通过插件来删除用户 */
+     //$users =& init_users();
+     //$users->remove_user($username); //已经删除用户所有数据
 
-    /* 记录管理员操作 */
-    admin_log(addslashes($username), 'remove', 'users');
+     /* 记录管理员操作 */
+     admin_log(addslashes($username), 'remove', 'users');
 
-    /* 提示信息 */
-    $link[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
-    sys_msg(sprintf($_LANG['remove_success'], $username), 0, $link);
+     /* 提示信息 */
+     $link[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
+     sys_msg(sprintf($_LANG['remove_success'], $username), 0, $link);
 }
 
 /*------------------------------------------------------ */
@@ -2218,20 +2211,20 @@ elseif ($_REQUEST['act'] == 'remove')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'address_list')
 {
-    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-    $sql = "SELECT a.*, c.region_name AS country_name, p.region_name AS province, ct.region_name AS city_name, d.region_name AS district_name ".
-        " FROM " .$ecs->table('user_address'). " as a ".
-        " LEFT JOIN " . $ecs->table('region') . " AS c ON c.region_id = a.country " .
-        " LEFT JOIN " . $ecs->table('region') . " AS p ON p.region_id = a.province " .
-        " LEFT JOIN " . $ecs->table('region') . " AS ct ON ct.region_id = a.city " .
-        " LEFT JOIN " . $ecs->table('region') . " AS d ON d.region_id = a.district " .
-        " WHERE user_id='$id'";
-    $address = $db->getAll($sql);
-    $smarty->assign('address',          $address);
-    assign_query_info();
-    $smarty->assign('ur_here',          $_LANG['address_list']);
-    $smarty->assign('action_link',      array('text' => $_LANG['03_users_list'], 'href'=>'users.php?act=list&' . list_link_postfix()));
-    $smarty->display('user_address_list.htm');
+     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+     $sql = "SELECT a.*, c.region_name AS country_name, p.region_name AS province, ct.region_name AS city_name, d.region_name AS district_name ".
+          " FROM " .$ecs->table('user_address'). " as a ".
+          " LEFT JOIN " . $ecs->table('region') . " AS c ON c.region_id = a.country " .
+          " LEFT JOIN " . $ecs->table('region') . " AS p ON p.region_id = a.province " .
+          " LEFT JOIN " . $ecs->table('region') . " AS ct ON ct.region_id = a.city " .
+          " LEFT JOIN " . $ecs->table('region') . " AS d ON d.region_id = a.district " .
+          " WHERE user_id='$id'";
+     $address = $db->getAll($sql);
+     $smarty->assign('address',          $address);
+     assign_query_info();
+     $smarty->assign('ur_here',          $_LANG['address_list']);
+     $smarty->assign('action_link',      array('text' => $_LANG['03_users_list'], 'href'=>'users.php?act=list&' . list_link_postfix()));
+     $smarty->display('user_address_list.htm');
 }
 
 /*------------------------------------------------------ */
@@ -2240,20 +2233,20 @@ elseif ($_REQUEST['act'] == 'address_list')
 
 elseif ($_REQUEST['act'] == 'remove_parent')
 {
-    /* 检查权限 */
-    admin_priv('users_manage');
+     /* 检查权限 */
+     admin_priv('users_manage');
 
-    $sql = "UPDATE " . $ecs->table('users') . " SET parent_id = 0 WHERE user_id = '" . $_GET['id'] . "'";
-    $db->query($sql);
+     $sql = "UPDATE " . $ecs->table('users') . " SET parent_id = 0 WHERE user_id = '" . $_GET['id'] . "'";
+     $db->query($sql);
 
-    /* 记录管理员操作 */
-    $sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id = '" . $_GET['id'] . "'";
-    $username = $db->getOne($sql);
-    admin_log(addslashes($username), 'edit', 'users');
+     /* 记录管理员操作 */
+     $sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id = '" . $_GET['id'] . "'";
+     $username = $db->getOne($sql);
+     admin_log(addslashes($username), 'edit', 'users');
 
-    /* 提示信息 */
-    $link[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
-    sys_msg(sprintf($_LANG['update_success'], $username), 0, $link);
+     /* 提示信息 */
+     $link[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
+     sys_msg(sprintf($_LANG['update_success'], $username), 0, $link);
 }
 
 /*------------------------------------------------------ */
@@ -2261,455 +2254,454 @@ elseif ($_REQUEST['act'] == 'remove_parent')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'aff_list')
 {
-    /* 检查权限 */
-    admin_priv('users_manage');
-    $smarty->assign('ur_here',      $_LANG['03_users_list']);
+     /* 检查权限 */
+     admin_priv('users_manage');
+     $smarty->assign('ur_here',      $_LANG['03_users_list']);
 
-    $auid = $_GET['auid'];
-    $user_list['user_list'] = array();
+     $auid = $_GET['auid'];
+     $user_list['user_list'] = array();
 
-    $affiliate = unserialize($GLOBALS['_CFG']['affiliate']);
-    $smarty->assign('affiliate', $affiliate);
+     $affiliate = unserialize($GLOBALS['_CFG']['affiliate']);
+     $smarty->assign('affiliate', $affiliate);
 
-    empty($affiliate) && $affiliate = array();
+     empty($affiliate) && $affiliate = array();
 
-    $num = count($affiliate['item']);
-    $up_uid = "'$auid'";
-    $all_count = 0;
-    for ($i = 1; $i<=$num; $i++)
-    {
-        $count = 0;
-        if ($up_uid)
-        {
-            $sql = "SELECT user_id FROM " . $ecs->table('users') . " WHERE parent_id IN($up_uid)";
-            $query = $db->query($sql);
-            $up_uid = '';
-            while ($rt = $db->fetch_array($query))
-            {
-                $up_uid .= $up_uid ? ",'$rt[user_id]'" : "'$rt[user_id]'";
-                $count++;
-            }
-        }
-        $all_count += $count;
+     $num = count($affiliate['item']);
+     $up_uid = "'$auid'";
+     $all_count = 0;
+     for ($i = 1; $i<=$num; $i++)
+     {
+          $count = 0;
+          if ($up_uid)
+          {
+               $sql = "SELECT user_id FROM " . $ecs->table('users') . " WHERE parent_id IN($up_uid)";
+               $query = $db->query($sql);
+               $up_uid = '';
+               while ($rt = $db->fetch_array($query))
+               {
+                    $up_uid .= $up_uid ? ",'$rt[user_id]'" : "'$rt[user_id]'";
+                    $count++;
+               }
+          }
+          $all_count += $count;
 
-        if ($count)
-        {
-            $sql = "SELECT user_id, user_name, '$i' AS level, email, is_validated, user_money, frozen_money, rank_points, pay_points, add_time ".
-                " FROM " . $GLOBALS['ecs']->table('users') . " WHERE user_id IN($up_uid)" .
-                " ORDER by level, user_id";
-            $user_list['user_list'] = array_merge($user_list['user_list'], $db->getAll($sql));
-        }
-    }
+          if ($count)
+          {
+               $sql = "SELECT user_id, user_name, '$i' AS level, email, is_validated, user_money, frozen_money, rank_points, pay_points, add_time ".
+                    " FROM " . $GLOBALS['ecs']->table('users') . " WHERE user_id IN($up_uid)" .
+                    " ORDER by level, user_id";
+               $user_list['user_list'] = array_merge($user_list['user_list'], $db->getAll($sql));
+          }
+     }
 
-    $temp_count = count($user_list['user_list']);
-    for ($i=0; $i<$temp_count; $i++)
-    {
-        $user_list['user_list'][$i]['add_time'] = date($_CFG['date_format'], $user_list['user_list'][$i]['add_time']);
-    }
+     $temp_count = count($user_list['user_list']);
+     for ($i=0; $i<$temp_count; $i++)
+     {
+          $user_list['user_list'][$i]['add_time'] = date($_CFG['date_format'], $user_list['user_list'][$i]['add_time']);
+     }
 
-    $user_list['record_count'] = $all_count;
+     $user_list['record_count'] = $all_count;
 
-    $smarty->assign('user_list',    $user_list['user_list']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('full_page',    1);
-    $smarty->assign('action_link',  array('text' => $_LANG['back_note'], 'href'=>"users.php?act=edit&id=$auid"));
+     $smarty->assign('user_list',    $user_list['user_list']);
+     $smarty->assign('record_count', $user_list['record_count']);
+     $smarty->assign('full_page',    1);
+     $smarty->assign('action_link',  array('text' => $_LANG['back_note'], 'href'=>"users.php?act=edit&id=$auid"));
 
-    assign_query_info();
-    $smarty->display('affiliate_list.htm');
+     assign_query_info();
+     $smarty->display('affiliate_list.htm');
 }
 
 /* 单个顾客转移-页面 */
 elseif ($_REQUEST['act'] == 'transfer')
 {
-    $user['user_id'] = intval($_GET['user_id']);
-    $user['user_name'] = mysql_real_escape_string(trim($_GET['user_name']));
-    $sql = 'SELECT user_id, user_name FROM '.$GLOBALS['ecs']->table('admin_user').' WHERE transfer=1';
-    $result = $db->getAll($sql);
+     $user['user_id'] = intval($_GET['user_id']);
+     $user['user_name'] = mysql_real_escape_string(trim($_GET['user_name']));
+     $sql = 'SELECT user_id, user_name FROM '.$GLOBALS['ecs']->table('admin_user').' WHERE transfer=1';
+     $result = $db->getAll($sql);
 
-    $smarty->assign('user', $user);
-    $smarty->assign('admin', $result);
-    $smarty->display('users_transfer.htm');
+     $smarty->assign('user', $user);
+     $smarty->assign('admin', $result);
+     $smarty->display('users_transfer.htm');
 }
 
 /* 单个顾客转移-执行转移 */
 elseif ($_REQUEST['act'] == 'give_up')
 {
-    $to_id = intval($_REQUEST['to_id']); // 目标客服id
-    $user_id = intval($_REQUEST['uid']); // 要转赠的顾客id
+     $to_id = intval($_REQUEST['to_id']); // 目标客服id
+     $user_id = intval($_REQUEST['uid']); // 要转赠的顾客id
 
-    // 将返回的信息参数
-    $res['id']      = $user_id;
-    $res['info']    = $request['info'];
-    $res['type']    = $request['type'];
-    $res['req_msg'] = true;
-    $res['timeout'] = 4000;
+     // 将返回的信息参数
+     $res['id']      = $user_id;
+     $res['info']    = $request['info'];
+     $res['type']    = $request['type'];
+     $res['req_msg'] = true;
+     $res['timeout'] = 4000;
 
-    // 查询目标客服与该顾客当前所属客服是否为同一人
-    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users').
-        " WHERE user_id=$user_id AND admin_id=$to_id";
-    $is_same_admin = $GLOBALS['db']->getOne($sql_select);
-    if ($is_same_admin){
-        $res['message'] = '所属客服与目标客服一致，无需转赠！';
-        die($json->encode($res));
-    }
+     // 查询目标客服与该顾客当前所属客服是否为同一人
+     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users').
+          " WHERE user_id=$user_id AND admin_id=$to_id";
+     $is_same_admin = $GLOBALS['db']->getOne($sql_select);
+     if ($is_same_admin){
+          $res['message'] = '所属客服与目标客服一致，无需转赠！';
+          die($json->encode($res));
+     }
 
-    // 查询目标客服是否可以接收顾客
-    $sql_select = 'SELECT max_customer FROM '.$GLOBALS['ecs']->table('admin_user').
-        " WHERE max_customer>0 AND user_id=$to_id";
-    $max_customer = $GLOBALS['db']->getOne($sql_select);
-    if (!empty($max_customer)){
-        // 统计目标客服已经拥有的顾客数量
-        $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users')." WHERE admin_id=$to_id";
-        $had_users_number = $GLOBALS['db']->getOne($sql_select);
-    }
-    else{
-        // 目标客服不允许接收顾客
-        $res['message'] = '目标客服不适合接收顾客！';
-        die($json->encode($res));
-    }
+     // 查询目标客服是否可以接收顾客
+     $sql_select = 'SELECT max_customer FROM '.$GLOBALS['ecs']->table('admin_user').
+          " WHERE max_customer>0 AND user_id=$to_id";
+     $max_customer = $GLOBALS['db']->getOne($sql_select);
+     if (!empty($max_customer)){
+          // 统计目标客服已经拥有的顾客数量
+          $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users')." WHERE admin_id=$to_id";
+          $had_users_number = $GLOBALS['db']->getOne($sql_select);
+     }
+     else{
+          // 目标客服不允许接收顾客
+          $res['message'] = '目标客服不适合接收顾客！';
+          die($json->encode($res));
+     }
 
-    if ($max_customer > $had_users_number){
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET last_admin=admin_id WHERE user_id=$user_id";
-        $GLOBALS['db']->query($sql_update);
+     if ($max_customer > $had_users_number){
+          $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET last_admin=admin_id WHERE user_id=$user_id";
+          $GLOBALS['db']->query($sql_update);
 
-        $now_time = time();
-        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users').' u, '.$GLOBALS['ecs']->table('admin_user').
-            " a SET u.admin_id=$to_id,u.assign_time=$now_time,u.user_cat='',u.admin_name=a.user_name,u.role_id=a.role_id,".
-            "u.group_id=a.group_id WHERE u.user_id=$user_id AND a.user_id=$to_id";
-        $GLOBALS['db']->query($sql_update);
+          $now_time = time();
+          $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users').' u, '.$GLOBALS['ecs']->table('admin_user').
+               " a SET u.admin_id=$to_id,u.assign_time=$now_time,u.user_cat='',u.admin_name=a.user_name WHERE u.user_id=$user_id AND a.user_id=$to_id";
+          $GLOBALS['db']->query($sql_update);
 
-        $res['message'] = '顾客转赠成功！';
-        $res['code'] = 1;
-        die($json->encode($res));
-    }
-    else{
-        // 目标客服的顾客数量已达到上限
-        $res['message'] = '目标客服的顾客数量已达到上线！';
-        die($json->encode($res));
-    }
+          $res['message'] = '顾客转赠成功！';
+          $res['code'] = 1;
+          die($json->encode($res));
+     }
+     else{
+          // 目标客服的顾客数量已达到上限
+          $res['message'] = '目标客服的顾客数量已达到上线！';
+          die($json->encode($res));
+     }
 }
 
 //查看顾客详细信息
 elseif ($_REQUEST['act'] == 'get_detail')
 {
-    $sql = 'SELECT user_id,user_name,sex,IF(birthday="1952-01-01",age_group,CONCAT(LEFT(NOW(),4) - LEFT(birthday,4),"岁")) birthday,parent_id,from_where,home_phone,mobile_phone,id_card,email,qq,aliww,income,habby,disease,characters,remarks FROM '.
-        $GLOBALS['ecs']->table('users').' WHERE user_id='.$_GET['user_id'];
-    $result = $GLOBALS['db']->getRow($sql);
-    extract($result);
+     $sql = 'SELECT user_id,user_name,sex,IF(birthday="1952-01-01",age_group,CONCAT(LEFT(NOW(),4) - LEFT(birthday,4),"岁")) birthday,parent_id,from_where,home_phone,mobile_phone,id_card,email,qq,aliww,income,habby,disease,characters,remarks FROM '.
+          $GLOBALS['ecs']->table('users').' WHERE user_id='.$_GET['user_id'];
+     $result = $GLOBALS['db']->getRow($sql);
+     extract($result);
 
-    //获取客户来源
-    $sql = 'SELECT `from` FROM '.$GLOBALS['ecs']->table('from_where').' WHERE from_id='.$from_where;
-    $from_where = $GLOBALS['db']->getOne($sql);
+     //获取客户来源
+     $sql = 'SELECT `from` FROM '.$GLOBALS['ecs']->table('from_where').' WHERE from_id='.$from_where;
+     $from_where = $GLOBALS['db']->getOne($sql);
 
-    //获取经济来源
-    $sql = 'SELECT income FROM '.$GLOBALS['ecs']->table('income').' WHERE income_id='.$income;
-    $income = $GLOBALS['db']->getOne($sql);
+     //获取经济来源
+     $sql = 'SELECT income FROM '.$GLOBALS['ecs']->table('income').' WHERE income_id='.$income;
+     $income = $GLOBALS['db']->getOne($sql);
 
-    $sql = 'SELECT zipcode, address, province, city, district FROM '.
-        $GLOBALS['ecs']->table('user_address').' WHERE user_id='.$user_id;
-    $address = $GLOBALS['db']->getRow($sql);
+     $sql = 'SELECT zipcode, address, province, city, district FROM '.
+          $GLOBALS['ecs']->table('user_address').' WHERE user_id='.$user_id;
+     $address = $GLOBALS['db']->getRow($sql);
 
-    if($address['province'] && $address['city'])
-    {
-        extract($address);
-        $province = get_address($province);
-        $city     = get_address($city);
-        if (!empty($district))
-        {
-            $district = get_address($district);
-        }
-        else 
-        {
-            $district = '';
-        }
+     if($address['province'] && $address['city'])
+     {
+          extract($address);
+          $province = get_address($province);
+          $city     = get_address($city);
+          if (!empty($district))
+          {
+               $district = get_address($district);
+          }
+          else 
+          {
+               $district = '';
+          }
 
-        $address = $province.$city.$district.$address;
-    }
-    else
-    {
-        $address = "请到点击<a href='users.php?act=edit&id=$user_id' title='编辑'><img src='images/icon_edit.gif' alt='编辑' /></a>完善顾客地址信息！";
-    }
+          $address = $province.$city.$district.$address;
+     }
+     else
+     {
+          $address = "请到点击<a href='users.php?act=edit&id=$user_id' title='编辑'><img src='images/icon_edit.gif' alt='编辑' /></a>完善顾客地址信息！";
+     }
 
-    switch($sex)
-    {
-    case 1 : $sex = '男'; break;
-    case 2 : $sex = '女'; break;
-    case 0 : $sex = '未知'; break;
-    }
+     switch($sex)
+     {
+     case 1 : $sex = '男'; break;
+     case 2 : $sex = '女'; break;
+     case 0 : $sex = '未知'; break;
+     }
 
-    if (!empty($disease))
-    {
-        $sql = 'SELECT disease FROM '.$GLOBALS['ecs']->table('disease').' WHERE disease_id IN ('.$disease.')';
-        $disease = $GLOBALS['db']->getAll($sql);
+     if (!empty($disease))
+     {
+          $sql = 'SELECT disease FROM '.$GLOBALS['ecs']->table('disease').' WHERE disease_id IN ('.$disease.')';
+          $disease = $GLOBALS['db']->getAll($sql);
 
-        foreach ($disease as $val)
-        {
-            $temp[] = $val['disease'];
-        }
+          foreach ($disease as $val)
+          {
+               $temp[] = $val['disease'];
+          }
 
-        $disease = implode(',', $temp);
-        unset($temp);
-    }
+          $disease = implode(',', $temp);
+          unset($temp);
+     }
 
-    if (!empty($characters) && $characters != ',')
-    {
-        $sql = 'SELECT characters FROM '.$GLOBALS['ecs']->table('character').
-            ' WHERE character_id IN ('.substr($characters, 1, -1).')';
-        $characters = $GLOBALS['db']->getAll($sql);
+     if (!empty($characters) && $characters != ',')
+     {
+          $sql = 'SELECT characters FROM '.$GLOBALS['ecs']->table('character').
+               ' WHERE character_id IN ('.substr($characters, 1, -1).')';
+          $characters = $GLOBALS['db']->getAll($sql);
 
-        foreach ($characters as $val)
-        {
-            $temp[] = $val['characters'];
-        }
+          foreach ($characters as $val)
+          {
+               $temp[] = $val['characters'];
+          }
 
-        $characters = implode('，', $temp);
-        unset($temp);
-    }
+          $characters = implode('，', $temp);
+          unset($temp);
+     }
 
-    // 获取服务信息
-    $ex_where = " WHERE s.user_id={$_GET['user_id']} AND s.service_class=c.class_id AND s.service_manner=m.manner_id ";
-    $sql = "SELECT s.admin_name,s.service_id,c.class service_class,m.manner service_manner,FROM_UNIXTIME(service_time,'%m月%d日 %H:%i') servicetime,user_name,service_status,logbook,admin_id FROM ".$GLOBALS['ecs']->table('service').' s,'.$GLOBALS['ecs']->table('service_class').' c,'.$GLOBALS['ecs']->table('service_manner').' m '.$ex_where." ORDER by service_time ASC";
-    $list = $GLOBALS['db']->getAll($sql);
+     // 获取服务信息
+     $ex_where = " WHERE s.user_id={$_GET['user_id']} AND s.service_class=c.class_id AND s.service_manner=m.manner_id ";
+     $sql = "SELECT s.admin_name,s.service_id,c.class service_class,m.manner service_manner,FROM_UNIXTIME(service_time,'%m月%d日 %H:%i') servicetime,user_name,service_status,logbook,admin_id FROM ".$GLOBALS['ecs']->table('service').' s,'.$GLOBALS['ecs']->table('service_class').' c,'.$GLOBALS['ecs']->table('service_manner').' m '.$ex_where." ORDER by service_time ASC";
+     $list = $GLOBALS['db']->getAll($sql);
 
-    $no = 0;
-    foreach($list as $val)
-    {
-        //++$no;
-        extract($val);
-        $final .= '【'.$servicetime.'】<font color="olive">'.$admin_name.'</font>通过<font color="olive">'.$service_manner.'</font>进行<font color="olive">'.$service_class.'</font>：'.$logbook.'<br>';
-    }
+     $no = 0;
+     foreach($list as $val)
+     {
+          //++$no;
+          extract($val);
+          $final .= '【'.$servicetime.'】<font color="olive">'.$admin_name.'</font>通过<font color="olive">'.$service_manner.'</font>进行<font color="olive">'.$service_class.'</font>：'.$logbook.'<br>';
+     }
 
-    /* 获取订单信息 */
-    $sql = 'SELECT i.order_id,FROM_UNIXTIME(i.add_time,"%Y-%m-%d") add_time,i.final_amount,i.shipping_fee,r.role_name,i.admin_id,i.add_admin_id,i.platform FROM '.
-        $GLOBALS['ecs']->table('order_info').' i LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
-        ' u ON i.add_admin_id=u.user_id LEFT JOIN '.$GLOBALS['ecs']->table('role').
-        " r ON u.role_id=r.role_id WHERE i.pay_status=2 AND i.order_status=5 AND i.user_id={$_GET['user_id']} ORDER BY i.add_time DESC";
-    $order_list = $GLOBALS['db']->getAll($sql);
-    if(!empty($order_list))
-    {
-        foreach ($order_list as $val)
-        {
-            $sql = 'SELECT goods_id,goods_name, goods_number, goods_price FROM '.
-                $GLOBALS['ecs']->table('order_goods')." WHERE order_id={$val['order_id']}";
-            $goods_list = $GLOBALS['db']->getAll($sql);
+     /* 获取订单信息 */
+     $sql = 'SELECT i.order_id,FROM_UNIXTIME(i.add_time,"%Y-%m-%d") add_time,i.final_amount,i.shipping_fee,r.role_name,i.admin_id,i.add_admin_id,i.platform FROM '.
+          $GLOBALS['ecs']->table('order_info').' i LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+          ' u ON i.add_admin_id=u.user_id LEFT JOIN '.$GLOBALS['ecs']->table('role').
+          " r ON u.role_id=r.role_id WHERE i.pay_status=2 AND i.order_status=5 AND i.user_id={$_GET['user_id']} ORDER BY i.add_time DESC";
+     $order_list = $GLOBALS['db']->getAll($sql);
+     if(!empty($order_list))
+     {
+          foreach ($order_list as $val)
+          {
+               $sql = 'SELECT goods_id,goods_name, goods_number, goods_price FROM '.
+                    $GLOBALS['ecs']->table('order_goods')." WHERE order_id={$val['order_id']}";
+               $goods_list = $GLOBALS['db']->getAll($sql);
 
-            //$sql = 'SELECT r.role_name FROM '.$GLOBALS['ecs']->table('admin_user')." au, ".
-            //$GLOBALS['ecs']->table('role').' r '." WHERE au.role_id=r.role_id AND au.user_id={$val['add_admin_id']}";
-            $sql = 'SELECT role_name FROM '.$GLOBALS['ecs']->table('role')." WHERE role_id={$val['platform']}";
-            $platform = $GLOBALS['db']->getOne($sql);
+               //$sql = 'SELECT r.role_name FROM '.$GLOBALS['ecs']->table('admin_user')." au, ".
+               //$GLOBALS['ecs']->table('role').' r '." WHERE au.role_id=r.role_id AND au.user_id={$val['add_admin_id']}";
+               $sql = 'SELECT role_name FROM '.$GLOBALS['ecs']->table('role')." WHERE role_id={$val['platform']}";
+               $platform = $GLOBALS['db']->getOne($sql);
 
-            $order_record[$val['order_id']] = '【'.$val['add_time'].'】在<font color="red">&nbsp;&nbsp;'.
-                $platform.'&nbsp;&nbsp;</font>购买<font color="olive"> ';
-            foreach ($goods_list as $v)
-            {
-                $order_record[$val['order_id']] .= $v['goods_name'].' ('.$v['goods_number'].') ，&nbsp;';
-            }
+               $order_record[$val['order_id']] = '【'.$val['add_time'].'】在<font color="red">&nbsp;&nbsp;'.
+                    $platform.'&nbsp;&nbsp;</font>购买<font color="olive"> ';
+               foreach ($goods_list as $v)
+               {
+                    $order_record[$val['order_id']] .= $v['goods_name'].' ('.$v['goods_number'].') ，&nbsp;';
+               }
 
-            $order_record[$val['order_id']] .= '</font>共'.$val['final_amount'].'元';
-        }
+               $order_record[$val['order_id']] .= '</font>共'.$val['final_amount'].'元';
+          }
 
-        $order_record = implode('<br />', $order_record);
-        $sql = 'SELECT SUM(goods_amount) FROM '.$GLOBALS['ecs']->table('order_info').
-            " WHERE order_status=5 AND pay_status=2 AND user_id=".intval($_GET['user_id']);
-        $all_money = '共'.$GLOBALS['db']->getOne($sql).'元';
-    }
+          $order_record = implode('<br />', $order_record);
+          $sql = 'SELECT SUM(goods_amount) FROM '.$GLOBALS['ecs']->table('order_info').
+               " WHERE order_status=5 AND pay_status=2 AND user_id=".intval($_GET['user_id']);
+          $all_money = '共'.$GLOBALS['db']->getOne($sql).'元';
+     }
 
-    $sql = 'SELECT * FROM '.$GLOBALS['ecs']->table('user_photos')." WHERE user_id=".intval($_GET['user_id']);
-    $photos = $GLOBALS['db']->getAll($sql);
+     $sql = 'SELECT * FROM '.$GLOBALS['ecs']->table('user_photos')." WHERE user_id=".intval($_GET['user_id']);
+     $photos = $GLOBALS['db']->getAll($sql);
 
-    $smarty->assign('photos', $photos);
+     $smarty->assign('photos', $photos);
 
-    $smarty->assign('user_id', intval($_GET['user_id']));
-    $smarty->assign('user_name', $user_name);
-    $smarty->assign('member_cid', $member_cid);
-    $smarty->assign('id_card', $id_card);
-    $smarty->assign('sex', $sex);
-    $smarty->assign('zipcode', $zipcode);
-    $smarty->assign('home_phone', $home_phone);
-    $smarty->assign('mobile_phone', $mobile_phone);
-    $smarty->assign('qq', $qq);
-    $smarty->assign('birthday', $birthday);
-    $smarty->assign('from_where', $from_where);
-    $smarty->assign('aliww', $aliww);
-    $smarty->assign('characters', $characters);
-    $smarty->assign('address', $address);
-    $smarty->assign('email', $email);
-    $smarty->assign('remarks', $remarks);
-    $smarty->assign('income', $income);
-    $smarty->assign('disease', $disease);
-    $smarty->assign('final', $final);
-    $smarty->assign('all_money', $all_money);
-    $smarty->assign('order_record', $order_record);
+     $smarty->assign('user_id', intval($_GET['user_id']));
+     $smarty->assign('user_name', $user_name);
+     $smarty->assign('member_cid', $member_cid);
+     $smarty->assign('id_card', $id_card);
+     $smarty->assign('sex', $sex);
+     $smarty->assign('zipcode', $zipcode);
+     $smarty->assign('home_phone', $home_phone);
+     $smarty->assign('mobile_phone', $mobile_phone);
+     $smarty->assign('qq', $qq);
+     $smarty->assign('birthday', $birthday);
+     $smarty->assign('from_where', $from_where);
+     $smarty->assign('aliww', $aliww);
+     $smarty->assign('characters', $characters);
+     $smarty->assign('address', $address);
+     $smarty->assign('email', $email);
+     $smarty->assign('remarks', $remarks);
+     $smarty->assign('income', $income);
+     $smarty->assign('disease', $disease);
+     $smarty->assign('final', $final);
+     $smarty->assign('all_money', $all_money);
+     $smarty->assign('order_record', $order_record);
 
-    die($smarty->fetch('detail.htm'));
+     die($smarty->fetch('detail.htm'));
 }
 
 // 验证顾客是否已经存在
 elseif ($_REQUEST['act'] == 'is_repeat')
 {
-    $area_code = trim($_POST['area_code']);
-    $hphone    = trim($_POST['hphone']);
-    $mphone    = trim($_POST['mphone']);
+     $area_code = trim($_POST['area_code']);
+     $hphone    = trim($_POST['hphone']);
+     $mphone    = trim($_POST['mphone']);
 
-    if(!empty($area_code))
-    {
-        $hphone = "$area_code-$hphone";
-    }
+     if(!empty($area_code))
+     {
+          $hphone = "$area_code-$hphone";
+     }
 
-    if($hphone)
-    {
-        $where = " home_phone='$hphone'";
-    }
+     if($hphone)
+     {
+          $where = " home_phone='$hphone'";
+     }
 
-    if($where && $mphone)
-    {
-        $where .= " OR mobile_phone='$mphone'";
-    }
-    elseif($mphone)
-    {
-        $where = " mobile_phone='$mphone'";
-    }
+     if($where && $mphone)
+     {
+          $where .= " OR mobile_phone='$mphone'";
+     }
+     elseif($mphone)
+     {
+          $where = " mobile_phone='$mphone'";
+     }
 
-    $sql = 'SELECT admin_name FROM '.$ecs->table('users')." WHERE $where";
-    $admin_name = $db->getOne($sql);
+     $sql = 'SELECT admin_name FROM '.$ecs->table('users')." WHERE $where";
+     $admin_name = $db->getOne($sql);
 
-    if(!empty($admin_name))
-    {
-        die($admin_name);
-    }
-    else
-    {
-        die(0);
-    }
+     if(!empty($admin_name))
+     {
+          die($admin_name);
+     }
+     else
+     {
+          die(0);
+     }
 }
 
 // 快速添加服务
 elseif ($_REQUEST['act'] == 'add_service')
 {
-    $smarty->assign('user_id', $_GET['user_id']);
-    $smarty->assign('username', $_GET['username']);
-    $smarty->assign('service_class', get_service_class());
-    $smarty->assign('service_manner', get_service_manner());
+     $smarty->assign('user_id', $_GET['user_id']);
+     $smarty->assign('username', $_GET['username']);
+     $smarty->assign('service_class', get_service_class());
+     $smarty->assign('service_manner', get_service_manner());
 
-    // 获取用户的生日信息
-    $sql = 'SELECT birthday FROM '.$GLOBALS['ecs']->table('users').
-        ' WHERE user_id='.intval($_GET['user_id']);
-    $birthday = $GLOBALS['db']->getOne($sql);
+     // 获取用户的生日信息
+     $sql = 'SELECT birthday FROM '.$GLOBALS['ecs']->table('users').
+          ' WHERE user_id='.intval($_GET['user_id']);
+     $birthday = $GLOBALS['db']->getOne($sql);
 
-    $invalid_birth = array ('0000-00-00', '1970-01-01', '1952-01-01');
-    if (empty($birthday) || in_array($birthday, $invalid_birth))
-    {
-        $smarty->assign('birthday', $birthday);
-    }
+     $invalid_birth = array ('0000-00-00', '1970-01-01', '1952-01-01');
+     if (empty($birthday) || in_array($birthday, $invalid_birth))
+     {
+          $smarty->assign('birthday', $birthday);
+     }
 
-    // 获取性格列表
-    $sql = 'SELECT character_id, characters FROM '.$ecs->table('character').' ORDER BY sort ASC';
-    $smarty->assign('character', $db->getAll($sql));
+     // 获取性格列表
+     $sql = 'SELECT character_id, characters FROM '.$ecs->table('character').' ORDER BY sort ASC';
+     $smarty->assign('character', $db->getAll($sql));
 
-    // 判断用户性格、杂志、专项服务、购买意向是否已经存在
-    $sql = 'SELECT characters, dm, mag_no, purchase FROM '.$ecs->table('users')." WHERE user_id=$_GET[user_id]";
-    $cdmp = $db->getRow($sql);
-    $smarty->assign('has_character', $cdmp['characters']);
-    $smarty->assign('dm', $cdmp['dm']);
-    $smarty->assign('purchase', $cdmp['purchase']);
+     // 判断用户性格、杂志、专项服务、购买意向是否已经存在
+     $sql = 'SELECT characters, dm, mag_no, purchase FROM '.$ecs->table('users')." WHERE user_id=$_GET[user_id]";
+     $cdmp = $db->getRow($sql);
+     $smarty->assign('has_character', $cdmp['characters']);
+     $smarty->assign('dm', $cdmp['dm']);
+     $smarty->assign('purchase', $cdmp['purchase']);
 
-    // 获取评分类型
-    $sql = 'SELECT grade_type_id,grade_type_name FROM '.$GLOBALS['ecs']->table('grade_type').' 
-        WHERE available = 1 ORDER BY sort';
-$grade_type = $GLOBALS['db']->getAll($sql);
-$smarty->assign('grade_type',$grade_type);  
+     // 获取评分类型
+     $sql = 'SELECT grade_type_id,grade_type_name FROM '.$GLOBALS['ecs']->table('grade_type').' 
+          WHERE available = 1 ORDER BY sort';
+     $grade_type = $GLOBALS['db']->getAll($sql);
+     $smarty->assign('grade_type',$grade_type);  
 
-// 初始化时间
-$smarty->assign('default_time', date('Y-m-d H:i', (time())));
+     // 初始化时间
+     $smarty->assign('default_time', date('Y-m-d H:i', (time())));
 
-$smarty->assign('form', 1);
+     $smarty->assign('form', 1);
 
-die($smarty->fetch('fast_service.htm'));
+     die($smarty->fetch('fast_service.htm'));
 }
 
 // 快速添加服务----提交至数据库
 elseif ($_REQUEST['act'] == 'fast_add')
 {
-    $service_info = array (
-        'service_manner'   => intval($_POST['service_manner']),
-        'service_class'    => intval($_POST['service_class']),
-        'service_time'     => strtotime($_POST['service_time']),
-        'service_status'   => intval($_POST['service_status']),
-        //'special_feedback' => $_POST['special_feedback'],
-        'logbook'          => mysql_real_escape_string(trim($_POST['logbook'])),
-        'admin_id'         => $_SESSION['admin_id'],
-        'admin_name'       => $_SESSION['admin_name'],
-        'user_id'          => intval($_POST['user_id']),
-        'user_name'        => mysql_real_escape_string(trim($_POST['user_name']))
-    );
+     $service_info = array (
+          'service_manner'   => intval($_POST['service_manner']),
+          'service_class'    => intval($_POST['service_class']),
+          'service_time'     => strtotime($_POST['service_time']),
+          'service_status'   => intval($_POST['service_status']),
+          //'special_feedback' => $_POST['special_feedback'],
+          'logbook'          => mysql_real_escape_string(trim($_POST['logbook'])),
+          'admin_id'         => $_SESSION['admin_id'],
+          'admin_name'       => $_SESSION['admin_name'],
+          'user_id'          => intval($_POST['user_id']),
+          'user_name'        => mysql_real_escape_string(trim($_POST['user_name']))
+     );
 
-    // 优先保存顾客生日
-    $birthday = mysql_real_escape_string(trim($_POST['birthday']));
-    $sql = 'UPDATE '.$GLOBALS['ecs']->table('users').
-        " SET birthday='$birthday' WHERE user_id={$service_info['user_id']}";
-    $GLOBALS['db']->query($sql);
+     // 优先保存顾客生日
+     $birthday = mysql_real_escape_string(trim($_POST['birthday']));
+     $sql = 'UPDATE '.$GLOBALS['ecs']->table('users').
+          " SET birthday='$birthday' WHERE user_id={$service_info['user_id']}";
+     $GLOBALS['db']->query($sql);
 
-    if(isset($_POST['handler']) && strlen($_POST['handler']) > 0)
-    {
-        $service_info['handler'] = strtotime($_POST['handler']);
-    }
+     if(isset($_POST['handler']) && strlen($_POST['handler']) > 0)
+     {
+          $service_info['handler'] = strtotime($_POST['handler']);
+     }
 
-    $characters = substr($_POST['characters'], 1);
-    $purchase = $_POST['purchase'];
-    $service_info['service_time'] = $service_info['service_time'] ? $service_info['service_time'] : time();
+     $characters = substr($_POST['characters'], 1);
+     $purchase = $_POST['purchase'];
+     $service_info['service_time'] = $service_info['service_time'] ? $service_info['service_time'] : time();
 
-    foreach ($service_info as $key=>$val)
-    {
-        if ($val)
-        {
-            if($key == 'special_feedback' && $val == 1)
-                continue;
-            $fields[] = $key;
-            $values[] = $val;
-        }
-    }
+     foreach ($service_info as $key=>$val)
+     {
+          if ($val)
+          {
+               if($key == 'special_feedback' && $val == 1)
+                    continue;
+               $fields[] = $key;
+               $values[] = $val;
+          }
+     }
 
-    $sql = 'INSERT INTO '.$ecs->table('service').'('.implode(',', $fields)
-        .')VALUES("'.implode('","', $values).'")';
-    if ($db->query($sql))
-    {
-        if($characters)
-        {
-            $characters = ", u.characters=',$characters,'";
-        }
+     $sql = 'INSERT INTO '.$ecs->table('service').'('.implode(',', $fields)
+          .')VALUES("'.implode('","', $values).'")';
+     if ($db->query($sql))
+     {
+          if($characters)
+          {
+               $characters = ", u.characters=',$characters,'";
+          }
 
-        if ($purchase && $purchase != 1)
-        {
-            $dm = ", u.purchase='$purchase', u.dm=0";
-        }
+          if ($purchase && $purchase != 1)
+          {
+               $dm = ", u.purchase='$purchase', u.dm=0";
+          }
 
-        $sql = 'UPDATE '.$ecs->table('users').' u, '.$ecs->table('service')." s SET u.service_time=$service_info[service_time] $characters $dm WHERE u.user_id=$service_info[user_id]";
-        $db->query($sql);
+          $sql = 'UPDATE '.$ecs->table('users').' u, '.$ecs->table('service')." s SET u.service_time=$service_info[service_time] $characters $dm WHERE u.user_id=$service_info[user_id]";
+          $db->query($sql);
 
-        //获取service表关联service_id
-        $sql = 'SELECT service_id FROM '.$GLOBALS['ecs']->table('service'). 
-            "WHERE service_time = $service_info[service_time] AND user_id = $service_info[user_id]";
-        $service_id = $GLOBALS['db']->getOne($sql);
-        // 获取评分类型
-        $sql = 'SELECT grade_type_id FROM '.$GLOBALS['ecs']->table('grade_type').' 
-            WHERE available = 1 ORDER BY sort';
-$grade_type = $GLOBALS['db']->getCol($sql);
-$insert = '';
-foreach($grade_type as $grade){
-    $i = grade.$grade; 
-    if($_REQUEST[$i]){
-        $insert .= "('".$grade."','".$_REQUEST[$i]."','.$service_id.'),";
-    }                
-}
-$insert = rtrim($insert,',');
-if($insert){
-    $sql = 'INSERT INTO '.$GLOBALS['ecs']->table('grade').' (grade_type_id,grade_type_value,service_id)'.'
-        VALUES '.$insert;
-    $GLOBALS['db']->query($sql); 
-}
+          //获取service表关联service_id
+          $sql = 'SELECT service_id FROM '.$GLOBALS['ecs']->table('service'). 
+               "WHERE service_time = $service_info[service_time] AND user_id = $service_info[user_id]";
+          $service_id = $GLOBALS['db']->getOne($sql);
+          // 获取评分类型
+          $sql = 'SELECT grade_type_id FROM '.$GLOBALS['ecs']->table('grade_type').' 
+               WHERE available = 1 ORDER BY sort';
+          $grade_type = $GLOBALS['db']->getCol($sql);
+          $insert = '';
+          foreach($grade_type as $grade){
+               $i = grade.$grade; 
+               if($_REQUEST[$i]){
+                    $insert .= "('".$grade."','".$_REQUEST[$i]."','.$service_id.'),";
+               }                
+          }
+          $insert = rtrim($insert,',');
+          if($insert){
+               $sql = 'INSERT INTO '.$GLOBALS['ecs']->table('grade').' (grade_type_id,grade_type_value,service_id)'.'
+                    VALUES '.$insert;
+               $GLOBALS['db']->query($sql); 
+          }
 
-die($smarty->fetch('fast_service.htm'));
-    }
+          die($smarty->fetch('fast_service.htm'));
+     }
 
 }
 
@@ -2776,7 +2768,7 @@ elseif($_REQUEST['act'] == 'from_to')
     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users')." WHERE admin_id=%d";
     $to_admin_counter = $GLOBALS['db']->getOne(sprintf($sql_select, $to_admin));
 
-    if (($to_admin_counter + $transfer_num) > $res['max_customer']) {
+     if (($to_admin_counter + $transfer_num) > $res['max_customer']) {
         $res = array (
             'req_msg' => true,
             'timeout' => 2000,
@@ -3761,8 +3753,7 @@ elseif ($_REQUEST['act'] == 'send_users') {
     $send_to   = intval($_REQUEST['send_to']);
 
     // 该客服允许维护的顾客数量
-    $sql_select = 'SELECT max_customer,user_name,role_id,group_id FROM '.
-        $GLOBALS['ecs']->table('admin_user')." WHERE user_id=$send_to";
+    $sql_select = 'SELECT max_customer,user_name,group_id FROM '.$GLOBALS['ecs']->table('admin_user')." WHERE user_id=$send_to";
     $admin_info = $GLOBALS['db']->getRow($sql_select);
 
     // 该客服已在维护的顾客数量
@@ -3786,17 +3777,17 @@ elseif ($_REQUEST['act'] == 'send_users') {
     $GLOBALS['db']->query($sql_update);
 
     $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET admin_id=$send_to,admin_name='{$admin_info['user_name']}',".
-        "group_id={$admin_info['group_id']}, role_id={$admin_info['role_id']}, assign_time=UNIX_TIMESTAMP() WHERE user_id IN ($user_list) LIMIT $user_number";
+        "group_id={$admin_info['group_id']}, assign_time=UNIX_TIMESTAMP() WHERE user_id IN ($user_list) LIMIT $user_number";
     $GLOBALS['db']->query($sql_update);
 
     $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('admin_user')." SET counter=counter+$user_number WHERE user_id=$send_to LIMIT 1";
     $GLOBALS['db']->query($sql_update);
 
     $res = array (
-        'req_msg'   => true,
-        'timeout'   => 2000,
-        'message'   => '顾客转移成功！',
-        'user_list' => $_REQUEST['user_list'],
+        'req_msg'=>true,
+        'timeout'=>2000,
+        'message'=>'顾客转移成功！',
+        'user_list'=>$_REQUEST['user_list'],
     );
 
     die($json->encode($res));
@@ -3827,6 +3818,9 @@ elseif ($_REQUEST['act'] == 'check_blacklist')
         }
         $res_msg = '审核';
     }elseif($do_what == 1){
+        $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('users')." SET is_black=0 WHERE user_id=$user_id";
+        $GLOBALS['db']->query($sql_update);
+
         $sql = 'DELETE FROM '.$GLOBALS['ecs']->table('user_blacklist')." WHERE user_id=$user_id"; 
         $res_msg = '撤销';
     }
@@ -3866,17 +3860,12 @@ elseif ($_REQUEST['act'] == 'add_contact') {
         $sql_insert = 'INSERT INTO '.$GLOBALS['ecs']->table('user_contact').'(user_id,contact_name,contact_value) SELECT '.
             "$user_id,'$field','$value' FROM dual WHERE NOT EXISTS (SELECT * FROM ".$GLOBALS['ecs']->table('user_contact').
             " WHERE contact_name='$field' AND contact_value='$value')";
-        $result = $GLOBALS['db']->query($sql_insert);
+        $GLOBALS['db']->query($sql_insert);
     }
 
     if (!$GLOBALS['db']->insert_id()) {
         $res['message'] = '相关记录已存在！';
     } else {
-        if($result){
-            $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('user_contact')." SET add_time={$_SERVER['REQUEST_TIME']},add_admin={$_SESSION['admin_id']} WHERE contact_id=".$GLOBALS['db']->insert_id();
-            $GLOBALS['db']->query($sql_update);
-        }
-
         $res['message']   = '添加成功！';
         $res['field']     = $field;
         $res['value']     = $value;
@@ -4538,76 +4527,6 @@ elseif ($_REQUEST['act'] == 'ignore_blacklist'){
     die($json->encode($res));
 }
 
-/* 按商品查询顾客 */
-elseif ($_REQUEST['act'] == 'search_by_goods') {
-    if (!admin_priv('search_by_goods', '', false)) {
-        $msg = array(
-            'req_msg' => true,
-            'timeout' => 2000,
-            'message' => '访问未经授权！'
-        );
-    }
-
-    // 品牌列表
-    $brand_list = get_brand_list(' WHERE is_show=1 ');
-    $smarty->assign('brand_list', $brand_list);
-
-    // 商品列表
-    $goods_list = goods_list(0);
-    $smarty->assign('goods_list', $goods_list['goods']);
-
-    $smarty->assign('full_page', 1);
-    $res['main'] = $smarty->fetch('search_by_goods.htm');
-
-    echo $json->encode($res);
-    return;
-}
-
-/* 按品牌显示商品 */
-elseif ($_REQUEST['act'] == 'list_goods_by_brand') {
-    $brand_id = intval($_REQUEST['brand_id']);
-
-    $sql_select = 'SELECT goods_id,goods_name FROM '.$GLOBALS['ecs']->table('goods')." WHERE brand_id=$brand_id AND is_on_sale=1";
-    $goods_list = $GLOBALS['db']->getAll($sql_select);
-
-    echo $json->encode($goods_list);
-    return;
-}
-
-/* 查询产品相关的顾客  */
-elseif ($_REQUEST['act'] == 'show_goods_users') {
-
-    $user_list = search_by_goods();
-
-    $smarty->assign('user_list', $user_list['user_list']);
-
-    // 分页设置
-    $smarty->assign('page_link',    $user_list['condition']);
-    $smarty->assign('filter',       $user_list['filter']);
-    $smarty->assign('record_count', $user_list['record_count']);
-    $smarty->assign('page_count',   $user_list['page_count']);
-    $smarty->assign('page_size',    $user_list['page_size']);
-    $smarty->assign('page_start',   $user_list['start']);
-    $smarty->assign('page_end',     $user_list['end']);
-    $smarty->assign('page_set',     $user_list['page_set']);
-    $smarty->assign('page',         $user_list['page']);
-
-    $smarty->assign('act', 'show_goods_users');
-
-    $smarty->assign('num', sprintf('（共%d条）', $user_list['record_count']));
-
-    $smarty->assign('full_page', 0);
-
-    $res['main'] = $smarty->fetch('search_by_goods.htm');
-    $res['page'] = $smarty->fetch('page.htm');
-
-    if (isset($_REQUEST['a'])) {
-        $res['a'] = $_REQUEST['a'];
-    }
-
-    echo $json->encode($res);
-    return;
-}
 
 /* 函数区 */
 
@@ -5153,7 +5072,7 @@ function access_purchase_records ($id)
         'o.shipping_name,o.pay_name,o.final_amount,o.tracking_sn express_number,a.user_name operator,o.receive_time,o.shipping_code, '.
         ' r.role_describe platform FROM '.$GLOBALS['ecs']->table('order_info').' o,'.$GLOBALS['ecs']->table('admin_user').' a, '.
         $GLOBALS['ecs']->table('role').' r WHERE  o.add_admin_id=a.user_id AND '.
-        " r.role_id=o.team AND o.user_id=$id GROUP BY o.order_id ORDER BY o.add_time DESC ";
+        " r.role_id=o.team AND o.user_id=$id GROUP BY o.order_id ORDER BY o.add_time ";
     $order_list = $GLOBALS['db']->getAll($sql_select);
 
     //o.order_status=5 AND o.shipping_status IN (1,2) AND
@@ -5915,15 +5834,12 @@ function referrals_list () {
  */
 function get_contact_list($user_id) 
 {
-    $sql_select = 'SELECT contact_id,contact_name,contact_value,is_default,add_time FROM '.
+    $sql_select = 'SELECT contact_id,contact_name,contact_value,is_default FROM '.
         $GLOBALS['ecs']->table('user_contact')." WHERE user_id=$user_id AND is_del=0";
     $result = $GLOBALS['db']->getAll($sql_select);
 
     $contact_list = array ();
     foreach ($result as $val){
-        if ($val['add_time']) {
-            $val['add_time'] = date('Y-m-d H:i:s',$val['add_time']);
-        }
         $contact_list[$val['contact_name']][] = $val;
     }
 
@@ -5970,53 +5886,4 @@ function is_freeze(){
 function get_blacklist_type(){
     $sql_select = 'SELECT type_id,type_name FROM '.$GLOBALS['ecs']->table('blacklist_type');
     return $GLOBALS['db']->getAll($sql_select); 
-}
-
-/**
- * 根据商品查询顾客
- */
-function search_by_goods() {
-    $filter['goods_id'] = intval($_REQUEST['goods_id']);
-
-    $condition = '';
-    foreach ($filter as $key=>$val) {
-        if (!empty($val)) {
-            $condition .= "&$key=$val";
-        }
-    }
-
-    $filter['page_size'] = empty($_REQUEST['page_size']) ? 20 : intval($_REQUEST['page_size']);
-    $filter['page']      = empty($_REQUEST['page'])   ? 1  : intval($_REQUEST['page']);
-
-    $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('users').' u,'.$GLOBALS['ecs']->table('order_info').' i,'.
-        $GLOBALS['ecs']->table('order_goods').' g WHERE '.' u.user_id=i.user_id AND i.order_id=g.order_id AND i.order_status IN (1,5) AND i.shipping_status<3 AND g.goods_id='.$filter['goods_id'];
-    $record_count = $GLOBALS['db']->getOne($sql_select);
-
-    $page = break_pages($record_count, $filter['page_size'], $filter['page']);
-
-    // 查询产品相关顾客
-    $sql_select = 'SELECT u.user_id,u.user_name,u.sex,u.member_cid,u.add_time,u.service_time,u.admin_name,u.assign_time,u.remarks FROM '.
-        $GLOBALS['ecs']->table('users').' u,'.$GLOBALS['ecs']->table('order_info').' i,'.$GLOBALS['ecs']->table('order_goods').' g WHERE '.
-        'u.user_id=i.user_id AND i.order_id=g.order_id AND i.order_status IN (1,5) AND i.shipping_status<3 AND g.goods_id='.
-        $filter['goods_id'].' LIMIT '.($filter['page'] -1)*$filter['page_size'].', '.$filter['page_size'];
-    $result = $GLOBALS['db']->getAll($sql_select);
-
-    foreach ($result as &$val){
-        $val['add_time']     = date('Y-m-d', $val['add_time']);
-        $val['service_time'] = date('Y-m-d', $val['service_time']);
-        $val['assign_time']  = date('Y-m-d', $val['assign_time']);
-    }
-
-    return array(
-        'user_list'    => $result,
-        'filter'       => $filter,
-        'page_count'   => $page['page_count'],
-        'record_count' => $record_count,
-        'page_size'    => $filter['page_size'],
-        'page'         => $filter['page'],
-        'page_set'     => $page['page_set'],
-        'condition'    => $condition,
-        'start'        => $page['start'],
-        'end'          => $page['end'],
-    );
 }

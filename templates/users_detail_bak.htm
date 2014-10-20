@@ -134,7 +134,7 @@
               <th>手机：</th>
               {if $contact_list.mobile}
               {foreach from=$contact_list.mobile item=val}
-              <td {if $val.add_time neq 0}title="添加时间:{$val.add_time}"{/if}>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
               {/foreach}
               {else}
               <td> </td>
@@ -147,7 +147,7 @@
               <th>电话：</th>
               {if $contact_list.tel}
               {foreach from=$contact_list.tel item=val}
-              <td {if $val.add_time neq 0}title="添加时间:{$val.add_time}"{/if}>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
               {/foreach}
               {else}
               <td> </td>
@@ -160,7 +160,7 @@
               <th> 微信：</th>
               {if $contact_list.wechat}
               {foreach from=$contact_list.wechat item=val}
-              <td {if $val.add_time neq 0}title="添加时间:{$val.add_time}"{/if}>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
               {/foreach}
               {else}
               <td> </td>
@@ -173,7 +173,7 @@
               <th rowspan="2"> 腾讯QQ： </th>
               {if $contact_list.qq}
               {foreach from=$contact_list.qq item=val}
-              <td {if $val.add_time neq 0}title="添加时间:{$val.add_time}"{/if}>
+              <td>
                 {if $val.contact_value}
                 <a href="tencent://message/?uin={$val}" title="{$val}" name="msg">
                   <img alt="{$val.contact_value}" src="http://wpa.qq.com/pa?p=1:{$val.contact_value}:17">
@@ -191,7 +191,7 @@
             <tr id="qqRow">
               {if $contact_list.qq}
               {foreach from=$contact_list.qq item=val}
-              <td {if $val.add_time neq 0}title="添加时间:{$val.add_time}"{/if}>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
               {/foreach}
               {else}
               <td> </td>
@@ -204,7 +204,7 @@
               <th>阿里旺旺：</th>
               {if $contact_list.aliww}
               {foreach from=$contact_list.aliww item=val}
-              <td {if $val.add_time neq 0}title="添加时间:{$val.add_time}"{/if}>{if $val.contact_value}<a target="_blank" href="http://www.taobao.com/webww/ww.php?ver=3&touid={$val.contact_value}&siteid=cntaobao&status=2&charset=utf-8" title="{$val.contact_value}"><img border="0" src="http://amos.alicdn.com/realonline.aw?v=2&uid={$val.contact_value}&site=cntaobao&s=2&charset=utf-8" alt="{$val.contact_value}" /></a>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span>{/if}</td>
+              <td>{if $val.contact_value}<a target="_blank" href="http://www.taobao.com/webww/ww.php?ver=3&touid={$val.contact_value}&siteid=cntaobao&status=2&charset=utf-8" title="{$val.contact_value}"><img border="0" src="http://amos.alicdn.com/realonline.aw?v=2&uid={$val.contact_value}&site=cntaobao&s=2&charset=utf-8" alt="{$val.contact_value}" /></a>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span>{/if}</td>
               {/foreach}
               {else}
               <td> </td>
@@ -217,7 +217,7 @@
               <th> E-mail：</th>
               {if $contact_list.email}
               {foreach from=$contact_list.email item=val}
-              <td {if $val.add_time neq 0}title="添加时间:{$val.add_time}"{/if}>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
+              <td>{$val.contact_value}<span cid="{$val.contact_id}" class=" {if $val.is_default eq 1}hide{else}pointer{/if}" onclick="setDefault(this)">[默]</span></td>
               {/foreach}
               {else}
               <td> </td>
@@ -280,36 +280,41 @@
           <thead>
             <tr height="25px">
               <th width="15%">购买日期</th>
-              <th width="10%">金额</th>
-              <th>订单</th>
-              <th>订单状态</th>
+              <!--<th width="10%">金额</th>-->
+              <th width="45%">订单</th>
+              <th width="10%">订单状态</th>
               <th width="10%">下单客服</th>
             </tr>
           </thead>
           <tbody>
-            {foreach from=$order_list item=order}
+            {foreach from=$order_list item=order name=i}
             <tr {$order.tr}>
               <td valign="top">{$order.add_time}</td>
-              <td valign="top">{if $order.final_amount eq 9.9}36.00{else}{$order.final_amount}{/if}</td>
+              <!--<td valign="top">{if $order.final_amount eq 9.9}36.00{else}{$order.final_amount}{/if}</td>-->
               <td align="left" style="text-align:left">
-                <details {if $order.goods_kind lt 3}open{/if}>
+                <details {if $order.goods_kind lt 2 || $smarty.foreach.i.iteration eq 1}open{/if}>
                 <summary><a href="http://www.kuaidi100.com/chaxun?com={$order.shipping_code}&nu={$order.express_number}" target="_blank" style="margin-right:20px">{$order.platform}：{if $order.order_sn}{$order.order_sn}{else}{$order.shipping_name}{/if}</a>{$order.shipping_name}</summary>
                 {foreach from=$order[goods_list] item=g}
                 {if isset($g['goods_list'])}
                 <details>
                 <summary>{$g.goods_name}  {$g.goods_number}×￥{$g.goods_price}</summary>
                 {foreach from=$g.goods_list item=o}
-                <p><strong>{$o.goods_name}</strong><wbr>（数量：{$o.goods_number}）</p>
+                <p onmouseover="moreGoodsInfo(this,1,'{$g.goods_sn}')" onmouseout="moreGoodsInfo(this,0,'{$g.goods_sn}')" >
+                <strong>{$o.goods_name}</strong><wbr>（数量：{$o.goods_number}）&nbsp;&nbsp;
+                <img src="images/medical.ico" class="hide png_btn mgr6" alt="服务说明" onclick="getKnowlage(this,'{$g.goods_sn}')" name="introduction"/>
+                <img src="images/book.ico" class="hide png_btn mgr6" alt="产品知识" onclick="getKnowlage(this,'{$g.goods_sn}')" name="goods_knowlage"/>
+                <img src="images/talk.ico" class="hide png_btn mgr6" alt="alt" onclick="getKnowlage(this,'{$g.goods_sn}')" name="talk_skill"/>
+                </p>
                 {/foreach}
                 </details>
                 {else}
-                <p>
+                <p onmouseover="moreGoodsInfo(this,1,'{$g.goods_sn}')" onmouseout="moreGoodsInfo(this,0,'{$g.goods_sn}')">
                 <strong>{$g.goods_name}</strong>
-                {$g.goods_number}×￥{$g.goods_price}
-                <lbl name="introduction" onmouseover="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="服用说明" src="images/tips_help.gif">&nbsp;&nbsp;</lbl>
-                <lbl name="goods_knowlage" onclick="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="产品知识" src="images/book_open.gif">&nbsp;&nbsp;</lbl>
-                <lbl name="talk_skill" onclick="getKnowlage(this,'{$g.goods_sn}')" ><img class="png_btn" title="相关话术" src="images/binocular.png">&nbsp;&nbsp;</lbl>
-                <a href="{$g.goods_id}" ><img class="png_btn" title="购买平台" src="images/shop.png">&nbsp;&nbsp;</a>
+                {$g.goods_number}×￥{$g.goods_price}&nbsp;&nbsp;
+                <img src="images/medical.ico" class="hide png_btn mgr6" alt="服务说明" onclick="getKnowlage(this,'{$g.goods_sn}')" name="introduction"/>
+                <img src="images/book.ico" class="hide png_btn mgr6" alt="产品知识" onclick="getKnowlage(this,'{$g.goods_sn}')" name="goods_knowlage"/>
+                <img src="images/talk.ico" class="hide png_btn mgr6" alt="alt" onclick="getKnowlage(this,'{$g.goods_sn}')" name="talk_skill"/>
+
                 </p>
                 {/if}
                 {/foreach}
@@ -428,10 +433,10 @@
                   {foreach from=$order_type item=val}
                   <option value="{$val.type_id}">{$val.type_name}</option>
                   {/foreach}
-              </select>
-          </td>
-          <td>
-              <select name="admin_id">
+                </select>
+              </td>
+              <td>
+                <select name="admin_id">
                   <option value="0">订单归属</option>
                   {foreach from=$admin_list item=val}
                   <option value="{$val.user_id}">{$val.user_name}</option>
@@ -529,15 +534,7 @@
             <div class="f_r"><input type="submit" name="submit" value="提交订单" class="input_submit" onclick="addNewOrder()"/></div>
           </div>
         </fieldset>
-        <fieldset>
-            <legend align="top">注意事项：</legend>
-            <ul class="warning">
-                <li>（1）凡是下单，低于公司定价的，第一次被发现自己垫钱补齐，第二次开始翻倍处罚。违规赠品等按原价自己垫钱。</li>
-                <li>（2）内部员工买货，一律请到主管处下单，有违反者，按每次100元进行罚款。</li>
-                <li>（3）有违反以上两条规定的员工所在部门，组长按20元/次，主管按50元/次连带罚款。</li>
-            </ul>
-            
-        </fieldset>
+
       </div>
 
       <!-- 添加新服务 -->
