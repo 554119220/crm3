@@ -3006,7 +3006,7 @@ elseif($_REQUEST['act'] == 'check_network_blacklist'){
 
 /*工作绩效*/
 elseif($_REQUEST['act'] == 'work_award'){
-    
+
     $year      = empty($_REQUEST['year']) ? date('Y') : mysql_real_escape_string($_REQUEST['year']);
     $month_day = empty($_REQUEST['month_day']) ? date('m-d') : mysql_real_escape_string($_REQUEST['month_day']);
 
@@ -3028,7 +3028,7 @@ elseif($_REQUEST['act'] == 'work_award'){
     }
 
     $sql_select = 'SELECT admin_id,COUNT(*) AS service_num FROM '.$GLOBALS['ecs']->table('service').
-    " WHERE valid=1 AND service_time>=$date_start AND service_time<=$date_end AND admin_id IN($admin_id_str)".' GROUP BY admin_id';
+        " WHERE valid=1 AND service_time>=$date_start AND service_time<=$date_end AND admin_id IN($admin_id_str)".' GROUP BY admin_id';
 
     $service    = $GLOBALS['db']->getAll($sql_select);
     $admin_list = array();
@@ -3164,6 +3164,7 @@ elseif($_REQUEST['act'] == 'year_performance'){
     die($json->encode($res));
 }
 
+/*异常操作*/
 elseif($_REQUEST['act']=='illegal_control'){
     $sql_select = 'SELECT o.order_id,o.consignee,o.add_time oadd_time,c.add_time cadd_time,c.contact_value,c.contact_name,a.user_name FROM '.$GLOBALS['ecs']->table('order_info').' o,'.
         $GLOBALS['ecs']->table('user_contact').' c,'.$GLOBALS['ecs']->table('admin_user').
@@ -3171,18 +3172,27 @@ elseif($_REQUEST['act']=='illegal_control'){
     $illegal_control_list = $GLOBALS['db']->getAll($sql_select);
 
     if($illegal_control_list){
-       foreach ($illegal_control_list as &$val) {
-           $val['oadd_time'] = date('Y-m-d H:i:s',$val['oadd_time']);
-           $val['cadd_time'] = date('Y-m-d H:i:s',$val['cadd_time']);
-           $d_start    = new DateTime($val['cadd_time']); 
-           $d_end      = new DateTime($val['oadd_time']); 
-           $diff = $d_start->diff($d_end);
-           $val['time_diff'] = $diff->h.' 时'.$diff->i.' 分'.$diff->s.' 秒';
-       } 
+        foreach ($illegal_control_list as &$val) {
+            $val['oadd_time'] = date('Y-m-d H:i:s',$val['oadd_time']);
+            $val['cadd_time'] = date('Y-m-d H:i:s',$val['cadd_time']);
+            $d_start    = new DateTime($val['cadd_time']); 
+            $d_end      = new DateTime($val['oadd_time']); 
+            $diff = $d_start->diff($d_end);
+            $val['time_diff'] = $diff->h.' 时'.$diff->i.' 分'.$diff->s.' 秒';
+        } 
     }
 
     $smarty->assign('illegal_control_list',$illegal_control_list);
     $res['main'] = $smarty->fetch('illegal_control.htm');
+    die($json->encode($res));
+}
+
+/*操作记录*/
+elseif($_REQUEST['act'] == 'action_log'){
+    $module_list = get_admin_action();
+    $smarty->assign('module_list',$module_list);
+    $smarty->assign('action_log_table',$smarty->fetch('action_log_table.htm'));
+    $res['main'] = $smarty->fetch('action_log.htm');
     die($json->encode($res));
 }
 
@@ -3911,7 +3921,7 @@ function get_sale_performance($start_time,$end_time){
     $result           = get_admin_sql();
     $admin_id_str     = $result['admin_id_str'];
     $sale_performance = $result['admin_id_arr'];
-    
+
     $where         = " WHERE order_status IN(1,5) AND shipping_status<>3 AND admin_id IN($admin_id_str) AND add_time>=$start_time AND add_time<=$end_time";
 
     $sql_select = 'SELECT admin_id,SUM(final_amount) as final_amount,COUNT(*) order_num FROM '
@@ -4026,4 +4036,11 @@ function get_platform($role_id = ''){
     $where = empty($role_id) ? '' : " WHERE role_id IN($role_id)";
     $sql_select = 'SELECT role_id,role_name FROM '.$GLOBALS['ecs']->table('role').$where;
     return $GLOBALS['db']->getAll($sql_select);
+}
+
+function get_admin_action(){
+    $sql_select = 'SELECT action_id,label FROM '.$GLOBALS['ecs']->table('admin_action').
+       ' WHERE action_level=0 ORDER BY action_id ASC'; 
+    $admin_action = $GLOBALS['db']->getAll($sql_select);
+    return $admin_action;
 }

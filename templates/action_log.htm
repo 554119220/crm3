@@ -1,0 +1,56 @@
+<br />
+<h3>操作记录</h3>
+<br />
+<div class="view">
+  <b>视图：</b>
+  <button onclick="getActionLog('all')" class="btn_new">全部</button>  
+  <button onclick="getActionLog('me')" class="btn_new">我的日志</button>  
+  <button onclick="getActionLog('today')" class="btn_new">今天的</button>  
+  <button onclick="getActionLog('week')" class="btn_new">本周的</button>  
+  <button onclick="getActionLog('month')" class="btn_new">本月的</button>  
+  <button onclick="getActionLog('add')" class="btn_new">最近创建的</button>  
+</div>
+<br />
+<div class="view-form">
+  <form action="javascript:void(0)" onsubmit="seeActionLog(this)" name="action_log_form">
+    <select name="module">
+      <option value="0">按类型查看</option>
+      {foreach from=$module_list item=val}
+      <option value="{$val.action_id}">{$val.label}</option>
+      {/foreach}
+    </select>&nbsp;&nbsp;&nbsp;
+    筛选条件
+    <label>
+      <input type="radio" name="type" value="0" onclick="seeActionLog(this.form)"/>
+      <span class="btn_new">全部操作</span>
+    </label>
+    <label>
+      <input type="radio" name="type" value="1" onclick="seeActionLog(this.form)"/> 
+      <span class="btn_new">添加</span>
+    </label>
+    <label>
+      <input type="radio" name="type" value="2" onclick="seeActionLog(this.form)"/>
+      <span class="btn_new">编辑</span>
+    </label>
+    <label>
+      <input type="radio" name="type" value="3" onclick="seeActionLog(this.form)"/>
+      <span class="btn_new">删除</span>
+    </label>
+    <ul style="display:inline-flex">
+      <li class="pull-left">
+      <select name="field" onchange="changeCondition()">
+        <option value="content">操作人</option>
+        <option value="content_time">操作时间</option>
+      </select>
+      </li>
+      <li id="conditionContent" class="pull-left"></li>
+      <li id="searchContent" class="pull-left"></li>
+      <li class="pull-left">
+      <input type="submit" value="搜 索" class="b_submit"/>
+      </li>
+    </ul>
+  </form>
+</div>
+<div id="resource">
+  {$action_log_table}
+</div>

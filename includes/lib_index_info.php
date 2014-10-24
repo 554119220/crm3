@@ -224,12 +224,16 @@ function stats_service($start,$end) {
         " WHERE a.status>0 AND service_time BETWEEN $start AND $end AND valid=1 ";
     $order_by = ' ORDER BY num_service DESC';
 
+    $role_id_str = get_role_str();
+
+    $platform_condition = $role_id_str ? " s.platform IN($role_id_str) " : " s.platform=$role_id";
+
     if(admin_priv('service_all_mgr','',false) || admin_priv('all','',false)){
         $sql_select .= " GROUP BY admin_id $order_by";
     }elseif(admin_priv('service_part_mgr','',false)){
-        $sql_select .= " AND s.platform=$role_id GROUP BY admin_id $order_by";
+        $sql_select .= " AND $platform_condition GROUP BY admin_id $order_by";
     }else{
-        $sql_select .= " AND s.platform=$role_id GROUP BY admin_id $order_by";
+        $sql_select .= " AND $platform_condition GROUP BY admin_id $order_by";
     }
 
     return $GLOBALS['db']->getAll($sql_select);
@@ -342,8 +346,7 @@ function get_ranklist($sql_sub,$ranklist_name,$start,$end){
     $order_by = isset($_REQUEST['order_by']) ? mysql_real_escape_string($_REQUEST['order_by']): ' ORDER BY final_amount DESC ';
 
     if(!$platform_list){
-        $sql_select = 'SELECT role_id,role_name FROM '.$GLOBALS['ecs']->table('role').' WHERE role_type>0';
-        $platform_list = $GLOBALS['db']->getAll($sql_select);
+        $platform_list = get_index_role();
     }
 
     switch($ranklist_name){
@@ -359,9 +362,7 @@ function get_ranklist($sql_sub,$ranklist_name,$start,$end){
         }
         break;
     case 'group_ranklist' :
-        $sql_select = 'SELECT group_id,group_name FROM '.$GLOBALS['ecs']->table('group');
-        $group_list = $GLOBALS['db']->getAll($sql_select);
-
+        $group_list = get_index_group();
         $ranklist = $GLOBALS['db']->getAll($sql.$sql_sub.$order_by);
 
         foreach($ranklist as &$sale_group){
@@ -422,8 +423,10 @@ function tidysql($sql_ranklist_name = ''){
         $tidy_date['sql_finish_order_ranklist'] = ' GROUP BY platform ORDER BY num DESC';
         $_REQUEST['company_mgr']                = true;
     }elseif ($pwd_info['statistic_part_mgr']){
-        $tidy_date['sql_person_ranklist']       = " AND platform=$role_id GROUP BY admin_id ";
-        $tidy_date['sql_group_ranklist']        = " AND platform=$role_id GROUP BY group_id "; 
+        $role_id_str = get_role_str();
+
+        $tidy_date['sql_person_ranklist'] = $role_id_str ? " AND platform IN($role_id_str) GROUP BY admin_id " : " AND platform=$role_id GROUP BY admin_id";
+        $tidy_date['sql_group_ranklist'] = $role_id_str ? " AND platform IN($role_id_str) GROUP BY group_id " : " AND platform=$role_id GROUP BY group_id";
         $tidy_date['sql_finish_order_ranklist'] = ' GROUP BY admin_id ORDER BY num DESC';
     }else{
         $tidy_date['sql_person_ranklist']       = " AND group_id=$group_id GROUP BY admin_id ";
@@ -739,3 +742,36 @@ function get_admin_tasks_list($where){
 
     return $admin_tasks_list;
 }
+
+/*查询子部门*/
+function get_role_str(){
+    if($_SESSION['role_id']){
+        $sql_select = 'SELECT role_describe FROM '.$GLOBALS['ecs']->table('role').
+            " WHERE role_id={$_SESSION['role_id']}";
+        $role_desc = $GLOBALS['db']->getOne($sql_select);
+        if($role_desc){
+            $sql_select = 'SELECT role_id FROM '.$GLOBALS['ecs']->table('role').
+                " WHERE role_describe='{$role_desc['role_describe']}'";
+            $role_id_list = $GLOBALS['db']->getCol($sql_select);
+
+            if($role_id_list){
+                $role_id_str = implode(',',$role_id_list);
+            }
+        }
+    }
+
+    return $role_id_str;
+}
+
+function get_index_group(){
+    $sql_select = 'SELECT group_id,group_name FROM '.$GLOBALS['ecs']->table('group');
+    $group_list = $GLOBALS['db']->getAll($sql_select);
+    return $group_list;
+}
+
+function get_index_role(){
+    $sql_select = 'SELECT role_id,role_name FROM '.$GLOBALS['ecs']->table('role').' WHERE role_type>0';
+    $platform_list = $GLOBALS['db']->getAll($sql_select);
+    return $platform_list;
+}
+

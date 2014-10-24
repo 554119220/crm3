@@ -3489,11 +3489,11 @@ function service_records($where = '')
         'act'           => $_REQUEST['act'],
     );
 
-    $sql_select = 'SELECT DISTINCT s.user_name,s.admin_name,s.service_id,s.service_status,s.logbook,s.admin_id,'.
-        's.service_time,s.show_sev,u.role_id FROM '.$GLOBALS['ecs']->table('users').' u, '.
-        $GLOBALS['ecs']->table('service').' AS s  LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+    $sql_select = 'SELECT s.user_name,s.admin_name,s.service_id,s.service_status,s.logbook,s.admin_id,'.
+        's.service_time,s.show_sev,u.role_id FROM '.$GLOBALS['ecs']->table('service').' s LEFT JOIN '.
+        $GLOBALS['ecs']->table('users').' AS u ON s.user_id=u.user_id LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
         ' AS ad ON ad.user_id=s.admin_id '.
-        " WHERE u.user_id=s.user_id $where ORDER BY s.service_time DESC LIMIT ".
+        " WHERE 1 $where ORDER BY s.service_time DESC LIMIT ".
         ($filter['page']-1)*$filter['page_size'].",{$filter['page_size']}";
 
     $records = $GLOBALS['db']->getAll($sql_select);

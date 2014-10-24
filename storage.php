@@ -509,13 +509,13 @@ elseif($_REQUEST['act'] == 'goods_list')
 elseif($_REQUEST['act'] == 'check_stock_batch')
 {
     $res = array ('req_msg' => true, 'hide_btn' => 1);
-    $goods_id = intval($_REQUEST['goods_id']);
+    $goods_sn = mysql_real_escape_string($_REQUEST['goods_sn']);
 
     $sql_select = 'SELECT g.goods_name,s.rec_id,s.quantity,s.production_day,s.update_time,'.
         'st.arrival_day,g.brand_id,b.mod_stock_status_time,st.confirmer FROM '.$GLOBALS['ecs']->table('goods').' g, '.
         $GLOBALS['ecs']->table('stock_goods').' s, '.$GLOBALS['ecs']->table('brand').
         ' b, '.$GLOBALS['ecs']->table('stock').' st WHERE s.quantity>0 AND g.goods_sn=s.goods_sn'.
-        " AND g.brand_id=b.brand_id AND g.goods_id=$goods_id AND s.stock_id=st.stock_id ";	
+        " AND g.brand_id=b.brand_id AND g.goods_sn='$goods_sn' AND s.stock_id=st.stock_id ";	
     $check_list = $GLOBALS['db']->getAll($sql_select);
 
     foreach ($check_list as &$val) {

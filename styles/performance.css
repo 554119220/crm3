@@ -77,3 +77,9 @@ textarea[class='content_text']{width:93%;height:380px;padding:6px;resize:none;ov
 .history-date summary.green {font-size:32px;}
 .history-date div.comment{ margin-left:64px;font-size:16px;}
 .history-date .in_summary{padding:8px;color:#1db702;font-size:18px;cursor:pointer}
+
+/*操作日志*/
+.view{ font-size: 16px; background: #F4F4F4; padding: 10px; color: #000000; border:1px solid #ccc}
+div.view{ font-size: 14px; color: #000000; }
+div.view-form{font-size:14px;}
+.pull-left{float:left}
