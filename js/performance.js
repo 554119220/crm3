@@ -572,3 +572,41 @@ function getAward(source){
 
   Ajax.call('performance.php?act='+source,data.join('&'),searchTimeResponse,'GET','JSON');
 }
+
+function viewActionLog (obj,data) {
+  var code      = obj.elements['code'].value;
+  var module    = obj.elements['module'].value;
+  var adminId   = obj.elements['admin_id'].value;
+  var startTime = obj.elements['start_time'].value;
+  var endTime   = obj.elements['end_time'].value;
+
+  Ajax.call('performance.php?act=view_action_log','code='+code+'&module='+module+'&admin_id='+adminId+'&start_time='+startTime+'&end_time='+endTime+'&data='+data,fullSearchResponse,'GET','JSON');
+}
+
+/*分析管理员操作模板*/
+function analyseLog (condition) {
+  Ajax.call('performance.php?act=analyse_log','condition='+condition,fullSearchResponse,'GET','JSON');
+}
+
+/*修改操作分析参数*/
+function analyseLogConfig(){
+  Ajax.call('performance.php?act=analyse_log_config','',showMsg,'GET','JSON');
+}
+
+/*保存操作日志分析参数修改*/
+function saveLogConfig(obj){
+  var inputList = obj.getElementsByTagName('input');
+  var data = [];
+  for (var i = 0; i < inputList.length; i++) {
+    if (inputList[i].type == 'number') {
+      data.push(inputList[i].name+'='+inputList[i].value);
+    }
+  }
+
+  Ajax.call('performance.php?act=save_log_conf',data.join('&'),showMsg,'GET','JSON');
+}
+
+//筛选条件
+function getCondition(obj){
+  Ajax.call('performance.php?act=get_condition','condition='+obj.value,inSelect,'GET','JSON');
+}

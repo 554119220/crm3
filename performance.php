@@ -3189,10 +3189,150 @@ elseif($_REQUEST['act']=='illegal_control'){
 
 /*操作记录*/
 elseif($_REQUEST['act'] == 'action_log'){
-    $module_list = get_admin_action();
+    $module_list  = get_admin_action();
+    $result    = get_admin_log();
+    $result['filter']['act'] = 'action_log';
+    $analyse_list = get_analyse_list();
+
     $smarty->assign('module_list',$module_list);
+    $smarty->assign('admin_log',$result['log_list']);
+    $smarty->assign('filter',$result['filter']);
+    $smarty->assign('analyse_list',$analyse_list);
     $smarty->assign('action_log_table',$smarty->fetch('action_log_table.htm'));
+
     $res['main'] = $smarty->fetch('action_log.htm');
+    die($json->encode($res));
+}
+
+/*搜索管理员操作记录*/
+elseif ($_REQUEST['act']== 'view_action_log'){
+    $code       = isset($_REQUEST['code']) ? mysql_real_escape_string($_REQUEST['code']) : '';
+    $module     = isset($_REQUEST['module']) ? mysql_real_escape_string($_REQUEST['module']) : 0;
+    $admin_id   = isset($_REQUEST['admin_id']) ? intval($_REQUEST['admin_id']) : 0;
+
+    if(isset($_REQUEST['data'])){
+        $data = empty($_REQUEST['data']) ? mysql_real_escape_string($_REQUEST['data']) : 'today';
+        if (!empty($data)) {
+            switch($data){
+            case 'today':
+                $start_time = strtotime(date('Y-m-d 00:00:00'));
+                $end_time = strtotime(date('Y-m-d 23:59:59'));
+                break;
+            case 'week' :
+                $start_time = mktime(0,0,0,date("m"),date("d")-date("w")+1,date("Y"));
+                $end_time   = mktime(23,59,59,date("m"),date("d")-date("w")+7,date("Y"));
+                break;
+            case 'month':
+                $start_time = strtotime(date('Y-m-1 00:00:00'));
+                $end_time = strtotime(date('Y-m-t 23:59:59'));
+                break;
+            }
+        }
+    }else{
+        $start_time = isset($_REQUEST['start_time']) ? strtotime($_REQUEST['start_time']) : 0;
+        $end_time   = isset($_REQUEST['end_time']) ? strtotime($_REQUEST['end_time']) : 0;
+    }
+
+    $result = get_admin_log($admin_id,$code,$module,$start_time,$end_time);
+    $result['filter']['act'] = $_REQUEST['act'];
+    $result['filter']['condition'] .= "&start_time=$start_time&end_time=$end_time&module=$module&code=$code";
+
+    $smarty->assign('admin_log',$result['log_list']);
+    $smarty->assign('filter',$result['filter']);
+    $res['response_action'] = 'search_service';
+    $res['main'] = $smarty->fetch('action_log_table.htm');
+    die($json->encode($res));
+}
+
+/*分析操作日志*/
+elseif($_REQUEST['act'] == 'analyse_log'){
+    $condition = isset($_REQUEST['condition']) ? mysql_real_escape_string($_REQUEST['condition']) : '';
+    $analyse_result = analyse_log($condition);
+
+    switch($condition){
+    case 'by_view_user_info' :
+        $action = 'view';
+        break;
+    case 'by_edit_user_info' :
+        $action = 'edit';
+        break;
+    case 'by_del_user_info' :
+        $action = 'del';
+        break;
+        break;
+    case 'by_view_order_info' :
+        break;
+    case 'by_edit_order_info' :
+        break;
+    case 'by_del_order_info' :
+        break;
+    }
+
+    $res['response_action'] = 'search_service';
+    $res['main'] = $smarty->fetch('analyse_log.htm');
+    die($json->encode($res));
+}
+
+
+//设置异常操作记录参数模板
+elseif($_REQUEST['act'] == 'analyse_log_config'){
+    $config_list = get_analyse_list();
+
+    $smarty->assign('config_list',$config_list);
+    $res = array(
+        'timeout'    => '',
+        'btncontent' => false,
+        'title'      => '修改操作日志分析参数',
+        'message'    => $smarty->fetch('act_log_config.htm'),
+    );
+
+    die($json->encode($res));
+}
+
+//设置异常操作记录参数操作
+elseif($_REQUEST['act'] == 'save_log_conf'){
+    $sql_update = 'UPDATE '.$GLOBALS['ecs']->table('action_analyse');
+    foreach($_REQUEST as $key=>$val){
+        if(preg_match('/^(by_)\w+/',$key)){
+            $GLOBALS['db']->query($sql_update." SET analyse_value=$val WHERE analyse_code='$key'");
+        }
+    }
+
+    $res = array(
+        'req_msg'  => true,
+        'time_out' => 2000,
+        'message'  => '修改成功',
+    );
+
+    die($json->encode($res)); 
+}
+
+/*日志详细的分析参数*/
+elseif($_REQUEST['act'] == 'get_condition'){
+
+    $condition = isset($_REQUEST['condition']) ? intval($_REQUEST['condition']) : 0;
+    $res['id'] = 'condition_field'; 
+    switch($condition){
+    case 0 :
+        $sql_select = 'SELECT role_id AS value,role_name AS text FROM '.$GLOBALS['ecs']->table('role');
+        $res['text'] = '请选择平台';
+        break;
+    case 1 :
+        break;
+    case 2 :
+        $sql_select = 'SELECT rank_id AS value,rank_name AS text FROM '.$GLOBALS['ecs']->table('user_rank').' ORDER BY level ASC';
+        $res['text'] = '请选择等级';
+        break;
+    }
+
+    if($sql_select){
+        $res['options'] = $GLOBALS['db']->getAll($sql_select);
+        $res['length'] = count($res['options']);
+    }else{
+        $res['text'] = "请选择条件";
+        $res['length'] = 0;
+    }
+
     die($json->encode($res));
 }
 
@@ -3398,8 +3538,7 @@ function select_list($rid)
     $list = $GLOBALS['db']->getAll($sql_select);
 
     //格式化下时间
-    foreach($list as &$v)
-    {
+    foreach($list as &$v) {
         $v['add_time'] = date('Y-m-d H:i',$v['add_time']);
     }
 
@@ -4038,9 +4177,77 @@ function get_platform($role_id = ''){
     return $GLOBALS['db']->getAll($sql_select);
 }
 
+/*主权限*/
 function get_admin_action(){
     $sql_select = 'SELECT action_id,label FROM '.$GLOBALS['ecs']->table('admin_action').
-       ' WHERE action_level=0 ORDER BY action_id ASC'; 
+        ' WHERE action_level=0 ORDER BY action_id ASC'; 
     $admin_action = $GLOBALS['db']->getAll($sql_select);
     return $admin_action;
+}
+
+//获取管理员操作记录
+function get_admin_log($user_id=0,$code='',$module='',$start_time='',$end_time=''){
+    $where     = ' WHERE 1';
+    $condition = '';
+
+    if($user_id){
+        $where .= " AND l.user_id=$user_id "; 
+        $condition .= "&user_id=$user_id";
+    }
+
+    if(!empty($code) && $code != 'all'){
+        $where .= " AND l.code='$code'";  
+        $condition .= "&code=$code";
+    }
+
+    if (!$start_time && !$end_time) {
+        $start_time = strtotime(date('Y-m-d 00:00:00'));
+        $end_time   = strtotime(date('Y-m-d 23:59:59'));
+    }
+
+    $condition .= "&start_time=$start_time&end_time=$end_time";
+    $where .= " AND log_time BETWEEN $start_time AND $end_time ";
+
+    $sql_select = ' SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('admin_log').
+        ' l LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').' a ON a.user_id=l.user_id '.$where;
+
+    $record_count       = $GLOBALS['db']->getOne($sql_select);
+    $page_size          = !empty($_REQUEST['page_size']) ? intval($_REQUEST['page_size']) : 8;
+    $page               = !empty($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
+    $filter             = break_pages($record_count,$page_size,$page);
+    $filter['codition'] = $condition;
+    $filter['page'] = $page;
+    $filter['page_size'] = $page_size;
+
+    $sql_select = 'SELECT l.log_time,l.log_info,a.user_name FROM '.$GLOBALS['ecs']->table('admin_log').
+        ' l LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').' a ON a.user_id=l.user_id '.
+        $where.' ORDER BY log_time DESC'.
+        ' LIMIT '.($page-1)*$page_size.",$page_size";
+
+    $log_list = $GLOBALS['db']->getAll($sql_select);
+
+    if($log_list){
+        foreach ($log_list as &$val) {
+            $val['log_time'] = date('Y-m-d H:i:s',$val['log_time']);
+        }
+    }
+
+    return array('log_list'=>$log_list,'filter'=>$filter);
+}
+
+function get_analyse_list(){
+    $sql_select = 'SELECT analyse_name,analyse_code,analyse_value FROM '.$GLOBALS['ecs']->table('action_analyse');
+    return $GLOBALS['db']->getAll($sql_select);
+}
+
+/*分析管理员操作*/
+function analyse_log(){
+    return true;
+}
+
+/*操作日志分析参数值*/
+function get_analyse_value($analyse_code){
+    $sql_select = 'SELECT analyse_value FROM '.$GLOBALS['ecs']->table('action_analyse').
+        " WHERE analyse_code='$analyse_code'";
+    return $GLOBALS['db']->getOne($sql_select);
 }

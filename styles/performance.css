@@ -83,3 +83,10 @@ textarea[class='content_text']{width:93%;height:380px;padding:6px;resize:none;ov
 div.view{ font-size: 14px; color: #000000; }
 div.view-form{font-size:14px;}
 .pull-left{float:left}
+
+.page_div{ background: rgba(197, 226, 255, 0.11); width: 100%; height: 25px; line-height: 25px; font-size: 14px; margin-top:6px;}
+.page_div .tip_left{ width:40%;float:left;padding-left:10px;}
+
+.general_table th,.general_table td{font-size:14px;font-weight:normal;border-bottom:0px;}
+.general_table td{text-align:left;}
+.analyse_conf_div input[type=number]{width:58px;}

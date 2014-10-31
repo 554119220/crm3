@@ -149,12 +149,12 @@ function sys_msg($msg_detail, $msg_type = 0, $links = array(), $auto_redirect = 
  * @param   string      $content    操作的内容
  * @return  void
  */
-function admin_log($sn = '', $action, $content)
+function admin_log($sn = '', $action, $content,$moudel='')
 {
       $log_info = $GLOBALS['_LANG']['log_action'][$action] . $GLOBALS['_LANG']['log_action'][$content] .': '. addslashes($sn);
 
-      $sql = 'INSERT INTO ' . $GLOBALS['ecs']->table('admin_log') . ' (log_time, user_id, log_info, ip_address) ' .
-            " VALUES ('" . gmtime() . "', $_SESSION[admin_id], '" . stripslashes($log_info) . "', '" . real_ip() . "')";
+      $sql = 'INSERT INTO ' . $GLOBALS['ecs']->table('admin_log') . ' (log_time, user_id, log_info, ip_address,moudel,code) ' .
+            " VALUES ('" . gmtime() . "', $_SESSION[admin_id], '" . stripslashes($log_info) . "', '" . real_ip() . "','$moudel','$action')";
       $GLOBALS['db']->query($sql);
 }
 

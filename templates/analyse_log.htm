@@ -1,0 +1,20 @@
+<br />
+<div id='analyse_result' style="border:1px solid #ccc;padding:12px;color:$fff;">
+  <form action="javascript:void(0)" name"detail_conf_form">
+    <div class="analyse_conf_div">
+       满足条件<select name="condition" onchange="getCondition(this)">
+       {$action}<option value="0">某平台顾客</option>
+       {$action}<option value="1">某类型顾客</option>
+       {$action}<option value="2">某等级顾客</option>
+       {$action}<option value="3">不属于自己的顾客</option>
+      </select>
+      <select id="condition_field">
+        <option value="0">请选择条件</option>
+      </select>
+      <input type="number" name="plat_num" value="0"/> 个
+      <input type="submit" value="搜 索" class="b_submit"/>
+    </div>  
+    <input type="hidden" name="behave" value="{$condition}"/>
+  </form>
+</div>
+<div id='analyse_result' style="border:1px solid #ccc;padding:12px;border-top:0px;"></div>

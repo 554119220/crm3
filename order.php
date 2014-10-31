@@ -598,7 +598,7 @@ elseif ($_REQUEST['act'] == 'order_detail')
          $res['message'] = '该顾客24小时内还有其它订单或未发货订单。订单信息如下：<br>'.implode('<br>', $last_order).'<br><br>提示：<br>多个有效订单且地址及收货人相同，请手动合并！<br><mark>避免重复添加订单！</mark>';
      }
       */
-
+    admin_log("订单ID是$id",'view','order_detail');  
     die($json->encode($res));
 }
 
@@ -873,6 +873,7 @@ elseif ($_REQUEST['act'] == 'ordersyn_verify')
         $res['message'] = '订单确认成功！'.$handle_message;
         $res['timeout'] = 2000;
 
+        admin_log("订单ID是$order_id",'confirm','ordersyn_verify','order');
         die($json->encode($res));
     }
 }
@@ -893,6 +894,7 @@ elseif ($_REQUEST['act'] == 'ordersyn_del')
         $res['id']      = $order_id;
         $res['message'] = '订单关闭成功！';
         $res['timeout'] = 2000;
+        admin_log("订单ID是$order_id",'del','ordersyn_del','order');
 
         die($json->encode($res));
     }
@@ -936,6 +938,8 @@ elseif ($_REQUEST['act'] == 'order_del') {
     if ($GLOBALS['db']->query($sql_update)) {
         $res['code'] = 1;
         $res['message'] = '订单取消成功！';
+
+        admin_log("订单ID是$order_id",'cancel','order_del','order');
     } else {
         $res['code'] = 0;
         $res['message'] = '订单不符合取消条件！';
@@ -1066,6 +1070,7 @@ elseif ($_REQUEST['act'] == 'save')
         $sql_select = "SELECT {$_REQUEST['info']} FROM ".$GLOBALS['ecs']->table('ordersyn_info').
             " WHERE order_id=$order_id";
         $res['main'] = $GLOBALS['db']->getOne($sql_select);
+        admin_log("订单ID是$order_id",'upd','edit_address','order');
     }
 
     // 记录客服操作
@@ -1368,6 +1373,8 @@ elseif ($_REQUEST['act'] == 'add_new_order') {
         $res['code'] = 1;
         $res['message'] = '订单添加成功，将进入发货流程！'.$handle_message;
         $res['timeout'] = 3000;
+
+        admin_log("订单ID是$order_id",'add_new_order','add','order');
 
         die($json->encode($res));
     }
@@ -2470,6 +2477,7 @@ elseif ($_REQUEST['act'] == 'do_returns') {
                 $GLOBALS['db']->query($sql_update);
             }
 
+        admin_log("订单ID是$order_id",'apply','do_returns','order');
 
         } else {
             $res['message'] = '申请退货失败，请稍后再试！';

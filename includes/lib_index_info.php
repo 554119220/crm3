@@ -71,10 +71,10 @@ function get_index_alarm_stock(){
 
         foreach($stock_alarm['stock_alarm'] as &$stock){
             foreach($order_sheet_list as $key=>$sheet){
-               if($sheet['goods_sn'] == $stock['goods_sn']){
-                   $stock['order_sheet_status'] = $sheet['status']; 
-                   unset($order_sheet_list[$key]);
-               } 
+                if($sheet['goods_sn'] == $stock['goods_sn']){
+                    $stock['order_sheet_status'] = $sheet['status']; 
+                    unset($order_sheet_list[$key]);
+                } 
             }
         }
     }
@@ -198,6 +198,15 @@ function sales_stats ($start,$end) {
     if($pwd_info['company_mgr'] || $pwd_info['statistic_part_mgr']){
         $sql_role_ranklist = " GROUP BY platform ";
         $sales['role_ranklist'] = get_ranklist($sql_role_ranklist,'role_ranklist',$start,$end);
+    }
+
+    if($pwd_info['statistic_part_mgr']){
+        $sql_group_ranklist = " AND platform={$_SESSION['role_id']}";
+        $sql_finish_order_ranklist = " AND platform={$_SESSION['role_id']} ";
+    }elseif($pwd_info['statistic_group_mgr']){
+        $sql_finish_order_ranklist = " AND platform={$_SESSION['role_id']} AND group_id={$_SESSION['group_id']} ";
+    }elseif(!$pwd_info['company_mgr']){
+        $sql_person_ranklist = " AND group_id={$_SESSION['group_id']}";
     }
 
     //团队排行
@@ -340,7 +349,8 @@ function get_commemoration(){
 //返回排行数据
 function get_ranklist($sql_sub,$ranklist_name,$start,$end){
     $sql = 'SELECT SUM(final_amount) final_amount,COUNT(*) num,admin_id,admin_name,platform,group_id FROM '.
-        $GLOBALS['ecs']->table('order_info').' WHERE order_status IN (1,5) AND shipping_status<>3 '.
+        $GLOBALS['ecs']->table('order_info').
+        ' WHERE order_status IN (1,5) AND shipping_status<>3 '.
         " AND add_time BETWEEN $start AND $end ";
 
     $order_by = isset($_REQUEST['order_by']) ? mysql_real_escape_string($_REQUEST['order_by']): ' ORDER BY final_amount DESC ';
@@ -365,8 +375,12 @@ function get_ranklist($sql_sub,$ranklist_name,$start,$end){
         $group_list = get_index_group();
         $ranklist = $GLOBALS['db']->getAll($sql.$sql_sub.$order_by);
 
-        foreach($ranklist as &$sale_group){
+        foreach($ranklist as $key=>&$sale_group){
             foreach($group_list as $group){
+                if (!$sale_group['final_amount']) {
+                    unset($ranklist[$key]);
+                }
+
                 if($sale_group['group_id'] == $group['group_id']){
                     $sale_group['group_name'] = $group['group_name'];
                 }
@@ -379,11 +393,21 @@ function get_ranklist($sql_sub,$ranklist_name,$start,$end){
     case 'finish_order_ranklist' :
         $ranklist = $GLOBALS['db']->getAll($sql.$sql_sub);
         if($_REQUEST['company_mgr']){
-            foreach($ranklist as &$finish_order){
+            foreach($ranklist as $key=>&$finish_order){
                 foreach($platform_list as $platform){
+                    if(!$finish_order['final_amount']){
+                        unset($finish_order[$key]); 
+                    }
+
                     if($platform['role_id'] == $finish_order['platform']){
                         $finish_order['role_name'] = $platform['role_name'];
                     }
+                }
+            }
+        }else{
+            foreach($ranklist as $key=>&$finish_order){
+                if(empty($finish_order['final_amount'])){
+                    unset($ranklist[$key]); 
                 }
             }
         }
@@ -584,8 +608,8 @@ function get_sale_alarm_list(){
         $goods_sn_str = implode("','",$goods_sn_list);
 
         $sql_select = 'SELECT goods_sn,goods_name,SUM(quantity) AS quantity FROM '
-        .$GLOBALS['ecs']->table('stock_goods')
-        ." WHERE goods_sn IN('$goods_sn_str') AND quantity>0 GROUP BY goods_sn";
+            .$GLOBALS['ecs']->table('stock_goods')
+            ." WHERE goods_sn IN('$goods_sn_str') AND quantity>0 GROUP BY goods_sn";
 
         $goods_quantity_list = $GLOBALS['db']->getAll($sql_select);
         $goods_list          = array();
@@ -686,7 +710,7 @@ function get_task_progress(){
                 if($val['column_name'] == 'service'){
                     $sql_select = 'SELECT COUNT(*) FROM '.$GLOBALS['ecs']->table('service').
                         " WHERE admin_id={$_SESSION['admin_id']} AND service_time>=$start_time".
-                       " AND service_time<=$end_time AND valid=1 "; 
+                        " AND service_time<=$end_time AND valid=1 "; 
                 }elseif($val['column_name'] == 'final_amount'){
                     $sql_select = 'SELECT SUM(final_amount) FROM '
                         .$GLOBALS['ecs']->table('order_info')
@@ -709,19 +733,19 @@ function get_task_progress(){
                 $style = 'class="';
 
                 if($percent >= 0){
-                   $val['sts1'] = $style.'sts1"';
+                    $val['sts1'] = $style.'sts1"';
                 }
 
                 if($percent >= 25){
-                   $val['sts2'] = $style.'sts2"';
+                    $val['sts2'] = $style.'sts2"';
                 }
 
                 if($percent >= 50){
-                   $val['sts3'] = $style.'sts3"';
+                    $val['sts3'] = $style.'sts3"';
                 }
 
                 if($percent >= 75){
-                   $val['sts4'] = $style.'sts4"';
+                    $val['sts4'] = $style.'sts4"';
                 }
 
                 if($percent == 100){
@@ -774,4 +798,3 @@ function get_index_role(){
     $platform_list = $GLOBALS['db']->getAll($sql_select);
     return $platform_list;
 }
-

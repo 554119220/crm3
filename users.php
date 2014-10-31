@@ -221,6 +221,8 @@ elseif ($_REQUEST['act'] == 'users_list') {
     $res['left'] = sub_menu_list($file);
     if ($res['left'] === false) unset($res['left']);
 
+    //admin_log('','view','users_list');
+
     die($json->encode($res));
 }
 
@@ -441,6 +443,8 @@ elseif ($_REQUEST['act'] == 'update_cat')
         $res['timeout'] = 2000;
         $res['message'] = '修改成功！';
         $res['tr_id'] = $cat['user_id'];
+
+        admin_log("顾客ID是$user_id",'upd','update_cat','users');
 
         die($json->encode($res));
     }
@@ -665,6 +669,8 @@ elseif ($_REQUEST['act'] == 'repeat')
 
     $res['left'] = sub_menu_list($file);
     if ($res['left'] === false) unset($res['left']);
+    //admin_log('','view','repeat');
+
 
     die($json->encode($res));
 }
@@ -692,6 +698,7 @@ elseif ($_REQUEST['act'] == 'user_detail') {
     $user_friends = get_user_friends($user_id);
 
     $case = get_before_case();         //既往病例
+
 
     //获取家长成员
     if($user_info['family_id'] != 0)
@@ -890,6 +897,7 @@ elseif ($_REQUEST['act'] == 'user_detail') {
     $smarty->assign('service_time', date('Y-m-d H:i'));
 
 
+    admin_log("顾客ID是$user_id",'view','user_detail','users');
     $res['info'] = $smarty->fetch('users_detail.htm');
 
     die($json->encode($res));
@@ -1794,7 +1802,7 @@ elseif ($_REQUEST['act'] == 'insert') {
     }
 
     /* 记录管理员操作 */
-    admin_log($_POST['username'], 'add', 'users');
+    admin_log($_POST['username'], 'add', 'users','users');
     $uname = implode('', $_REQUEST['uname']);
     if (!empty($uname))
     {
@@ -2037,7 +2045,7 @@ elseif ($_REQUEST['act'] == 'update')
       $db->autoExecute($ecs->table('users'), $other, 'UPDATE', "user_name = '$username'");
        */
     /* 记录管理员操作 */
-    admin_log($username, 'edit', 'users');
+    admin_log($username, 'edit', 'users','users');
 
     /* 更新顾客社会关系 */
     $uname = implode('', $_REQUEST['uname']);
@@ -2097,7 +2105,7 @@ elseif ($_REQUEST['act'] == 'batch_remove')
         //$users =& init_users();
         //$users->remove_user($col);
 
-        admin_log($usernames, 'batch_remove', 'users');
+        admin_log($usernames, 'batch_remove', 'users','users');
 
         $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
         sys_msg(sprintf($_LANG['batch_remove_success'], $count), 0, $lnk);
@@ -2140,7 +2148,7 @@ elseif ($_REQUEST['act'] == 'edit_username')
             $db->query('UPDATE ' .$ecs->table('users'). " SET user_name = '$username' WHERE user_id = '$id'");
         }
 
-        admin_log(addslashes($username), 'edit', 'users');
+        admin_log(addslashes($username), 'edit', 'users','users');
         make_json_result(stripcslashes($username));
     }
     else
@@ -2171,7 +2179,7 @@ elseif ($_REQUEST['act'] == 'edit_email')
     {
         if ($users->edit_user(array('username'=>$username, 'email'=>$email)))
         {
-            admin_log(addslashes($username), 'edit', 'users');
+            admin_log(addslashes($username), 'edit', 'users','users');
 
             make_json_result(stripcslashes($email));
         }
@@ -2206,7 +2214,7 @@ elseif ($_REQUEST['act'] == 'remove')
     //$users->remove_user($username); //已经删除用户所有数据
 
     /* 记录管理员操作 */
-    admin_log(addslashes($username), 'remove', 'users');
+    admin_log(addslashes($username), 'remove', 'users','users');
 
     /* 提示信息 */
     $link[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
@@ -2249,7 +2257,7 @@ elseif ($_REQUEST['act'] == 'remove_parent')
     /* 记录管理员操作 */
     $sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id = '" . $_GET['id'] . "'";
     $username = $db->getOne($sql);
-    admin_log(addslashes($username), 'edit', 'users');
+    admin_log(addslashes($username), 'edit', 'users','users');
 
     /* 提示信息 */
     $link[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
@@ -3799,6 +3807,8 @@ elseif ($_REQUEST['act'] == 'send_users') {
         'user_list' => $_REQUEST['user_list'],
     );
 
+    admin_log("将顾客ID为$user_list转给了$send_to",'transfer','send_users','users');
+
     die($json->encode($res));
 }
 
@@ -3883,6 +3893,10 @@ elseif ($_REQUEST['act'] == 'add_contact') {
         $res['code']      = 1;
         $res['user_id']   = $user_id;
         $res['insert_id'] = $GLOBALS['db']->insert_id();
+
+
+        admin_log("顾客ID是$user_id",'add','add_contact','users');
+
     }
 
     die($json->encode($res));
@@ -4467,6 +4481,9 @@ elseif($_REQUEST['act'] == 'putin_network_blacklist'){
             $res['code'] = $GLOBALS['db']->query($sql_insert);
             if($res['code']){
                 $res['message'] = '添加成功';
+
+                admin_log("顾客姓名是$user_name",'add','blacklist','users');
+
             }
         }
     }
