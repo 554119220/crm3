@@ -1,9 +1,10 @@
+<br />
 <div width="100%">
   <form action="javascript:void(0)" onsubmit="saveLogConfig(this)">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" class="form_table general_table">
+    <table width="50%" cellpadding="0" cellspacing="0" border="0" class="form_table general_table">
       {foreach from=$config_list item=val}
       <tr>
-        <th>{$val.analyse_name}</th>
+        <th>{$val.analyse_name} ：</th>
         <td>
           <input type="number" name="{$val.analyse_code}" value="{$val.analyse_value}" min="0" required /> 次
         </td>
@@ -11,9 +12,24 @@
       {/foreach}
       <tr>
         <td colspan="2" style="text-align:center;padding-right:6px;">
-          <input type="submit" value="修 改" class="btn_new" style="font-size:16px;"/>
+          <input type="submit" value="修 改" class="b_submit" style="font-size:16px;"/>
         </td>
       </tr>
     </table>
   </form>
+  <br />
+  <div>
+    <form action="javascript:void(0)" name="allot_form">
+      <table class="form_table general_table" width="50%" cellpadding="0" cellspacing="0" border="0">
+        <th>将异常操作及时提醒给：
+        </th>
+        <td id="td_admin"></td>
+        <td>
+          <input type="button" id="admin_id_field" value="查看 " onclick="allotAuthority()" class="btn_new"/>
+        </td>
+      </table>
+    </form>
+  </div>
+  <br />
+  <div id="admin_view"></div>
 </div>

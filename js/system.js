@@ -901,3 +901,12 @@ function showAndInmain(res) {
 function justGetAdmin(user_name){ 
     Ajax.call('system.php?act=admin_list','user_name='+user_name,getAdminListResp,'GET','JSON');
 }
+
+function allotAuthority(){
+  Ajax.call('system.php?act=view_admin','',allotAuthorityResp,'GET','JSON');
+}
+
+function allotAuthorityResp(res){
+  document.getElementById('admin_view').innerHTML = res.main;
+}
+

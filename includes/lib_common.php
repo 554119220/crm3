@@ -150,7 +150,3 @@ function format_tasks_list($tasks_list,$period_list,$group_list){
 
     return $tasks_list;
 }
-
-/*记录操作日志*/
-function insert_dolog($doing){
-}

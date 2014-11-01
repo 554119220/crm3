@@ -3277,14 +3277,8 @@ elseif($_REQUEST['act'] == 'analyse_log'){
 //设置异常操作记录参数模板
 elseif($_REQUEST['act'] == 'analyse_log_config'){
     $config_list = get_analyse_list();
-
     $smarty->assign('config_list',$config_list);
-    $res = array(
-        'timeout'    => '',
-        'btncontent' => false,
-        'title'      => '修改操作日志分析参数',
-        'message'    => $smarty->fetch('act_log_config.htm'),
-    );
+    $res['main'] = $smarty->fetch('act_log_config.htm');
 
     die($json->encode($res));
 }
@@ -3314,7 +3308,7 @@ elseif($_REQUEST['act'] == 'get_condition'){
     $res['id'] = 'condition_field'; 
     switch($condition){
     case 0 :
-        $sql_select = 'SELECT role_id AS value,role_name AS text FROM '.$GLOBALS['ecs']->table('role');
+        $sql_select = 'SELECT role_id AS value,role_name AS text FROM '.$GLOBALS['ecs']->table('role')." WHERE role_id IN(".SALE.')';
         $res['text'] = '请选择平台';
         break;
     case 1 :

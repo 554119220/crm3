@@ -3,6 +3,7 @@
   <form action="javascript:void(0)" name"detail_conf_form">
     <div class="analyse_conf_div">
        满足条件<select name="condition" onchange="getCondition(this)">
+       {$action}<option value="-1">请选择条件</option>
        {$action}<option value="0">某平台顾客</option>
        {$action}<option value="1">某类型顾客</option>
        {$action}<option value="2">某等级顾客</option>
@@ -11,7 +12,7 @@
       <select id="condition_field">
         <option value="0">请选择条件</option>
       </select>
-      <input type="number" name="plat_num" value="0"/> 个
+      <input type="number" name="plat_num" value="0" min="0" /> 个
       <input type="submit" value="搜 索" class="b_submit"/>
     </div>  
     <input type="hidden" name="behave" value="{$condition}"/>

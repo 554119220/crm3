@@ -579,8 +579,11 @@ function viewActionLog (obj,data) {
   var adminId   = obj.elements['admin_id'].value;
   var startTime = obj.elements['start_time'].value;
   var endTime   = obj.elements['end_time'].value;
-
-  Ajax.call('performance.php?act=view_action_log','code='+code+'&module='+module+'&admin_id='+adminId+'&start_time='+startTime+'&end_time='+endTime+'&data='+data,fullSearchResponse,'GET','JSON');
+  var strParamer = 'code='+code+'&module='+module+'&admin_id='+adminId+'&start_time='+startTime+'&end_time='+endTime;
+  if(data != ''){
+    strParamer += '&data='+data;
+  }
+  Ajax.call('performance.php?act=view_action_log',strParamer,fullSearchResponse,'GET','JSON');
 }
 
 /*分析管理员操作模板*/
@@ -590,7 +593,7 @@ function analyseLog (condition) {
 
 /*修改操作分析参数*/
 function analyseLogConfig(){
-  Ajax.call('performance.php?act=analyse_log_config','',showMsg,'GET','JSON');
+  Ajax.call('performance.php?act=analyse_log_config','',fullSearchResponse,'GET','JSON');
 }
 
 /*保存操作日志分析参数修改*/

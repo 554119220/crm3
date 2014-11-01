@@ -1181,6 +1181,43 @@ elseif('change_log' == $_REQUEST['act']){
     die($json->encode($res));
 }
 
+elseif($_REQUEST['act'] == 'view_admin'){
+    if(admin_priv('allot_authority','',true)){
+
+        $role_list  = get_role();
+        $admin_list = get_admin('all');
+        $mem = new Memcache;
+        $mem->connect('127.0.0.1', 11211);
+        $admin_view = $mem->get("admin_view");
+        if(empty($admin_view)){
+
+            foreach ($role_list as $role) {
+                $admin_view[]['role_id'] = $role['role_id'];
+                foreach($admin_list as $admin){
+                    if($role['role_id'] == $admin['role_id']){
+                        $role_admin[$role['role_id']][] = array(
+                            'admin_id'  => $admin['user_id'],
+                            'user_name' => $admin['user_name']
+                        );
+                    }
+                }
+            }
+
+            foreach($admin_view as &$val){
+                $val['admin'] = $role_admin[$val['role_id']];
+            }
+        }
+
+        $mem->add("admin_view", $admin_view, false, 20*3600);
+        $mem->close();
+
+        $smarty->assign('role_list',$role_list);
+        $smarty->assign('admin_view',$admin_view);
+        $res['main'] = $smarty->fetch('admin_view.htm');
+        die($json->encode($res));
+    }
+}
+
 /*
  *  函数部分 
  */

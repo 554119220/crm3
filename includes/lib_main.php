@@ -1045,9 +1045,9 @@ function get_admin ($role_id = 0) {
         }
     }
 
-    $sql = 'SELECT user_name, user_id FROM '.$GLOBALS['ecs']->table('admin_user');
+    $sql = 'SELECT user_name, user_id ,role_id FROM '.$GLOBALS['ecs']->table('admin_user').$wher = ' WHERE status=1 AND freeze=0 ';
     if ($role) {
-        $sql .= " WHERE $role ORDER BY user_id ASC";
+        $sql .= " AND $role ORDER BY user_id ASC";
     } else {
         $sql .= ' ORDER BY user_id ASC';
     }
@@ -1488,4 +1488,3 @@ function scan_phone_records($user_id)
 
     return $final_list;
 }
-

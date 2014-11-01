@@ -159,7 +159,7 @@ color: #444;
 .mb_10{margin-bottom:10px;}
 
 /*表单式表格*/
-.form_table{border:1px solid #CFC2C2;border-collapse:collapse;background:#fff}
+.form_table{border:1px solid #CFC2C2;border-collapse:collapse;background:#FAFAFA}
 .form_table th,.form_table td{ border-right: 1px #e3e6eb solid; border-bottom: 1px #e3e6eb solid;border-collapse:collapse;line-height: 30px;text-align:center}
 
 .block_span{width:132px;border:1px solid #EDEDED;padding:5px;}
