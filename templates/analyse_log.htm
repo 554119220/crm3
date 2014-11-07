@@ -1,6 +1,6 @@
 <br />
 <div id='analyse_result' style="border:1px solid #ccc;padding:12px;color:$fff;">
-  <form action="javascript:void(0)" name"detail_conf_form">
+  <form action="javascript:void(0)" name"detail_conf_form" onsubmit="getAnalyse(this)">
     <div class="analyse_conf_div">
        满足条件<select name="condition" onchange="getCondition(this)">
        {$action}<option value="-1">请选择条件</option>
@@ -18,4 +18,26 @@
     <input type="hidden" name="behave" value="{$condition}"/>
   </form>
 </div>
-<div id='analyse_result' style="border:1px solid #ccc;padding:12px;border-top:0px;"></div>
+<div id='analyse_result' style="border:1px solid #ccc;padding:12px;border-top:0px;">
+  <div style="font-size:16px;margin-bottom:3px;">{$start_time} 至 {$end_time}</div>
+  <table cellpadding="0" cellspacing="0" border="0" class="wu_table_list rb_border wu_rb_border tr_hover" width="70%">
+    <tr>
+      <th>序号</th>
+      <th>结果</th>
+    </tr>
+    {if $analyse_result neq ''}
+    {foreach from=$analyse_result item=val name=i}
+    <tr>
+      <td>{$smarty.foreach.i.iteration}</td>
+      <td class="talignLeft">
+        {$val.user_name} 查看 {$val.module}ID：<button class="btn_new">{$val.sn}</button> ------ <b>{$val.total} 次</b>  {if !$val.me_do}<font color="red">【此{$val.module}不属于{$va.user_name}</font>{/if}
+      </td>
+    </tr>
+    {/foreach}
+    {else}
+    <tr>
+      <td colspan="2">没有分析结果</td>
+    </tr>
+    {/if}
+  </table>
+</div>

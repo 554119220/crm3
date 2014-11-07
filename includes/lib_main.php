@@ -149,12 +149,32 @@ function sys_msg($msg_detail, $msg_type = 0, $links = array(), $auto_redirect = 
  * @param   string      $content    操作的内容
  * @return  void
  */
-function admin_log($sn = '', $action, $content,$moudel='')
+function admin_log($sn = '', $action, $content,$module='',$sn='')
 {
-      $log_info = $GLOBALS['_LANG']['log_action'][$action] . $GLOBALS['_LANG']['log_action'][$content] .': '. addslashes($sn);
+      $log_info = $GLOBALS['_LANG']['log_action'][$action] . $GLOBALS['_LANG']['log_action'][$content] .': ';
 
-      $sql = 'INSERT INTO ' . $GLOBALS['ecs']->table('admin_log') . ' (log_time, user_id, log_info, ip_address,moudel,code) ' .
-            " VALUES ('" . gmtime() . "', $_SESSION[admin_id], '" . stripslashes($log_info) . "', '" . real_ip() . "','$moudel','$action')";
+      //判断操作的订单或顾客是否属于自己的
+      if('users' == $module){
+          $table = 'users';
+          if(strpos($sn,',')){
+              $where = " WHERE user_id IN($sn)";
+          }else{
+              $where = " WHERE user_id=$sn";
+          }
+      }elseif('order' == $module){
+          $table = 'order_info';
+          $where = " WHERE order_id=$sn";
+      }
+
+      $me_do = 1;
+      if($table){
+          $sql_select = 'SELECT admin_id FROM '.$GLOBALS['ecs']->table($table).$where;
+          $admin_id   = $GLOBALS['db']->getOne($sql_select);
+          $me_do = $_SESSION['admin_id'] != $admin_id ? 0 : 1;
+      }
+
+      $sql = 'INSERT INTO ' . $GLOBALS['ecs']->table('admin_log') . ' (log_time, user_id, log_info, ip_address,module,code,sn,me_do) ' .
+          " VALUES ('" . $_SERVER['REQUEST_TIME'] . "', $_SESSION[admin_id], '" . stripslashes($log_info) . "', '" . real_ip() . "','$module','$action','$sn',$me_do)";
       $GLOBALS['db']->query($sql);
 }
 
@@ -168,12 +188,12 @@ function admin_log($sn = '', $action, $content,$moudel='')
  */
 function sys_joindate($prefix)
 {
-      /* 返回年-月-日的日期格式 */
-      $year  = empty($_POST[$prefix . 'Year']) ? '0' :  $_POST[$prefix . 'Year'];
-      $month = empty($_POST[$prefix . 'Month']) ? '0' : $_POST[$prefix . 'Month'];
-      $day   = empty($_POST[$prefix . 'Day']) ? '0' : $_POST[$prefix . 'Day'];
+    /* 返回年-月-日的日期格式 */
+    $year  = empty($_POST[$prefix . 'Year']) ? '0' :  $_POST[$prefix . 'Year'];
+    $month = empty($_POST[$prefix . 'Month']) ? '0' : $_POST[$prefix . 'Month'];
+    $day   = empty($_POST[$prefix . 'Day']) ? '0' : $_POST[$prefix . 'Day'];
 
-      return $year . '-' . $month . '-' . $day;
+    return $year . '-' . $month . '-' . $day;
 }
 
 /**

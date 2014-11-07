@@ -2,394 +2,394 @@
  * 添加一行记录
  */
 function insertRowElement(obj) {
-	var table = document.getElementById('ad_table'); // 获取表格对象
-	var rowIndex = table.rows.length;
+  var table = document.getElementById('ad_table'); // 获取表格对象
+  var rowIndex = table.rows.length;
 
-	var rowObj = obj.parentNode.parentNode; // 获取当前文本所在的行对象
-	var rowInnerHtml = rowObj.innerHTML; // 获取当前行的全部内容
-	// 将 添加行元素 的函数 add_ad 替换为 删除行元素 的函数 remove_ad
-	rowInnerHtml = rowInnerHtml.replace(/insertRowElement/, 'removeRowElement');
-	rowInnerHtml = rowInnerHtml.replace(/\+/, '-'); // 替换 添加 + 为 删除 -
-	var newRow = table.insertRow(rowIndex); // 在表格尾部添加一行
-	newRow.innerHTML = rowInnerHtml; // 在新添加的行元素中填充内容
-	var input = newRow.getElementsByTagName('input');
-	for (var i in input) {
-		input[i].value = '';
-	}
+  var rowObj = obj.parentNode.parentNode; // 获取当前文本所在的行对象
+  var rowInnerHtml = rowObj.innerHTML; // 获取当前行的全部内容
+  // 将 添加行元素 的函数 add_ad 替换为 删除行元素 的函数 remove_ad
+  rowInnerHtml = rowInnerHtml.replace(/insertRowElement/, 'removeRowElement');
+  rowInnerHtml = rowInnerHtml.replace(/\+/, '-'); // 替换 添加 + 为 删除 -
+  var newRow = table.insertRow(rowIndex); // 在表格尾部添加一行
+  newRow.innerHTML = rowInnerHtml; // 在新添加的行元素中填充内容
+  var input = newRow.getElementsByTagName('input');
+  for (var i in input) {
+    input[i].value = '';
+  }
 }
 
 /**
  * 删除行
  */
 function removeTr(obj,val) {
-	var tableObj = obj.parentNode.parentNode.parentNode.parentNode;
-	var trIndex = obj.parentNode.parentNode.rowIndex;
-	var url = document.getElementById('target_url').value;
-	var tableName = tableObj.id;
+  var tableObj = obj.parentNode.parentNode.parentNode.parentNode;
+  var trIndex = obj.parentNode.parentNode.rowIndex;
+  var url = document.getElementById('target_url').value;
+  var tableName = tableObj.id;
 
-	if (val) {
-		Ajax.call(url, 'val=' + val + '&table_name=' + tableName + '&tr_index=' + trIndex, removeTrResp, 'GET', 'JSON');
-	} else {
-		return;
-	}
+  if (val) {
+    Ajax.call(url, 'val=' + val + '&table_name=' + tableName + '&tr_index=' + trIndex, removeTrResp, 'GET', 'JSON');
+  } else {
+    return;
+  }
 }
 
 function removeTrResp(res) {
-	showMsg(res);
-	if (res.code) {
-		var tblObj = document.getElementById(res.table_name);
-		tblObj.deleteRow(res.tr_index);
-	} else {
-		return;
-	}
+  showMsg(res);
+  if (res.code) {
+    var tblObj = document.getElementById(res.table_name);
+    tblObj.deleteRow(res.tr_index);
+  } else {
+    return;
+  }
 }
 
 /**
-*  添加一条推广记录
-*/
+ *  添加一条推广记录
+ */
 function addSpread(obj) {
-	var table = document.getElementById('ad_table');
-	var form = document.forms['spread'];
+  var table = document.getElementById('ad_table');
+  var form = document.forms['spread'];
 
-	var str = '';
-	for (var i in form.elements) {
-		if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
-			str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
-		}
-	}
+  var str = '';
+  for (var i in form.elements) {
+    if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
+      str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
+    }
+  }
 
-	Ajax.call('performance.php?act=add_spread', str, editSpreadResponse, 'POST', 'JSON');
+  Ajax.call('performance.php?act=add_spread', str, editSpreadResponse, 'POST', 'JSON');
 }
 
 /**
-*  编辑一条推广记录
-*/
+ *  编辑一条推广记录
+ */
 function editSpread(obj) {
-	var form = document.forms['spread'];
+  var form = document.forms['spread'];
 
-	var str = '';
-	for (var i in form.elements) {
-		if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
-			str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
-		}
-	}
+  var str = '';
+  for (var i in form.elements) {
+    if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
+      str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
+    }
+  }
 
-	Ajax.call('performance.php?act=update_spread', str, editSpreadResponse, 'POST', 'JSON');
+  Ajax.call('performance.php?act=update_spread', str, editSpreadResponse, 'POST', 'JSON');
 }
 
 /**
-*  编辑一条推广记录的回调函数
-*/
+ *  编辑一条推广记录的回调函数
+ */
 function editSpreadResponse(res) {
-	if (res.req_msg) {
-		showMsg(res);
-	}
+  if (res.req_msg) {
+    showMsg(res);
+  }
 }
 
 /**
-*  添加一条客服记录
-*/
+ *  添加一条客服记录
+ */
 function addServiceRecord(obj) {
-	var form = document.forms['service_record'];
-	var str = '';
+  var form = document.forms['service_record'];
+  var str = '';
 
-	for (var i in form.elements) {
-		if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
-			str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
-		}
-	}
+  for (var i in form.elements) {
+    if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
+      str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
+    }
+  }
 
-	Ajax.call('performance.php?act=add_service_record', str, addServiceResponse, 'POST', 'JSON');
+  Ajax.call('performance.php?act=add_service_record', str, addServiceResponse, 'POST', 'JSON');
 }
 
 /**
-*	 添加客服的回调函数
-*/
+ *	 添加客服的回调函数
+ */
 function addServiceResponse(res) {
-	if (res.req_msg) {
-		showMsg(res);
-	}
+  if (res.req_msg) {
+    showMsg(res);
+  }
 }
 
 /**
-*  客服记录查找、筛选
-*/
+ *  客服记录查找、筛选
+ */
 function searchTime() {
-	var form = document.forms['worksummary_time'];
-	var time = form.elements['time'].value;
-	var username = form.elements['username'].value;
-	var str = 'time=' + time + '&username=' + username;
-	Ajax.call('performance.php?act=search_time', str, searchTimeResponse, 'POST', 'JSON');
+  var form = document.forms['worksummary_time'];
+  var time = form.elements['time'].value;
+  var username = form.elements['username'].value;
+  var str = 'time=' + time + '&username=' + username;
+  Ajax.call('performance.php?act=search_time', str, searchTimeResponse, 'POST', 'JSON');
 }
 
 /**
-*	回调函数
-*/
+ *	回调函数
+ */
 function searchTimeResponse(res) {
-	if (res.req_msg) {
-		showMsg(res);
-	}
+  if (res.req_msg) {
+    showMsg(res);
+  }
 
-	if (res.code == 1) {
-		document.getElementById('main').innerHTML = res.main;
-	}
+  if (res.code == 1) {
+    document.getElementById('main').innerHTML = res.main;
+  }
 }
 
 /**
-*  编辑一条客服记录
-*/
+ *  编辑一条客服记录
+ */
 function editServiceRecord(obj) {
-	var form = document.forms['service_record'];
+  var form = document.forms['service_record'];
 
-	var str = '';
-	for (var i in form.elements) {
-		if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
-			str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
-		}
-	}
+  var str = '';
+  for (var i in form.elements) {
+    if (typeof(form.elements[i]) == 'object' && form.elements[i].name != '') {
+      str = str + '&' + form.elements[i].name + '=' + form.elements[i].value;
+    }
+  }
 
-	Ajax.call('performance.php?act=update_service_record', str, editServiceResponse, 'POST', 'JSON');
+  Ajax.call('performance.php?act=update_service_record', str, editServiceResponse, 'POST', 'JSON');
 }
 
 /**
-*  编辑客服回调函数
-*/
+ *  编辑客服回调函数
+ */
 function editServiceResponse(res) {
-	if (res.req_msg) {
-		showMsg(res);
-	}
+  if (res.req_msg) {
+    showMsg(res);
+  }
 }
 
 /**
-*  删除一条客服记录
-*/
+ *  删除一条客服记录
+ */
 function delService(obj) {
-	if (!confirm("确认删除吗")) {
-		return false;
-	}
+  if (!confirm("确认删除吗")) {
+    return false;
+  }
 
-	var str = 'work_id=' + obj;
-	Ajax.call('performance.php?act=service_personal_delete', str, delServiceResponse, 'POST', 'JSON');
+  var str = 'work_id=' + obj;
+  Ajax.call('performance.php?act=service_personal_delete', str, delServiceResponse, 'POST', 'JSON');
 }
 
 /**
-*  删除客服回调函数
-*/
+ *  删除客服回调函数
+ */
 function delServiceResponse(res) {
-	if (res.req_msg) {
-		showMsg(res);
-	}
+  if (res.req_msg) {
+    showMsg(res);
+  }
 }
 
 /**
-*  删除一条个人推广记录
-*/
+ *  删除一条个人推广记录
+ */
 function delSpread(obj) {
-	if (!confirm("确认删除吗")) {
-		return false;
-	}
+  if (!confirm("确认删除吗")) {
+    return false;
+  }
 
-	var str = 'spread_id=' + obj;
-	Ajax.call('performance.php?act=spread_delete', str, delSpreadResponse, 'POST', 'JSON');
+  var str = 'spread_id=' + obj;
+  Ajax.call('performance.php?act=spread_delete', str, delSpreadResponse, 'POST', 'JSON');
 }
 
 /**
-*  删除个人推广回调函数
-*/
+ *  删除个人推广回调函数
+ */
 function delSpreadResponse(res) {
-	if (res.req_msg) {
-		showMsg(res);
-	}
+  if (res.req_msg) {
+    showMsg(res);
+  }
 }
 
 //查看平台活动
 function activity(do_what) {
-	var data = [];
-	Ajax.call('performance.php?act=activity', 'data=' + data.join('&'), activityResp, 'GET', 'JSON');
+  var data = [];
+  Ajax.call('performance.php?act=activity', 'data=' + data.join('&'), activityResp, 'GET', 'JSON');
 }
 
 function activityResp(res) {
-	document.getElementById('main').innerHTML = res.main;
+  document.getElementById('main').innerHTML = res.main;
 }
 
 // 添加平台活动
 function addMoreActivity(behave,confirm) {
-	if (!confirm) {
-		if (document.getElementById('goods_list_div')) {
-			return;
-		}
+  if (!confirm) {
+    if (document.getElementById('goods_list_div')) {
+      return;
+    }
 
-		Ajax.call('performance.php?act=add_more_activity', 'view=' + true, getActivityResp, 'GET', 'JSON');
-		return;
-	}else if (confirm == 1){
-		var url = 'performance.php?act=add_more_activity';
-	}
+    Ajax.call('performance.php?act=add_more_activity', 'view=' + true, getActivityResp, 'GET', 'JSON');
+    return;
+  }else if (confirm == 1){
+    var url = 'performance.php?act=add_more_activity';
+  }
 
-	var data = [];
+  var data = [];
 
-	if (confirm) {
-		var msg = [];
-		msg['timeout'] = 2000;
+  if (confirm) {
+    var msg = [];
+    msg['timeout'] = 2000;
 
-		var obj = document.forms['add_activity_forms'];
+    var obj = document.forms['add_activity_forms'];
 
-		for (var i = 0; i < obj.elements.length - 5; i++) {
-			if (obj.elements[i].value == '') {
-				msg['message'] = '请完整填写活动信息';
-				showMsg(msg);
-				return;
-			} else {
-				data.push(obj.elements[i].name + '=' + obj.elements[i].value);
-			}
-		}
-	}
+    for (var i = 0; i < obj.elements.length - 5; i++) {
+      if (obj.elements[i].value == '') {
+        msg['message'] = '请完整填写活动信息';
+        showMsg(msg);
+        return;
+      } else {
+        data.push(obj.elements[i].name + '=' + obj.elements[i].value);
+      }
+    }
+  }
 
-	if (document.getElementById('number') || document.getElementById('money')) {
-		if (document.getElementById('number')) {
-			var goods_num = document.getElementById('number').value;
-			data.push('number=' + goods_num);
-		} else if (document.getElementById('money')) {
-			var money = document.getElementById('money').value;
-			data.push('money=' + money);
-		}
+  if (document.getElementById('number') || document.getElementById('money')) {
+    if (document.getElementById('number')) {
+      var goods_num = document.getElementById('number').value;
+      data.push('number=' + goods_num);
+    } else if (document.getElementById('money')) {
+      var money = document.getElementById('money').value;
+      data.push('money=' + money);
+    }
 
-		var gifts_num = document.getElementById('gifts_num').value;
-		var gifts_sn = document.getElementById('goods_id').value;
-		data.push('gifts_sn=' + gifts_sn);
-		data.push('gifts_num=' + gifts_num);
-	}
+    var gifts_num = document.getElementById('gifts_num').value;
+    var gifts_sn = document.getElementById('goods_id').value;
+    data.push('gifts_sn=' + gifts_sn);
+    data.push('gifts_num=' + gifts_num);
+  }
 
-	if (data) {
-		Ajax.call(url, data.join('&') + '&confirm=' + confirm, addMoreActivityResp, 'GET', 'JSON');
-	} else {
-		return;
-	};
+  if (data) {
+    Ajax.call(url, data.join('&') + '&confirm=' + confirm, addMoreActivityResp, 'GET', 'JSON');
+  } else {
+    return;
+  };
 }
 
 function addMoreActivityResp(res) {
-	showMsg(res);
-	activity('nothing');
-	init();
+  showMsg(res);
+  activity('nothing');
+  init();
 }
 
 // 商品
 function getGoodslist(obj) {
-	var brandId = obj.elements['brand_id'].value;
-	var goods_sn = obj.elements['act_goods_sn'].value;
-	var keyword = obj.elements['keyword'].value;
-	var activity_id = document.getElementById('activity_id').value;
+  var brandId = obj.elements['brand_id'].value;
+  var goods_sn = obj.elements['act_goods_sn'].value;
+  var keyword = obj.elements['keyword'].value;
+  var activity_id = document.getElementById('activity_id').value;
 
-	Ajax.call('performance.php?act=get_goods_list', 'brand_id=' + brandId + '&goods_sn=' + goods_sn + '&keyword=' + keyword + '&activity_id=' + activity_id, getActivityResp, 'GET', 'JSON');
+  Ajax.call('performance.php?act=get_goods_list', 'brand_id=' + brandId + '&goods_sn=' + goods_sn + '&keyword=' + keyword + '&activity_id=' + activity_id, getActivityResp, 'GET', 'JSON');
 }
 
 // 搜索推广活动
 function schActivity(obj) {
-	var data = [];
-	for (var i = 0; i < obj.elements.length - 1; i++) {
-		data.push(obj.elements[i].name + '=' + obj.elements[i].value);
-	}
+  var data = [];
+  for (var i = 0; i < obj.elements.length - 1; i++) {
+    data.push(obj.elements[i].name + '=' + obj.elements[i].value);
+  }
 
-	Ajax.call('performance.php?act=sch_activity', data.join('&'), getActivityResp, 'GET', 'JSON');
+  Ajax.call('performance.php?act=sch_activity', data.join('&'), getActivityResp, 'GET', 'JSON');
 }
 
 //选择商品参加活动
 function joinActivity(obj, goods_sn, is_join) {
-	if (goods_sn != '') {
-		var tr_index = obj.parentNode.parentNode.rowIndex;
-		var activity_id = document.getElementById('activity_id').value;
+  if (goods_sn != '') {
+    var tr_index = obj.parentNode.parentNode.rowIndex;
+    var activity_id = document.getElementById('activity_id').value;
 
-		Ajax.call('performance.php?act=get_goods_list', 'goods_sn=' + goods_sn + '&is_join=' + is_join + '&tr_index=' + tr_index + '&join_goods=' + 'join_goods' + '&activity_id=' + activity_id, joinActivityResp, 'GET', 'JSON');
-	}
+    Ajax.call('performance.php?act=get_goods_list', 'goods_sn=' + goods_sn + '&is_join=' + is_join + '&tr_index=' + tr_index + '&join_goods=' + 'join_goods' + '&activity_id=' + activity_id, joinActivityResp, 'GET', 'JSON');
+  }
 }
 
 function joinActivityResp(res) {
-	if (res.code) {
-		var obj = document.getElementById('goods_list_tbl');
-		var trObj = obj.rows[res.tr_index];
-		var inputObj = trObj.getElementsByTagName('input');
+  if (res.code) {
+    var obj = document.getElementById('goods_list_tbl');
+    var trObj = obj.rows[res.tr_index];
+    var inputObj = trObj.getElementsByTagName('input');
 
-		if (res.is_join) {
-			inputObj[0].checked = true;
-			trObj.cells[4].innerHTML = '<button class="btn_new" onclick="joinActivity(this,' + "'" + res.goods_sn + "'" + ',0)">退出活动</button>';
-		} else {
-			inputObj[0].checked = false;
-			trObj.cells[4].innerHTML = '<button class="btn_new" onclick="joinActivity(this,' + "'" + res.goods_sn + "'" + ',1)">参加活动</button>';
-		}
-	}
+    if (res.is_join) {
+      inputObj[0].checked = true;
+      trObj.cells[4].innerHTML = '<button class="btn_new" onclick="joinActivity(this,' + "'" + res.goods_sn + "'" + ',0)">退出活动</button>';
+    } else {
+      inputObj[0].checked = false;
+      trObj.cells[4].innerHTML = '<button class="btn_new" onclick="joinActivity(this,' + "'" + res.goods_sn + "'" + ',1)">参加活动</button>';
+    }
+  }
 }
 
 function getActivityResp(res) {
-	if (res.forms_div) {
-		document.getElementById('forms_div').innerHTML = res.forms_div;
-	}
+  if (res.forms_div) {
+    document.getElementById('forms_div').innerHTML = res.forms_div;
+  }
 
-	document.getElementById('resource').innerHTML = res.main;
-	init();
+  document.getElementById('resource').innerHTML = res.main;
+  init();
 }
 
 // 优惠内容
 function setPrivilegeView(obj) {
-	var tdObj = document.getElementById('privilege_td');
-	var inputObj = tdObj.getElementsByTagName('input');
-	var privilege = obj.value;
+  var tdObj = document.getElementById('privilege_td');
+  var inputObj = tdObj.getElementsByTagName('input');
+  var privilege = obj.value;
 
-	for (var i = 0; i < inputObj.length; i++) {
-		if (inputObj[i].value == privilege) {
-			inputObj[i].parentNode.className = ' onclk_privilege';
-		} else {
-			inputObj[i].parentNode.className = '';
-		}
-	}
+  for (var i = 0; i < inputObj.length; i++) {
+    if (inputObj[i].value == privilege) {
+      inputObj[i].parentNode.className = ' onclk_privilege';
+    } else {
+      inputObj[i].parentNode.className = '';
+    }
+  }
 
-	if (privilege != '') {
-		var insertHtml = '';
-		if (privilege == 'fillNum') {
-			insertHtml = ' 满 <input type="number" id="number" min="0" value="0" style="width:32px;" max="99"/> 件';
-		} else if (privilege == 'fillAny') {
-			insertHtml = ' 满 <input type="text" id="money" min="0" value="0" style="width:32px" max="99"/> 元';
-		}
+  if (privilege != '') {
+    var insertHtml = '';
+    if (privilege == 'fillNum') {
+      insertHtml = ' 满 <input type="number" id="number" min="0" value="0" style="width:32px;" max="99"/> 件';
+    } else if (privilege == 'fillAny') {
+      insertHtml = ' 满 <input type="text" id="money" min="0" value="0" style="width:32px" max="99"/> 元';
+    }
 
-		document.getElementById('privilege_condition').innerHTML = insertHtml;
-		document.getElementById('privilege_condition').style.display = '';
-		document.getElementById('gifts').style.display = '';
-	} else {
-		return;
-	}
+    document.getElementById('privilege_condition').innerHTML = insertHtml;
+    document.getElementById('privilege_condition').style.display = '';
+    document.getElementById('gifts').style.display = '';
+  } else {
+    return;
+  }
 }
 
 function getGoodsInActivity(brand_id) {
-	Ajax.call('storage.php?act=get_goods_by_brand', 'brand_id=' + brand_id, getGoodsInActivityResp, 'GET', 'JSON');
+  Ajax.call('storage.php?act=get_goods_by_brand', 'brand_id=' + brand_id, getGoodsInActivityResp, 'GET', 'JSON');
 }
 
 function getGoodsInActivityResp(goods) {
-	var obj = document.getElementById('act_goods_sn');
-	var opt = document.createElement('option');
+  var obj = document.getElementById('act_goods_sn');
+  var opt = document.createElement('option');
 
-	obj.length = 0;
-	opt.value = 0;
-	opt.text = '请选择商品';
+  obj.length = 0;
+  opt.value = 0;
+  opt.text = '请选择商品';
 
-	obj.appendChild(opt);
+  obj.appendChild(opt);
 
-	for (var i in goods) {
-		if (typeof(goods[i]) == 'function') continue;
+  for (var i in goods) {
+    if (typeof(goods[i]) == 'function') continue;
 
-		var opt = document.createElement('option');
-		opt.value = goods[i].goods_sn;
-		opt.text = goods[i].goods_name;
-		obj.appendChild(opt);
-	}
+    var opt = document.createElement('option');
+    opt.value = goods[i].goods_sn;
+    opt.text = goods[i].goods_name;
+    obj.appendChild(opt);
+  }
 }
 
 // 查看参加活动的商品
 function getActivityGoods(act_id) {
-	if (parseInt(act_id) != 0) {
-		Ajax.call('performance.php?act=get_act_goods', 'act_id=' + act_id,onlyShowMsg, 'GET', 'JSON');
-	}
+  if (parseInt(act_id) != 0) {
+    Ajax.call('performance.php?act=get_act_goods', 'act_id=' + act_id,onlyShowMsg, 'GET', 'JSON');
+  }
 }
 
 function onlyShowMsg(res) {
-	showMsg(res);
+  showMsg(res);
 }
 
 //绩效统计
@@ -445,10 +445,10 @@ function controlTask(obj,task_id,behave){
     data.push('task_id' + '=' + task_id);
     data.push('behave' + '=' + behave);
 
-		Ajax.call('performance.php?act=control_task',data.join('&'),controlTaskResp,'GET','JSON');
-	}else{
-		return ;
-	}
+    Ajax.call('performance.php?act=control_task',data.join('&'),controlTaskResp,'GET','JSON');
+  }else{
+    return ;
+  }
 }
 
 function controlTaskResp(res){
@@ -521,7 +521,7 @@ function schNetworkBlacklist(obj){
   var elementList = obj.elements;
 
   for(var i = 0; i < elementList.length - 3; i++){
-   data.push(elementList[i].name + '=' + elementList[i].value);
+    data.push(elementList[i].name + '=' + elementList[i].value);
   }
 
   data.push('is_checked' + '=' + obj.elements['is_checked'].value);
@@ -573,22 +573,23 @@ function getAward(source){
   Ajax.call('performance.php?act='+source,data.join('&'),searchTimeResponse,'GET','JSON');
 }
 
-function viewActionLog (obj,data) {
+function viewActionLog (obj,date) {
   var code      = obj.elements['code'].value;
   var module    = obj.elements['module'].value;
   var adminId   = obj.elements['admin_id'].value;
   var startTime = obj.elements['start_time'].value;
   var endTime   = obj.elements['end_time'].value;
   var strParamer = 'code='+code+'&module='+module+'&admin_id='+adminId+'&start_time='+startTime+'&end_time='+endTime;
-  if(data != ''){
-    strParamer += '&data='+data;
+  if(date != ''){
+    strParamer += '&date='+date;
   }
   Ajax.call('performance.php?act=view_action_log',strParamer,fullSearchResponse,'GET','JSON');
 }
 
 /*分析管理员操作模板*/
-function analyseLog (condition) {
-  Ajax.call('performance.php?act=analyse_log','condition='+condition,fullSearchResponse,'GET','JSON');
+function analyseLog (obj,condition) {
+  var date = obj.elements['date'].value;
+  Ajax.call('performance.php?act=analyse_log','condition='+condition+'&date='+date,fullSearchResponse,'GET','JSON');
 }
 
 /*修改操作分析参数*/
@@ -612,4 +613,18 @@ function saveLogConfig(obj){
 //筛选条件
 function getCondition(obj){
   Ajax.call('performance.php?act=get_condition','condition='+obj.value,inSelect,'GET','JSON');
+}
+
+/*查看对管理员操作分析结果*/
+function getAnalyse(obj){
+  var condition      = obj.elements['condition'].value;
+  var conditionField = obj.elements['condition_field'].value;
+  var number         = obj.elements['number'].value;
+
+  Ajax.call('performance.php?act=get_asnalyse','condition='+condition+'&condition_field'+conditionField+'&number='+number,inDiv,'GET','JSON');
+}
+
+function inDiv(res){
+  document.getElementById(res.id).innerHTML = res.main;
+  init();
 }

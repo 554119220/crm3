@@ -204,7 +204,7 @@ function sales_stats ($start,$end) {
         $sql_group_ranklist = " AND platform={$_SESSION['role_id']}";
         $sql_finish_order_ranklist = " AND platform={$_SESSION['role_id']} ";
     }elseif($pwd_info['statistic_group_mgr']){
-        $sql_finish_order_ranklist = " AND platform={$_SESSION['role_id']} AND a.group_id={$_SESSION['group_id']} ";
+        $sql_finish_order_ranklist = " AND platform={$_SESSION['role_id']} AND group_id={$_SESSION['group_id']} ";
     }elseif(!$pwd_info['company_mgr']){
         //$sql_person_ranklist = " AND group_id={$_SESSION['group_id']}";
     }

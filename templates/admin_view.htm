@@ -1,25 +1,25 @@
 <div>
-  <form action="javascript:void(0)" name="allot_admin_form">
-    <ul class="nav-tabs">
+  <div>
+    <select name="role_id" onchange="switchRole(this)">
       {foreach from=$role_list item=val}
-      <li>
-      <span>{$val.role_name}</span>
-      </li>
+      <option value="{$val.role_id}">{$val.role_name}</option>
       {/foreach}
-    </ul>
-    {foreach from=$admin_view item=val name=i}
-    <div class="{if $smarty.foreach.i.iteration eq 1}show{else}hide{/if}">
-    <div>
-      <label><input type="checkbox" name="checkbox" value="all"/> 全选</label>
-    </div>
-    {foreach from=$val.admin item=admin}
-    <div>
-      <label>
-        <input type="checkbox" class="muti_role_id muti_role_id1" name="to_role_id[]" rel="admin" value="{$admin.user_id}"> {$admin.user_name}
-      </label> 
-    </div>
-    {/foreach}
-    {/foreach}
-    </div>
-  </form>
+    </select>
+  </div>
+  <br />
+  {foreach from=$admin_view item=val name=i}
+  <div class="{if $smarty.foreach.i.iteration eq 1}show{else}hide{/if}" id="role_{$val.role_id}">
+    <form action="javascript:void(0)" name="allot_admin_form">
+      <label><input type="checkbox" value="all" onclick="selectAll(this,'checkboxes')"/> 全选</label>
+      <br />
+      <div>
+        {foreach from=$val.admin item=admin}
+        <label>
+          <input type="checkbox" rel="admin" value="{$admin.user_id}" name="checkboxes[]" /> {$admin.user_name}
+        </label> 
+        {/foreach}
+      </div>
+    </form>
+  </div>
+  {/foreach}
 </div>

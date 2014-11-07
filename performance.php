@@ -3205,32 +3205,23 @@ elseif($_REQUEST['act'] == 'action_log'){
 }
 
 /*搜索管理员操作记录*/
-elseif ($_REQUEST['act']== 'view_action_log'){
+elseif ($_REQUEST['act'] == 'view_action_log'){
     $code       = isset($_REQUEST['code']) ? mysql_real_escape_string($_REQUEST['code']) : '';
     $module     = isset($_REQUEST['module']) ? mysql_real_escape_string($_REQUEST['module']) : 0;
     $admin_id   = isset($_REQUEST['admin_id']) ? intval($_REQUEST['admin_id']) : 0;
 
-    if(isset($_REQUEST['data'])){
-        $data = empty($_REQUEST['data']) ? mysql_real_escape_string($_REQUEST['data']) : 'today';
-        if (!empty($data)) {
-            switch($data){
-            case 'today':
-                $start_time = strtotime(date('Y-m-d 00:00:00'));
-                $end_time = strtotime(date('Y-m-d 23:59:59'));
-                break;
-            case 'week' :
-                $start_time = mktime(0,0,0,date("m"),date("d")-date("w")+1,date("Y"));
-                $end_time   = mktime(23,59,59,date("m"),date("d")-date("w")+7,date("Y"));
-                break;
-            case 'month':
-                $start_time = strtotime(date('Y-m-1 00:00:00'));
-                $end_time = strtotime(date('Y-m-t 23:59:59'));
-                break;
-            }
-        }
+    if(isset($_REQUEST['date'])){
+        $date = !empty($_REQUEST['date']) ? $_REQUEST['date'] : 'today';
+        $date = get_date($date);
+        extract($date);
     }else{
-        $start_time = isset($_REQUEST['start_time']) ? strtotime($_REQUEST['start_time']) : 0;
-        $end_time   = isset($_REQUEST['end_time']) ? strtotime($_REQUEST['end_time']) : 0;
+        if (!empty($_REQUEST['start_time']) && !empty($_REQUEST['end_time'])) {
+            $start_time = strpos($_REQUEST['start_time'],'-') ? strtotime($_REQUEST['start_time']) : $_REQUEST['start_time'];
+            $end_time   = strpos($_REQUEST['end_time'],'-') ? strtotime($_REQUEST['end_time']) : $_REQUEST['end_time'];
+        }else{
+            $date = get_date('today');
+            extract($date);
+        }
     }
 
     $result = get_admin_log($admin_id,$code,$module,$start_time,$end_time);
@@ -3246,30 +3237,24 @@ elseif ($_REQUEST['act']== 'view_action_log'){
 
 /*分析操作日志*/
 elseif($_REQUEST['act'] == 'analyse_log'){
-    $condition = isset($_REQUEST['condition']) ? mysql_real_escape_string($_REQUEST['condition']) : '';
-    $analyse_result = analyse_log($condition);
 
-    switch($condition){
-    case 'by_view_user_info' :
-        $action = 'view';
-        break;
-    case 'by_edit_user_info' :
-        $action = 'edit';
-        break;
-    case 'by_del_user_info' :
-        $action = 'del';
-        break;
-        break;
-    case 'by_view_order_info' :
-        break;
-    case 'by_edit_order_info' :
-        break;
-    case 'by_del_order_info' :
-        break;
-    }
+    $condition = isset($_REQUEST['condition']) ? mysql_real_escape_string($_REQUEST['condition']) : '';
+    $date      = isset($_REQUEST['date']) ? mysql_real_escape_string($_REQUEST['date']) : 'today';
+    $date      = get_date($date);
+    extract($date);
+
+    $parameters     = get_module_act($condition);
+    extract($parameters);
+
+
+    $smarty->assign('start_time',date('Y-m-d H:i:s',$start_time));
+    $smarty->assign('end_time',date('Y-m-d H:i:s',$end_time));
+    $smarty->assign('analyse_result',$analyse_result);
+    $analyse_result = analyse_log($module,$code,$date,$condition);
 
     $res['response_action'] = 'search_service';
-    $res['main'] = $smarty->fetch('analyse_log.htm');
+    $res['main']            = $smarty->fetch('analyse_log.htm');
+
     die($json->encode($res));
 }
 
@@ -3328,6 +3313,11 @@ elseif($_REQUEST['act'] == 'get_condition'){
     }
 
     die($json->encode($res));
+}
+
+/*搜索操作分析*/
+elseif ($_REQUEST['act'] == 'get_asnalyse'){
+   //$condition = isset($_REQUEST['condition']) : mysql_real_escape_string($_REQUEST['condition']);
 }
 
 /*
@@ -4213,7 +4203,7 @@ function get_admin_log($user_id=0,$code='',$module='',$start_time='',$end_time='
     $filter['page'] = $page;
     $filter['page_size'] = $page_size;
 
-    $sql_select = 'SELECT l.log_time,l.log_info,a.user_name FROM '.$GLOBALS['ecs']->table('admin_log').
+    $sql_select = 'SELECT l.log_time,l.log_info,l.sn,l.module,l.me_do,a.user_name FROM '.$GLOBALS['ecs']->table('admin_log').
         ' l LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').' a ON a.user_id=l.user_id '.
         $where.' ORDER BY log_time DESC'.
         ' LIMIT '.($page-1)*$page_size.",$page_size";
@@ -4230,18 +4220,93 @@ function get_admin_log($user_id=0,$code='',$module='',$start_time='',$end_time='
 }
 
 function get_analyse_list(){
-    $sql_select = 'SELECT analyse_name,analyse_code,analyse_value FROM '.$GLOBALS['ecs']->table('action_analyse');
+    $sql_select = 'SELECT analyse_name,analyse_code,analyse_value FROM '.$GLOBALS['ecs']->table('action_analyse').' ORDER BY analyse_id ASC';
     return $GLOBALS['db']->getAll($sql_select);
 }
 
-/*分析管理员操作*/
-function analyse_log(){
-    return true;
-}
 
 /*操作日志分析参数值*/
 function get_analyse_value($analyse_code){
     $sql_select = 'SELECT analyse_value FROM '.$GLOBALS['ecs']->table('action_analyse').
         " WHERE analyse_code='$analyse_code'";
     return $GLOBALS['db']->getOne($sql_select);
+}
+
+/*分析管理员操作*/
+function analyse_log($module,$code,$date,$condition){
+    if($date){
+        extract($date);
+    }
+
+    $sql_select = 'SELECT analyse_value FROM '.$GLOBALS['ecs']->table('action_analyse').
+        " WHERE analyse_code='$condition'";
+    $value = $GLOBALS['db']->getOne($sql_select);
+
+    $sql_select = 'SELECT l.user_id,a.user_name,l.sn,l.module,l.me_do FROM '.$GLOBALS['ecs']->table('admin_log').
+        ' l LEFT JOIN '.$GLOBALS['ecs']->table('admin_user').
+        ' a ON a.user_id=l.user_id '.
+        " WHERE code='$code' AND log_time BETWEEN $start_time AND $end_time ";
+
+    if('user' == $module){
+        $sql_select .= " AND module='users'";
+        $content = '顾客';
+    }elseif('order' == $module){
+        $sql_select .= " AND module='orders'";
+        $content = '订单';
+    } 
+
+    $result = $GLOBALS['db']->getAll($sql_select);
+
+    /*指转移顾客数量*/
+    if ($code == 'transfer') {
+    }else{
+        foreach($result as $val){
+            if($val['total'] >= $value){
+                $analyse_res[] = array(
+                    'user_name' => $val['user_name'],
+                    'total'     => $val['total'],
+                    'sn'        => $val['sn'],
+                    'module'    => $content,
+                    'me_do'     => $val['me_do'],
+                );    
+            }
+        }    
+    }
+
+    return $analyse_res;
+}
+
+/*获得操作类型*/
+function get_module_act($condition) {
+    switch($condition){
+    case 'by_view_user_info'  : $code = 'view';$module = 'user'; break;
+    case 'by_edit_user_info'  : $code = 'upd';$module = 'user'; break;
+    case 'by_del_user_info'   : $code = 'del';$module  = 'user'; break;
+    case 'by_view_order_info' : $code = 'view';$module  = 'order'; break;
+    case 'by_edit_order_info' : $code = 'upd';$module  = 'order'; break;
+    case 'by_del_order_info'  : $code = 'del';$module  = 'order'; break;
+    }
+
+    return array('code' => $code, 'module' => $module);
+}
+
+function get_date($date){
+    if (!empty($date)) {
+        switch($date){
+        case 'today':
+            $start_time = strtotime(date('Y-m-d 00:00:00'));
+            $end_time = strtotime(date('Y-m-d 23:59:59'));
+            break;
+        case 'week' :
+            $start_time = mktime(0,0,0,date("m"),date("d")-date("w")+1,date("Y"));
+            $end_time   = mktime(23,59,59,date("m"),date("d")-date("w")+7,date("Y"));
+            break;
+        case 'month':
+            $start_time = strtotime(date('Y-m-1 00:00:00'));
+            $end_time = strtotime(date('Y-m-t 23:59:59'));
+            break;
+        }
+    }
+
+    return array('start_time' => $start_time, 'end_time' => $end_time); 
 }

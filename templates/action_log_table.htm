@@ -9,7 +9,13 @@
 <tr>
   <td>{$val.user_name}</td>
   <td>{$val.log_time}</td>
-  <td style="text-align:left;padding-left:6px;">{$val.log_info}</td>
+  <td style="text-align:left;padding-left:6px;">
+    {$val.log_info}
+    <button class="btn_new" onclick="getMoreInfo('{$val.module}')">{$val.sn}</button>  
+    {if !$val.me_do }
+    <font color="red">操作了非自己的{if $val.module eq 'users'}顾客{else}订单{/if}</font>  
+    {/if}
+  </td>
 </tr>
 {/foreach}
 {else}

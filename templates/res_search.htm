@@ -42,8 +42,8 @@
     <tr> 
       <td style="background:{if $val.is_black eq 1}red{elseif $val.is_black eq 4}yellow{/if}">{$val.user_id}</td>
       <td>{$val.user_name}</td>
-      <td>{$val.admin_name}</td>
       <td>-</td>
+      <td>{$val.admin_name}</td>
       <td>-</td>
       <td>
         <button class="btn_new" onclick="getMoreInfo({$val.user_id},'vip_card',0)">会员卡</button>&nbsp;&nbsp;

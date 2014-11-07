@@ -13,7 +13,7 @@ if ($_REQUEST['act'] == 'menu')
     die($smarty->fetch('left.htm'));
 }
 
-/* 操作员 */
+/* 员工列表 */
 elseif ($_REQUEST['act'] == 'operator_manage')
 {
     /* 分页大小 */
@@ -1181,6 +1181,7 @@ elseif('change_log' == $_REQUEST['act']){
     die($json->encode($res));
 }
 
+/*查看管理员*/
 elseif($_REQUEST['act'] == 'view_admin'){
     if(admin_priv('allot_authority','',true)){
 
@@ -1226,8 +1227,12 @@ elseif($_REQUEST['act'] == 'view_admin'){
 function get_role_lists()
 {
     $list = array();
-    $sql  = 'SELECT role_id,role_name,action_list,role_describe,role_describe,manager,role_type,compete '.
-        ' FROM '.$GLOBALS['ecs']->table('role').' ORDER BY role_id DESC';
+    if(!admin_priv('all','',false)){
+        $where = " WHERE role_id={$_SESSION['role_id']} ";
+    }
+
+    $sql  = 'SELECT role_id,role_name,action_list,role_describe,role_describe,manager,role_type,compete FROM '.
+        $GLOBALS['ecs']->table('role')." $where ORDER BY role_id DESC";
     $list = $GLOBALS['db']->getAll($sql);
 
     return $list;
@@ -1238,6 +1243,7 @@ function get_action_list()
     $sql_query = "SELECT * FROM " .$GLOBALS['ecs']->table('admin_action').
         " WHERE parent_id = 0";
     $res = $GLOBALS['db']->query($sql_query);
+
     while ($rows = $GLOBALS['db']->FetchRow($res))
     {
         $priv_arr[$rows['action_id']] = $rows;

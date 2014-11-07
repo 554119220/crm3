@@ -1,17 +1,20 @@
 <br />
 <h3>操作日志</h3>
-<br />
-<div class="view">
-  <b>视图：</b>
-  <button onclick="javascript:viewActionLog(document.forms['action_log_form'],'today')" class="btn_new">今天的</button>  
-  <button onclick="javascript:viewActionLog(document.forms['action_log_form'],'week')" class="btn_new">本周的</button>  
-  <button onclick="javascript:viewActionLog(document.forms['action_log_form'],'month')" class="btn_new">本月的</button> |
-  <b>行为分析：</b>
-  {foreach from=$analyse_list item=val}
-  <button onclick="analyseLog('{$val.analyse_code}')" class="btn_new">{$val.analyse_name}</button>
-  {/foreach}
-  | <button class="btn_new" style="color:#21A622;padding-right:12px;" onclick="analyseLogConfig()">编辑分析参数</button>
+<div style="text-align:right;padding-right:16px;margin-bottom:5px;">
+<button class="btn_new" style="color:#21A622;padding:3px;border:1px solid " onclick="analyseLogConfig()">编辑分析参数</button>
 </div>
+<div class="view">
+  <form action="javascript:void(0)" >
+  <b>视图：</b>
+    <label class="btn_new"><input type="radio" name="date" value="today" onclick="javascript:viewActionLog(document.forms['action_log_form'],'today')" checked />今天的</label>  
+    <label class="btn_new"><input type="radio" name="date" onclick="javascript:viewActionLog(document.forms['action_log_form'],'week')" value="week" />本周的</label>  
+    <label class="btn_new"><input type="radio" name="date" onclick="javascript:viewActionLog(document.forms['action_log_form'],'month')" class="btn_new" value="month" />本月的</label> |
+    <b>行为分析：</b>
+    {foreach from=$analyse_list item=val}
+    <button onclick="analyseLog(this.form,'{$val.analyse_code}')" class="btn_new">{$val.analyse_name}</button>
+    {/foreach}
+</div>
+  </form>
 <br />
 <div class="view-form">
   <form action="javascript:void(0)" onsubmit="viewActionLog(this,'')" name="action_log_form">
@@ -30,7 +33,7 @@
       <span class="btn_new">添加</span>
     </label>
     <label>
-      <input type="radio" name="code" value="edit" onclick="viewActionLog(this.form,'')" {if $code eq 'edit'}checked{/if}/>
+      <input type="radio" name="code" value="upd" onclick="viewActionLog(this.form,'')" {if $code eq 'edit'}checked{/if}/>
       <span class="btn_new">编辑</span>
     </label>
     <label>
